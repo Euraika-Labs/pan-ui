@@ -1,5 +1,10 @@
 # Hermes Workspace WebUI
 
+[![CI](https://github.com/Euraika-Labs/hermesagentwebui/actions/workflows/ci.yml/badge.svg)](https://github.com/Euraika-Labs/hermesagentwebui/actions/workflows/ci.yml)
+[![CodeQL](https://github.com/Euraika-Labs/hermesagentwebui/actions/workflows/codeql.yml/badge.svg)](https://github.com/Euraika-Labs/hermesagentwebui/actions/workflows/codeql.yml)
+[![Release](https://img.shields.io/github/v/release/Euraika-Labs/hermesagentwebui?display_name=tag)](https://github.com/Euraika-Labs/hermesagentwebui/releases)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](./LICENSE)
+
 A first-party-style web interface for Hermes Agent with real runtime awareness, durable operational history, and admin-facing controls for sessions, skills, extensions, memory, approvals, and diagnostics.
 
 Repo
