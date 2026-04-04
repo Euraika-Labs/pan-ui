@@ -2,6 +2,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { execCli } from '@/server/core/cli';
 import { execPythonJson } from '@/server/core/python-exec';
+import { detectHermesActiveProfileFromHome } from '@/server/hermes/profile-context';
 
 type RuntimeSession = {
   id: string;
@@ -74,7 +75,8 @@ export function getHermesRuntimeStatus(): RuntimeStatus {
       ) as Record<string, unknown>)
     : {};
 
-  const profiles = ['default', ...((fs.existsSync(profilesDir) ? fs.readdirSync(profilesDir).filter((name) => fs.statSync(path.join(profilesDir, name)).isDirectory()) : []) as string[])];
+  const detectedActive = detectHermesActiveProfileFromHome();
+  const profiles = [detectedActive, ...((fs.existsSync(profilesDir) ? fs.readdirSync(profilesDir).filter((name) => fs.statSync(path.join(profilesDir, name)).isDirectory()) : []) as string[])].filter((value, index, array) => array.indexOf(value) === index);
 
   const recentSessions = fs.existsSync(stateDbPath)
     ? (runPythonJson(
@@ -99,12 +101,14 @@ export function getHermesRuntimeStatus(): RuntimeStatus {
 
   const mcpServers = ((config.mcp_servers as Record<string, { command?: string; url?: string }> | undefined) || {});
 
+  const activeProfile = detectedActive;
+
   return {
     available: true,
     hermesPath,
     hermesVersion: version,
     hermesHome,
-    activeProfile: profiles.includes('default') ? 'default' : profiles[0],
+    activeProfile,
     configPath,
     modelDefault: (config.model as { default?: string } | undefined)?.default,
     provider: (config.model as { provider?: string } | undefined)?.provider,

@@ -1,16 +1,18 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import type { Profile } from '@/lib/types/profile';
+import { detectHermesActiveProfileFromHome } from '@/server/hermes/profile-context';
 import { getHermesHome, getProfileConfigPath } from '@/server/hermes/paths';
 import { readYamlFile, writeYamlFile } from '@/server/hermes/yaml-config';
 
 export function listRealProfiles(activeProfile: string | null | undefined): Profile[] {
   const hermesHome = getHermesHome();
   const profilesDir = path.join(hermesHome, 'profiles');
-  const names = ['default'];
+  const detectedActive = detectHermesActiveProfileFromHome();
+  const names = [detectedActive];
   if (fs.existsSync(profilesDir)) {
     for (const entry of fs.readdirSync(profilesDir, { withFileTypes: true })) {
-      if (entry.isDirectory()) names.push(entry.name);
+      if (entry.isDirectory() && !names.includes(entry.name)) names.push(entry.name);
     }
   }
   return names.map((name) => {
@@ -20,7 +22,7 @@ export function listRealProfiles(activeProfile: string | null | undefined): Prof
       name,
       modelDefault: config.model?.default,
       policyPreset: config.ui_policy_preset || 'safe-chat',
-      active: name === (activeProfile || 'default'),
+      active: name === (activeProfile || detectedActive),
     } satisfies Profile;
   });
 }
