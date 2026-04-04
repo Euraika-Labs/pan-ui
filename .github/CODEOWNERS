@@ -1,0 +1,7 @@
+# Default code owners
+* @anubissbe
+
+docs/ @anubissbe
+src/server/ @anubissbe
+src/features/ @anubissbe
+.github/ @anubissbe
