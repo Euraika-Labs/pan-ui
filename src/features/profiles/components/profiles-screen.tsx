@@ -1,8 +1,10 @@
 'use client';
 
 import { useMemo, useState } from 'react';
+import { Pencil, Sparkles } from 'lucide-react';
 import { CreateProfileDialog } from '@/features/profiles/components/create-profile-dialog';
-import { useCreateProfile, useDeleteProfile, useProfiles, useUpdateProfile } from '@/features/profiles/api/use-profiles';
+import { ProfileEditorDialog } from '@/features/profiles/components/profile-editor-dialog';
+import { useCreateProfile, useDeleteProfile, useProfiles, useUpdateProfile, useAiOptimizeProfile, useUpdateProfileConfig } from '@/features/profiles/api/use-profiles';
 import { PolicyPresetSelector } from '@/features/settings/components/policy-preset-selector';
 import { useRuntimeStatus } from '@/features/settings/api/use-runtime-status';
 import { useUIStore } from '@/lib/store/ui-store';
@@ -14,7 +16,10 @@ export function ProfilesScreen() {
   const createProfile = useCreateProfile();
   const updateProfile = useUpdateProfile();
   const deleteProfile = useDeleteProfile();
+  const aiOptimize = useAiOptimizeProfile();
+  const updateConfig = useUpdateProfileConfig();
   const [dialogOpen, setDialogOpen] = useState(false);
+  const [editorProfileId, setEditorProfileId] = useState<string | null>(null);
 
   const profiles = profilesQuery.data ?? [];
   const selectedProfile = useMemo(
@@ -22,8 +27,27 @@ export function ProfilesScreen() {
     [profiles, selectedProfileId],
   );
 
+  async function handleCreateWithAi(payload: { name: string; policyPreset?: 'safe-chat' | 'research' | 'builder' | 'full-power'; aiPurpose?: string }) {
+    // 1. Create the profile via CLI
+    await createProfile.mutateAsync({ name: payload.name, policyPreset: payload.policyPreset });
+
+    // 2. If AI purpose was given, generate and apply optimized config
+    if (payload.aiPurpose?.trim()) {
+      try {
+        const result = await aiOptimize.mutateAsync({ profileId: payload.name, purpose: payload.aiPurpose, mode: 'create' });
+        if (result.suggestion && Object.keys(result.suggestion).length > 0) {
+          await updateConfig.mutateAsync({ profileId: payload.name, config: result.suggestion });
+        }
+      } catch {
+        // Non-fatal: profile is created, AI config is bonus
+      }
+    }
+
+    setDialogOpen(false);
+  }
+
   return (
-    <div className="h-full overflow-y-auto space-y-6 p-4 lg:p-6">
+    <div className="h-full overflow-y-auto space-y-6 p-4 lg:p-6 pb-8 lg:pb-10">
       <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
         <div>
           <h1 className="text-2xl font-semibold">Profiles</h1>
@@ -122,6 +146,15 @@ export function ProfilesScreen() {
               <div className="mt-4 flex flex-wrap gap-2">
                 <button
                   type="button"
+                  onClick={() => setEditorProfileId(profile.id)}
+                  className="flex items-center gap-1.5 rounded-lg border border-purple-500/30 bg-purple-500/10 px-3 py-2 text-sm font-medium text-purple-300 transition hover:bg-purple-500/20"
+                >
+                  <Pencil className="h-3.5 w-3.5" />
+                  Edit
+                  <Sparkles className="h-3 w-3 text-purple-400" />
+                </button>
+                <button
+                  type="button"
                   onClick={async () => {
                     setSelectedProfileId(profile.id);
                     await updateProfile.mutateAsync({ profileId: profile.id, action: 'activate' });
@@ -145,11 +178,17 @@ export function ProfilesScreen() {
       <CreateProfileDialog
         open={dialogOpen}
         onClose={() => setDialogOpen(false)}
-        onSubmit={async (payload) => {
-          await createProfile.mutateAsync(payload);
-          setDialogOpen(false);
-        }}
+        onSubmit={handleCreateWithAi}
       />
+
+      {editorProfileId && (
+        <ProfileEditorDialog
+          profileId={editorProfileId}
+          profileName={profiles.find((p) => p.id === editorProfileId)?.name ?? editorProfileId}
+          open={!!editorProfileId}
+          onClose={() => setEditorProfileId(null)}
+        />
+      )}
     </div>
   );
 }
