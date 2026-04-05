@@ -3,52 +3,109 @@
 @tailwind utilities;
 
 :root {
-  --background: 0 0% 100%;
-  --foreground: 222.2 84% 4.9%;
+  --background: 220 33% 98%;
+  --foreground: 222 40% 10%;
   --card: 0 0% 100%;
-  --card-foreground: 222.2 84% 4.9%;
-  --primary: 221.2 83.2% 53.3%;
+  --card-foreground: 222 40% 10%;
+  --surface: 220 25% 97%;
+  --surface-2: 220 24% 95%;
+  --surface-elevated: 0 0% 100%;
+  --primary: 247 90% 64%;
   --primary-foreground: 210 40% 98%;
-  --muted: 210 40% 96.1%;
-  --muted-foreground: 215.4 16.3% 46.9%;
-  --border: 214.3 31.8% 91.4%;
-  --input: 214.3 31.8% 91.4%;
-  --ring: 221.2 83.2% 53.3%;
-  --success: 142 71% 45%;
+  --muted: 220 24% 95%;
+  --muted-foreground: 222 20% 36%;
+  --border: 220 22% 84%;
+  --input: 220 22% 89%;
+  --ring: 247 90% 64%;
+  --success: 151 64% 43%;
   --warning: 38 92% 50%;
   --danger: 0 84% 60%;
-  --approval: 262 83% 58%;
-  --radius: 0.875rem;
+  --approval: 271 91% 65%;
+  --accent: 191 92% 48%;
+  --shadow-color: 240 45% 22%;
+  --shadow-soft: 0 20px 60px -28px hsl(var(--shadow-color) / 0.18);
+  --shadow-card: 0 16px 40px -24px hsl(var(--shadow-color) / 0.14);
+  --shadow-elevated: 0 28px 80px -34px hsl(var(--shadow-color) / 0.22);
+  --shadow-shell: 0 36px 100px -48px hsl(var(--shadow-color) / 0.18);
+  --radius: 1rem;
 }
 
 .dark {
-  --background: 222.2 84% 4.9%;
+  --background: 228 29% 8%;
   --foreground: 210 40% 98%;
-  --card: 224 71% 4%;
+  --card: 227 24% 11%;
   --card-foreground: 210 40% 98%;
-  --primary: 217.2 91.2% 59.8%;
-  --primary-foreground: 222.2 47.4% 11.2%;
-  --muted: 217.2 32.6% 17.5%;
-  --muted-foreground: 215 20.2% 65.1%;
-  --border: 217.2 32.6% 17.5%;
-  --input: 217.2 32.6% 17.5%;
-  --ring: 224.3 76.3% 48%;
-  --success: 142 71% 45%;
-  --warning: 38 92% 50%;
-  --danger: 0 72% 51%;
-  --approval: 262 83% 68%;
+  --surface: 228 27% 10%;
+  --surface-2: 227 25% 13%;
+  --surface-elevated: 228 26% 14%;
+  --primary: 252 92% 71%;
+  --primary-foreground: 0 0% 100%;
+  --muted: 227 20% 18%;
+  --muted-foreground: 219 16% 71%;
+  --border: 226 19% 22%;
+  --input: 226 19% 22%;
+  --ring: 252 92% 71%;
+  --success: 151 64% 43%;
+  --warning: 38 92% 56%;
+  --danger: 0 72% 58%;
+  --approval: 271 88% 74%;
+  --accent: 189 94% 58%;
+  --shadow-color: 240 30% 3%;
+  --shadow-soft: 0 28px 80px -34px hsl(var(--shadow-color) / 0.58);
+  --shadow-card: 0 18px 42px -26px hsl(var(--shadow-color) / 0.54);
+  --shadow-elevated: 0 36px 110px -40px hsl(var(--shadow-color) / 0.72);
+  --shadow-shell: 0 44px 140px -56px hsl(var(--shadow-color) / 0.78);
 }
 
 * {
   @apply border-border;
 }
 
-body {
-  @apply bg-background text-foreground antialiased;
-}
-
 html,
 body,
 :root {
   height: 100%;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  @apply bg-background text-foreground antialiased;
+  background-image: linear-gradient(180deg, hsl(var(--background)), hsl(var(--surface)) 100%);
+}
+
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  background: radial-gradient(circle at top, hsl(var(--primary) / 0.06), transparent 26%);
+  opacity: 0.8;
+}
+
+::selection {
+  background: hsl(var(--primary) / 0.2);
+}
+
+::-webkit-scrollbar {
+  width: 12px;
+  height: 12px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  border: 3px solid transparent;
+  border-radius: 999px;
+  background: hsl(var(--muted-foreground) / 0.25);
+  background-clip: padding-box;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: hsl(var(--muted-foreground) / 0.4);
+  background-clip: padding-box;
 }

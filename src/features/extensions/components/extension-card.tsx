@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import type { Extension } from '@/lib/types/extension';
 import { ExtensionHealthBadge } from '@/features/extensions/components/extension-health-badge';
+import { describeAuthState, describeExtensionProvenance, describeGovernance, describeRiskLevel } from '@/lib/presentation/capability-labels';
 
 export function ExtensionCard({ extension }: { extension: Extension }) {
   return (
@@ -12,8 +13,13 @@ export function ExtensionCard({ extension }: { extension: Extension }) {
         </div>
         <div className="space-y-2 text-right">
           <ExtensionHealthBadge health={extension.health} />
-          <p className="text-xs text-muted-foreground">{extension.type} · risk {extension.riskLevel}</p>
+          <p className="text-xs text-muted-foreground">{describeRiskLevel(extension.riskLevel)} · {describeAuthState(extension.authState)}</p>
         </div>
+      </div>
+      <div className="mt-4 flex flex-wrap gap-2 text-xs text-muted-foreground">
+        <span className="rounded-full border border-border px-2 py-1">{describeExtensionProvenance(extension.provenance)}</span>
+        <span className="rounded-full border border-border px-2 py-1">{describeGovernance(extension.governance)}</span>
+        <span className="rounded-full border border-border px-2 py-1">{extension.capabilities.length} capabilities</span>
       </div>
     </Link>
   );

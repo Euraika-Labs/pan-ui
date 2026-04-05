@@ -7,6 +7,19 @@ import type { ChatSession, ChatSessionSettings, ChatSessionSummary } from '@/lib
 type SessionsResponse = { sessions: ChatSessionSummary[] };
 type SessionResponse = { session: ChatSession };
 
+function toSummary(session: ChatSession): ChatSessionSummary {
+  return {
+    id: session.id,
+    title: session.title,
+    updatedAt: session.updatedAt,
+    preview: session.preview,
+    workspaceLabel: session.archived ? 'Archived' : session.parentSessionId ? 'Forks' : 'Active workspace',
+    pinned: !session.archived && !session.parentSessionId,
+    archived: session.archived,
+    parentSessionId: session.parentSessionId,
+  };
+}
+
 export function useSessions(search = '') {
   return useQuery({
     queryKey: ['sessions', search],
@@ -46,6 +59,13 @@ export function useRenameSession() {
       }),
     onSuccess: async ({ session }) => {
       await queryClient.invalidateQueries({ queryKey: ['sessions'] });
+      queryClient.setQueryData<SessionsResponse | undefined>(['sessions', ''], (current) =>
+        current
+          ? {
+              sessions: current.sessions.map((item) => (item.id === session.id ? { ...item, ...toSummary(session) } : item)),
+            }
+          : current,
+      );
       queryClient.setQueryData(['session', session.id], { session });
     },
   });
@@ -88,6 +108,13 @@ export function useForkSession() {
       }),
     onSuccess: async ({ session }) => {
       await queryClient.invalidateQueries({ queryKey: ['sessions'] });
+      queryClient.setQueryData<SessionsResponse | undefined>(['sessions', ''], (current) =>
+        current
+          ? {
+              sessions: [toSummary(session), ...current.sessions.filter((item) => item.id !== session.id)],
+            }
+          : { sessions: [toSummary(session)] },
+      );
       queryClient.setQueryData(['session', session.id], { session });
     },
   });

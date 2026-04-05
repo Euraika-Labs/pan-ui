@@ -1,20 +1,32 @@
 'use client';
 
-import { useRef, useState } from 'react';
+import { ChevronDown, Paperclip, SendHorizonal, Shield, Wrench } from 'lucide-react';
+import { useRef, useState, type FormEvent } from 'react';
 import { trackClientEvent } from '@/lib/telemetry/client';
 import type { MessageAttachment } from '@/lib/types/message';
 import { useUploadAttachment } from '@/features/chat/api/use-upload';
 import { AttachmentChip } from '@/features/chat/components/attachment-chip';
 import { MicButton } from '@/features/chat/components/mic-button';
 
-type ChatComposerProps = {
-  disabled?: boolean;
-  onSend: (message: string, attachmentIds?: string[]) => Promise<void> | void;
+type ComposerChip = {
+  key: string;
+  label: string;
 };
 
-export function ChatComposer({ disabled, onSend }: ChatComposerProps) {
+export function ChatComposer({
+  disabled,
+  statusNote,
+  chips = [],
+  onSend,
+}: {
+  disabled?: boolean;
+  statusNote?: string;
+  chips?: ComposerChip[];
+  onSend: (message: string, attachmentIds?: string[]) => Promise<void> | void;
+}) {
   const [value, setValue] = useState('');
   const [attachments, setAttachments] = useState<MessageAttachment[]>([]);
+  const [advancedOpen, setAdvancedOpen] = useState(false);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   const uploadAttachment = useUploadAttachment();
 
@@ -23,7 +35,7 @@ export function ChatComposer({ disabled, onSend }: ChatComposerProps) {
     setAttachments((current) => [...current, attachment]);
   };
 
-  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const trimmed = value.trim();
     if ((!trimmed && attachments.length === 0) || disabled) return;
@@ -35,9 +47,9 @@ export function ChatComposer({ disabled, onSend }: ChatComposerProps) {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="border-t border-border bg-background p-3 md:p-4">
+    <form onSubmit={handleSubmit} className="shrink-0 border-t border-border/70 bg-background/75 p-2 md:p-3">
       <div
-        className="rounded-2xl border border-border bg-card p-3 shadow-sm"
+        className="rounded-[1.8rem] border border-border/70 bg-card/88 p-3 shadow-[var(--shadow-soft)]"
         onDragOver={(event) => event.preventDefault()}
         onDrop={(event) => {
           event.preventDefault();
@@ -47,25 +59,62 @@ export function ChatComposer({ disabled, onSend }: ChatComposerProps) {
           }
         }}
       >
+        <div className="mb-2 flex flex-wrap items-center gap-1.5">
+          {chips.map((chip) => (
+            <span key={chip.key} className="rounded-full border border-border/70 bg-background/80 px-3 py-1 text-xs font-medium text-foreground">
+              {chip.label}
+            </span>
+          ))}
+          <button
+            type="button"
+            onClick={() => setAdvancedOpen((current) => !current)}
+            className="inline-flex items-center gap-1 rounded-full border border-border/70 bg-background/65 px-3 py-1 text-xs font-medium text-muted-foreground"
+          >
+            Advanced
+            <ChevronDown className={`h-3.5 w-3.5 transition ${advancedOpen ? 'rotate-180' : ''}`} />
+          </button>
+        </div>
+
+        {advancedOpen ? (
+          <div className="mb-3 grid gap-3 rounded-[1.3rem] border border-border/70 bg-background/60 p-3 text-xs text-muted-foreground md:grid-cols-3">
+            <div className="rounded-xl border border-border/60 bg-card/75 p-3">
+              <p className="font-semibold text-foreground">Prompt focus</p>
+              <p className="mt-1">The main prompt stays dominant. Lower-frequency context and controls live here so the composer stays calm.</p>
+            </div>
+            <div className="rounded-xl border border-border/60 bg-card/75 p-3">
+              <p className="font-semibold text-foreground">Visible trust cues</p>
+              <p className="mt-1">Model, mode, tools, files, and profile remain visible before you send anything.</p>
+            </div>
+            <div className="rounded-xl border border-border/60 bg-card/75 p-3">
+              <p className="font-semibold text-foreground">Attachments</p>
+              <p className="mt-1">Drop a file anywhere on the composer or use Attach to add screenshots, notes, and code snippets.</p>
+            </div>
+          </div>
+        ) : null}
+
         {attachments.length ? (
           <div className="mb-3 flex flex-wrap gap-2">
             {attachments.map((attachment) => (
-              <AttachmentChip
-                key={attachment.id}
-                attachment={attachment}
-                onRemove={(attachmentId) => setAttachments((current) => current.filter((item) => item.id !== attachmentId))}
-              />
+              <AttachmentChip key={attachment.id} attachment={attachment} onRemove={(attachmentId) => setAttachments((current) => current.filter((item) => item.id !== attachmentId))} />
             ))}
           </div>
         ) : null}
+
         <textarea
           value={value}
           onChange={(event) => setValue(event.target.value)}
-          placeholder="Message Hermes…"
-          className="min-h-24 w-full resize-none bg-transparent text-sm outline-none placeholder:text-muted-foreground"
+          onKeyDown={(event) => {
+            if (event.key === 'Enter' && !event.shiftKey) {
+              event.preventDefault();
+              void handleSubmit(event as unknown as FormEvent<HTMLFormElement>);
+            }
+          }}
+          placeholder={disabled ? 'Hermes is unavailable right now.' : 'Message Hermes…'}
+          className="min-h-14 w-full resize-none bg-transparent px-1 text-sm leading-7 outline-none placeholder:text-muted-foreground"
           disabled={disabled}
         />
-        <div className="mt-3 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+
+        <div className="mt-3 flex flex-col gap-3 xl:flex-row xl:items-center xl:justify-between">
           <div className="flex flex-wrap items-center gap-2">
             <input
               ref={fileInputRef}
@@ -78,23 +127,31 @@ export function ChatComposer({ disabled, onSend }: ChatComposerProps) {
                 event.currentTarget.value = '';
               }}
             />
-            <button
-              type="button"
-              onClick={() => fileInputRef.current?.click()}
-              className="rounded-lg border border-border px-3 py-2 text-sm text-muted-foreground"
-            >
+            <button type="button" onClick={() => fileInputRef.current?.click()} className="inline-flex items-center gap-2 rounded-2xl border border-border/70 bg-background/80 px-3 py-2 text-sm font-medium text-foreground">
+              <Paperclip className="h-4 w-4" />
               Attach
             </button>
             <MicButton disabled={disabled} onTranscript={(text) => setValue((current) => `${current}${current ? ' ' : ''}${text}`)} />
-            <p className="text-xs text-muted-foreground">Shift+Enter newline support and real voice recording can be improved later.</p>
+            {statusNote ? <p className="text-xs text-muted-foreground">{statusNote}</p> : null}
           </div>
-          <button
-            type="submit"
-            disabled={disabled || (!value.trim() && attachments.length === 0)}
-            className="rounded-lg bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50"
-          >
-            Send
-          </button>
+          <div className="flex flex-wrap items-center gap-2">
+            <span className="hidden items-center gap-1 text-xs text-muted-foreground md:inline-flex">
+              <Shield className="h-3.5 w-3.5" />
+              Trust cues stay visible
+            </span>
+            <span className="hidden items-center gap-1 text-xs text-muted-foreground md:inline-flex">
+              <Wrench className="h-3.5 w-3.5" />
+              Tools stay explicit
+            </span>
+            <button
+              type="submit"
+              disabled={disabled || (!value.trim() && attachments.length === 0)}
+              className="inline-flex items-center justify-center gap-2 rounded-2xl bg-[linear-gradient(135deg,hsl(var(--primary)),hsl(var(--accent)))] px-4 py-2.5 text-sm font-semibold text-primary-foreground shadow-[var(--shadow-card)] transition hover:-translate-y-0.5 disabled:cursor-not-allowed disabled:opacity-50"
+            >
+              <SendHorizonal className="h-4 w-4" />
+              Send
+            </button>
+          </div>
         </div>
       </div>
     </form>

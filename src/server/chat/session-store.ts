@@ -16,7 +16,7 @@ function createMessage(role: Message['role'], content: string, attachments?: Mes
 
 const defaultSessionSettings: ChatSessionSettings = {
   model: 'Hermes 3 405B',
-  provider: 'mock-runtime',
+  provider: 'real-hermes',
   policyPreset: 'safe-chat',
   memoryMode: 'standard',
 };
@@ -56,6 +56,10 @@ function summarize(session: ChatSession): ChatSessionSummary {
     title: session.archived ? `${session.title} (archived)` : session.title,
     updatedAt: session.updatedAt,
     preview: session.preview,
+    workspaceLabel: session.archived ? 'Archived' : session.parentSessionId ? 'Forks' : 'Active workspace',
+    pinned: !session.archived && !session.parentSessionId,
+    archived: session.archived,
+    parentSessionId: session.parentSessionId,
   };
 }
 

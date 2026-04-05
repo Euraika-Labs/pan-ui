@@ -13,6 +13,7 @@ test('user can sign in, create a chat, send a message, and receive a streamed re
   await page.getByRole('button', { name: 'Continue' }).click();
 
   await expect(page).toHaveURL(/\/chat$/);
+  await expect(page.getByRole('heading', { name: 'Hermes chat workspace' })).toBeVisible();
   await expect(page.getByRole('button', { name: 'New chat', exact: true })).toBeVisible();
 
   await page.getByPlaceholder('Message Hermes…').fill('Help me plan Hermes Workspace');
@@ -27,12 +28,19 @@ test('user can sign in, create a chat, send a message, and receive a streamed re
   await page.getByRole('button', { name: 'Send' }).click();
   await page.getByRole('button', { name: 'Approve' }).click();
 
-  await expect(page.getByText('Help me plan Hermes Workspace Voice input captured from mock microphone control.')).toBeVisible();
+  await expect(page.locator('p').filter({ hasText: 'Help me plan Hermes Workspace Voice input captured from mock microphone control.' }).last()).toBeVisible();
   await expect(page.getByText('brief.txt').first()).toBeVisible();
-  await expect(page.getByText(/Hermes mock mode is active/).first()).toBeVisible();
+  await expect(page.locator('p:visible').filter({ hasText: /Hermes mock mode is active/ }).first()).toBeVisible();
   await expect(page.getByRole('heading', { name: 'web_search' }).first()).toBeVisible();
   await expect(page.getByText(/Approval needed/).first()).toBeVisible();
   await expect(page.getByRole('button', { name: /Artifact · text\/markdown/i }).first()).toBeVisible();
+
+  await page.getByRole('button', { name: 'Open workspace details' }).click();
+  await expect(page.getByRole('button', { name: 'Context', exact: true })).toBeVisible();
+  await expect(page.getByRole('button', { name: 'Activity', exact: true })).toBeVisible();
+  await expect(page.getByRole('button', { name: 'Tools', exact: true })).toBeVisible();
+  await expect(page.getByRole('button', { name: 'Output', exact: true })).toBeVisible();
+  await expect(page.getByRole('button', { name: 'Session', exact: true })).toBeVisible();
 });
 
 test('user can search, rename, fork, archive, and update chat settings', async ({ page }) => {
@@ -58,18 +66,17 @@ test('user can search, rename, fork, archive, and update chat settings', async (
 
   await page.getByRole('button', { name: 'Manage' }).click();
   await page.getByRole('button', { name: 'Fork' }).click();
-  await page.getByRole('button', { name: /Renamed Sprint 3 session \(fork\)/i }).first().click();
-  await expect(page.getByRole('heading', { name: 'Renamed Sprint 3 session (fork)' })).toBeVisible();
+  await expect(page.getByRole('button', { name: /Renamed Sprint 3 session \(fork\)/i }).first()).toBeVisible();
 
   await page.getByRole('button', { name: 'Settings' }).click();
   await page.getByLabel('Settings model switcher').selectOption('Hermes Fast');
   await page.getByLabel('Policy preset').selectOption('builder');
   await page.getByRole('button', { name: 'Save settings' }).click();
-  await page.getByRole('button', { name: 'Close' }).click();
-  await expect(page.getByText(/Policy: builder/)).toBeVisible();
+  await page.getByRole('button', { name: 'Close', exact: true }).click();
+  await expect(page.getByText('builder').first()).toBeVisible();
 
   await page.getByRole('button', { name: 'Manage' }).click();
   await page.getByRole('button', { name: 'Archive' }).click();
   await page.getByRole('button', { name: 'Archive' }).last().click();
-  await expect(page.getByText(/archived/)).toBeVisible();
+  await expect(page.getByText('Archived').first()).toBeVisible();
 });

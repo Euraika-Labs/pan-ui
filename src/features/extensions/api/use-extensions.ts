@@ -2,17 +2,21 @@
 
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { apiFetch } from '@/lib/api/client';
+import { normalizeExtension, normalizeExtensions, normalizeToolInventory } from '@/lib/api/normalizers';
 import { trackClientEvent } from '@/lib/telemetry/client';
-import type { Extension } from '@/lib/types/extension';
+import type { Extension, ToolInventoryItem } from '@/lib/types/extension';
 
-type ExtensionsResponse = { extensions: Extension[] };
+type ExtensionsResponse = { extensions: Extension[]; tools: ToolInventoryItem[] };
 type ExtensionResponse = { extension: Extension };
 
 export function useExtensions() {
   return useQuery({
     queryKey: ['extensions'],
     queryFn: () => apiFetch<ExtensionsResponse>('/api/extensions'),
-    select: (data) => data.extensions,
+    select: (data) => ({
+      extensions: normalizeExtensions(data.extensions),
+      tools: normalizeToolInventory(data.tools),
+    }),
   });
 }
 
@@ -20,14 +24,15 @@ export function useExtension(extensionId: string | null) {
   return useQuery({
     queryKey: ['extension', extensionId],
     queryFn: () => apiFetch<ExtensionResponse>(`/api/extensions/${extensionId}`),
-    select: (data) => data.extension,
+    select: (data) => normalizeExtension(data.extension),
     enabled: Boolean(extensionId),
   });
 }
 
 function writeExtension(queryClient: ReturnType<typeof useQueryClient>, extension: Extension) {
+  const normalized = normalizeExtension(extension);
   queryClient.invalidateQueries({ queryKey: ['extensions'] });
-  queryClient.setQueryData(['extension', extension.id], { extension });
+  queryClient.setQueryData(['extension', normalized.id], { extension: normalized });
 }
 
 export function useAddMcpExtension() {

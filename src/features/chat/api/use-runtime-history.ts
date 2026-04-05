@@ -27,6 +27,5 @@ export function useRuntimeApprovals(sessionId: string | null, query = '', status
     queryKey: ['runtime-approvals', sessionId, query, status],
     queryFn: () => apiFetch<{ approvals: Array<Record<string, string>> }>(`/api/runtime/approvals?sessionId=${encodeURIComponent(sessionId || '')}&query=${encodeURIComponent(query)}&status=${encodeURIComponent(status)}`),
     select: (data) => data.approvals,
-    enabled: Boolean(sessionId),
   });
 }

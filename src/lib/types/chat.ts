@@ -1,10 +1,16 @@
 import type { Message } from '@/lib/types/message';
+import type { ChatSource } from '@/lib/types/source';
+import type { GovernanceStatus, ProvenanceLabel, RiskLevel } from '@/lib/types/runtime-status';
 
 export type ChatSessionSummary = {
   id: string;
   title: string;
   updatedAt: string;
   preview?: string;
+  workspaceLabel?: string;
+  pinned?: boolean;
+  archived?: boolean;
+  parentSessionId?: string;
 };
 
 export type ChatSessionSettings = {
@@ -29,10 +35,24 @@ export type ChatArtifact = {
   content?: string;
 };
 
+export type ChatSourceEvent = {
+  type: 'source.emitted';
+  source: ChatSource;
+};
+
 export type ChatStreamEvent =
   | { type: 'assistant.delta'; delta: string }
-  | { type: 'tool.started'; toolCallId: string; toolName: string }
-  | { type: 'tool.awaiting_approval'; toolCallId: string; toolName: string; summary: string }
-  | { type: 'tool.completed'; toolCallId: string; toolName: string; output?: string }
+  | { type: 'run.phase'; phase: 'drafting' | 'tool-started' | 'waiting-approval' | 'completed'; label: string }
+  | { type: 'tool.started'; toolCallId: string; toolName: string; riskLevel?: RiskLevel; provenance?: ProvenanceLabel }
+  | {
+      type: 'tool.awaiting_approval';
+      toolCallId: string;
+      toolName: string;
+      summary: string;
+      riskLevel?: RiskLevel;
+      governance?: GovernanceStatus;
+    }
+  | { type: 'tool.completed'; toolCallId: string; toolName: string; output?: string; riskLevel?: RiskLevel }
   | ({ type: 'artifact.emitted' } & ChatArtifact)
+  | ChatSourceEvent
   | { type: 'error'; message: string };

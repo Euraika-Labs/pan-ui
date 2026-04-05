@@ -6,6 +6,14 @@ export async function GET(request: Request) {
   const sessionId = searchParams.get('sessionId');
   const query = searchParams.get('query') || '';
   const status = searchParams.get('status') || '';
-  if (!sessionId) return NextResponse.json({ approvals: [] });
-  return NextResponse.json({ approvals: listApprovals(sessionId, query, status) });
+  const approvals = listApprovals(sessionId, query, status);
+
+  return NextResponse.json({
+    approvals,
+    summary: {
+      pending: approvals.filter((approval) => approval.status === 'pending').length,
+      approved: approvals.filter((approval) => approval.status === 'approved').length,
+      rejected: approvals.filter((approval) => approval.status === 'rejected').length,
+    },
+  });
 }

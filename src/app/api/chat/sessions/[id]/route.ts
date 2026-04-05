@@ -3,10 +3,12 @@ import { archiveSession, deleteSession, getSession, renameSession, updateSession
 import { getSelectedProfileFromCookie } from '@/server/hermes/profile-cookie';
 import { archiveRealSession, deleteRealSession, getRealSession, renameRealSession, updateRealSessionSettings } from '@/server/hermes/real-sessions';
 
+const mockMode = process.env.HERMES_MOCK_MODE === 'true';
+
 export async function GET(_: Request, { params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
   const profileId = await getSelectedProfileFromCookie();
-  const session = getSession(id) ?? getRealSession(profileId, id);
+  const session = getRealSession(profileId, id) ?? (mockMode ? getSession(id) : null);
 
   if (!session) {
     return NextResponse.json({ error: 'Session not found' }, { status: 404 });
@@ -26,7 +28,7 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
   try {
     const profileId = await getSelectedProfileFromCookie();
     const isReal = Boolean(getRealSession(profileId, id));
-    let session = getSession(id);
+    let session = isReal ? getRealSession(profileId, id) : mockMode ? getSession(id) : null;
     if (!session && !isReal) {
       return NextResponse.json({ error: 'Session not found' }, { status: 404 });
     }
@@ -56,8 +58,10 @@ export async function DELETE(_: Request, { params }: { params: Promise<{ id: str
     const profileId = await getSelectedProfileFromCookie();
     if (getRealSession(profileId, id)) {
       deleteRealSession(profileId, id);
-    } else {
+    } else if (mockMode) {
       deleteSession(id);
+    } else {
+      return NextResponse.json({ error: 'Session not found' }, { status: 404 });
     }
     return NextResponse.json({ ok: true });
   } catch (error) {

@@ -20,6 +20,7 @@ test('user can add, configure, test, and toggle an MCP extension', async ({ page
 
   await page.getByRole('button', { name: 'Test connection' }).click();
   await expect(page.getByText(/^healthy$/).first()).toBeVisible();
+  await expect(page.getByText(/auth connected/i).first()).toBeVisible();
 
   await page.getByRole('button', { name: 'configuration' }).click();
   await page.getByLabel('Extension command').fill('npx docs-mcp');
@@ -34,4 +35,8 @@ test('user can add, configure, test, and toggle an MCP extension', async ({ page
 
   const firstScope = page.locator('select').last();
   await firstScope.selectOption('session');
+
+  await page.getByRole('link', { name: 'Extensions' }).click();
+  await page.getByRole('button', { name: 'Tools' }).click();
+  await expect(page.getByText('docs-mcp')).toBeVisible();
 });

@@ -7,9 +7,14 @@ export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
   const installedOnly = searchParams.get('installed') === 'true';
   const profileId = await getSelectedProfileFromCookie();
-  const mockSkills = listSkills({ installedOnly });
   const realSkills = listRealSkills(profileId);
-  const seen = new Set(realSkills.map((s) => s.id));
-  const merged = [...realSkills, ...mockSkills.filter((s) => !seen.has(s.id))];
-  return NextResponse.json({ skills: installedOnly ? merged.filter((s) => s.installed) : merged });
+  const fallbackSkills = listSkills();
+  const merged = [...realSkills];
+  for (const skill of fallbackSkills) {
+    if (!merged.some((item) => item.id === skill.id)) {
+      merged.push(skill);
+    }
+  }
+  const skills = (installedOnly ? merged.filter((s) => s.installed) : merged).sort((a, b) => a.name.localeCompare(b.name));
+  return NextResponse.json({ skills });
 }

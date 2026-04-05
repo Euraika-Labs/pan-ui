@@ -3,9 +3,11 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useSessionSearch } from '@/features/memory/api/use-memory';
+import { useUIStore } from '@/lib/store/ui-store';
 
 export function SessionSearchPanel() {
   const router = useRouter();
+  const { setActiveSessionId } = useUIStore();
   const [query, setQuery] = useState('');
   const searchQuery = useSessionSearch(query);
 
@@ -21,11 +23,22 @@ export function SessionSearchPanel() {
       />
       <div className="mt-4 space-y-3">
         {(searchQuery.data ?? []).map((result) => (
-          <button key={result.id} type="button" onClick={() => router.push('/chat')} className="block w-full rounded-xl border border-border bg-background p-4 text-left">
+          <button
+            key={result.id}
+            type="button"
+            onClick={() => {
+              setActiveSessionId(result.id);
+              router.push('/chat');
+            }}
+            className="block w-full rounded-xl border border-border bg-background p-4 text-left"
+          >
             <p className="text-sm font-medium">{result.title}</p>
             <p className="mt-1 text-sm text-muted-foreground">{result.preview}</p>
           </button>
         ))}
+        {query.trim() && !searchQuery.isLoading && (searchQuery.data?.length ?? 0) === 0 ? (
+          <p className="text-sm text-muted-foreground">No prior sessions matched that search.</p>
+        ) : null}
       </div>
     </section>
   );

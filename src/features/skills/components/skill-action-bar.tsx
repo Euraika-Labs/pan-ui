@@ -12,28 +12,33 @@ type SkillActionBarProps = {
 };
 
 export function SkillActionBar({ skill, hasActiveSession, onInstall, onEnableToggle, onLoadIntoSession, onUninstall }: SkillActionBarProps) {
+  const canEditDirectly = skill.scope !== 'builtin';
+
   return (
     <div className="flex flex-wrap gap-2">
-      {!skill.installed ? (
-        <button type="button" onClick={onInstall} className="rounded-lg bg-primary px-4 py-2 text-sm font-medium text-primary-foreground">Install</button>
-      ) : (
-        <>
-          <button type="button" onClick={onEnableToggle} className="rounded-lg border border-border px-4 py-2 text-sm">
-            {skill.enabled ? 'Disable' : 'Enable'}
-          </button>
-          <button
-            type="button"
-            onClick={onLoadIntoSession}
-            disabled={!hasActiveSession}
-            className="rounded-lg border border-border px-4 py-2 text-sm disabled:cursor-not-allowed disabled:opacity-50"
-          >
-            Load into current session
-          </button>
-          <button type="button" onClick={onUninstall} className="rounded-lg border border-border px-4 py-2 text-sm text-danger">
-            Uninstall
-          </button>
-        </>
-      )}
+      {skill.scope === 'builtin' ? (
+        <button type="button" onClick={onInstall} className="rounded-lg bg-primary px-4 py-2 text-sm font-medium text-primary-foreground">
+          {canEditDirectly ? 'Install' : 'Copy to profile scope'}
+        </button>
+      ) : null}
+      {!skill.scope || skill.scope !== 'builtin' ? (
+        <button type="button" onClick={onEnableToggle} className="rounded-lg border border-border px-4 py-2 text-sm">
+          {skill.enabled ? 'Disable' : 'Enable'}
+        </button>
+      ) : null}
+      <button
+        type="button"
+        onClick={onLoadIntoSession}
+        disabled={!hasActiveSession}
+        className="rounded-lg border border-border px-4 py-2 text-sm disabled:cursor-not-allowed disabled:opacity-50"
+      >
+        Load into current session
+      </button>
+      {skill.scope !== 'builtin' ? (
+        <button type="button" onClick={onUninstall} className="rounded-lg border border-border px-4 py-2 text-sm text-danger">
+          Remove local copy
+        </button>
+      ) : null}
     </div>
   );
 }

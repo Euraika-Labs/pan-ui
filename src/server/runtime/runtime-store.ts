@@ -28,8 +28,8 @@ export function persistToolEvent(sessionId: string, event: ChatStreamEvent) {
   const id = crypto.randomUUID();
   const toolCallId = 'toolCallId' in event ? (event.toolCallId ?? null) : null;
   const toolName = 'toolName' in event ? (event.toolName ?? null) : null;
-  const summary = event.type === 'tool.awaiting_approval' ? event.summary : null;
-  const output = event.type === 'tool.completed' ? (event.output ?? null) : null;
+  const summary = event.type === 'tool.awaiting_approval' ? event.summary : event.type === 'run.phase' ? event.label : null;
+  const output = event.type === 'tool.completed' ? (event.output ?? null) : event.type === 'source.emitted' ? (event.source.href ?? event.source.snippet ?? null) : null;
   pyExec(`import sqlite3, sys
 conn=sqlite3.connect(sys.argv[1])
 conn.execute("INSERT INTO tool_events (id, session_id, event_type, tool_call_id, tool_name, summary, output, payload_json, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)", tuple(sys.argv[2:11]))
@@ -60,6 +60,7 @@ conn=sqlite3.connect(sys.argv[1])
 conn.execute("UPDATE approvals SET status=?, updated_at=? WHERE tool_call_id=?", (sys.argv[2], sys.argv[3], sys.argv[4]))
 conn.commit()
 `, [status, nowIso(), toolCallId]);
+  return getApprovalDecision(toolCallId);
 }
 
 export function getApprovalDecision(toolCallId: string) {
@@ -107,24 +108,28 @@ print(json.dumps(rows))
 `, [sessionId, query]);
 }
 
-export function listApprovals(sessionId: string, query = '', status = '') {
+export function listApprovals(sessionId?: string | null, query = '', status = '') {
   return pyExecJson<Array<Record<string, string>>>(`import sqlite3, json, sys
 conn=sqlite3.connect(sys.argv[1])
 conn.row_factory=sqlite3.Row
 cur=conn.cursor()
+session_id=(sys.argv[2] or '').strip()
 q=(sys.argv[3] or '').lower()
 status_filter=(sys.argv[4] or '').lower()
-cur.execute("SELECT tool_call_id, tool_name, summary, status, created_at, updated_at FROM approvals WHERE session_id=? ORDER BY created_at ASC", (sys.argv[2],))
+if session_id:
+    cur.execute("SELECT tool_call_id, session_id, tool_name, summary, status, created_at, updated_at FROM approvals WHERE session_id=? ORDER BY CASE status WHEN 'pending' THEN 0 WHEN 'rejected' THEN 1 ELSE 2 END, updated_at DESC", (session_id,))
+else:
+    cur.execute("SELECT tool_call_id, session_id, tool_name, summary, status, created_at, updated_at FROM approvals ORDER BY CASE status WHEN 'pending' THEN 0 WHEN 'rejected' THEN 1 ELSE 2 END, updated_at DESC")
 rows=[]
 for r in cur.fetchall():
-    hay=f"{r['tool_call_id']} {r['tool_name']} {r['summary'] or ''} {r['status']}".lower()
+    hay=f"{r['tool_call_id']} {r['session_id']} {r['tool_name']} {r['summary'] or ''} {r['status']}".lower()
     if q and q not in hay:
         continue
     if status_filter and r['status'].lower()!=status_filter:
         continue
-    rows.append({'toolCallId':r['tool_call_id'],'toolName':r['tool_name'],'summary':r['summary'],'status':r['status'],'createdAt':r['created_at'],'updatedAt':r['updated_at']})
+    rows.append({'toolCallId':r['tool_call_id'],'sessionId':r['session_id'],'toolName':r['tool_name'],'summary':r['summary'],'status':r['status'],'createdAt':r['created_at'],'updatedAt':r['updated_at']})
 print(json.dumps(rows))
-`, [sessionId, query, status]);
+`, [sessionId || '', query, status]);
 }
 
 export function persistTelemetry(event: string, source: string, payload?: Record<string, unknown>) {
