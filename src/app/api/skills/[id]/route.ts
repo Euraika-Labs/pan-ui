@@ -6,7 +6,8 @@ import { getRealSkill, uninstallRealSkill, updateRealSkill } from '@/server/herm
 export async function GET(_: Request, { params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
   const profileId = await getSelectedProfileFromCookie();
-  const skill = getRealSkill(profileId, id) ?? getSkill(id);
+  const realSkill = getRealSkill(profileId, id);
+  const skill = realSkill ?? getSkill(id);
   if (!skill) {
     return NextResponse.json({ error: 'Skill not found' }, { status: 404 });
   }
@@ -18,7 +19,11 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
   const body = (await request.json()) as { content?: string };
   try {
     const profileId = await getSelectedProfileFromCookie();
-    const skill = getRealSkill(profileId, id) ? updateRealSkill(profileId, id, body.content ?? '') : updateSkillContent(id, body.content ?? '');
+    const realSkill = getRealSkill(profileId, id);
+    const skill = realSkill ? updateRealSkill(profileId, id, body.content ?? '') : updateSkillContent(id, body.content ?? '');
+    if (!skill) {
+      return NextResponse.json({ error: 'Skill not found' }, { status: 404 });
+    }
     return NextResponse.json({ skill });
   } catch (error) {
     return NextResponse.json({ error: error instanceof Error ? error.message : 'Unable to update skill' }, { status: 400 });
@@ -29,13 +34,24 @@ export async function DELETE(_: Request, { params }: { params: Promise<{ id: str
   const { id } = await params;
   try {
     const profileId = await getSelectedProfileFromCookie();
+    const realSkill = getRealSkill(profileId, id);
     const skill = (() => {
-      if (getRealSkill(profileId, id)) {
+      if (realSkill) {
+        const prior = realSkill;
         uninstallRealSkill(profileId, id);
-        return { id, name: id, installed: false, enabled: false };
+        return {
+          ...prior,
+          installed: false,
+          enabled: false,
+          loadedInSessions: [],
+          updatedAt: new Date().toISOString(),
+        };
       }
       return uninstallSkill(id);
     })();
+    if (!skill) {
+      return NextResponse.json({ error: 'Skill not found' }, { status: 404 });
+    }
     return NextResponse.json({ skill });
   } catch (error) {
     return NextResponse.json({ error: error instanceof Error ? error.message : 'Unable to uninstall skill' }, { status: 404 });

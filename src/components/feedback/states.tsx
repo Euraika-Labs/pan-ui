@@ -1,19 +1,19 @@
 import type { ReactNode } from 'react';
 
 export function LoadingState({ message = 'Loading…' }: { message?: string }) {
-  return <div className="rounded-2xl border border-border bg-card/50 p-6 text-sm text-muted-foreground">{message}</div>;
+  return <div className="rounded-[1.5rem] border border-border/70 bg-card/75 p-6 text-sm text-muted-foreground shadow-[var(--shadow-card)]">{message}</div>;
 }
 
 export function EmptyState({ title, description, action }: { title: string; description: string; action?: ReactNode }) {
   return (
-    <div className="rounded-2xl border border-dashed border-border bg-card/50 p-6 text-sm text-muted-foreground">
-      <p className="font-medium text-foreground">{title}</p>
-      <p className="mt-2">{description}</p>
+    <div className="rounded-[1.5rem] border border-dashed border-border/70 bg-card/70 p-6 text-sm text-muted-foreground shadow-[var(--shadow-card)]">
+      <p className="font-semibold text-foreground">{title}</p>
+      <p className="mt-2 leading-6">{description}</p>
       {action ? <div className="mt-4">{action}</div> : null}
     </div>
   );
 }
 
 export function ErrorState({ message }: { message: string }) {
-  return <div className="rounded-2xl border border-danger/40 bg-danger/10 p-4 text-sm text-foreground">{message}</div>;
+  return <div className="rounded-[1.5rem] border border-danger/30 bg-danger/10 p-4 text-sm text-foreground shadow-[var(--shadow-card)]">{message}</div>;
 }

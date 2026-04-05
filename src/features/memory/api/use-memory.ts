@@ -4,7 +4,12 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { apiFetch } from '@/lib/api/client';
 import type { ContextInspector, MemoryEntry } from '@/lib/types/memory';
 
-type MemoryResponse = { entries: MemoryEntry[] };
+type MemoryResponse = {
+  entries: MemoryEntry[];
+  raw: string;
+  globalEntries: MemoryEntry[];
+  globalRaw: string;
+};
 type SessionSearchResponse = { results: Array<{ id: string; title: string; preview?: string }> };
 type ContextResponse = { context: ContextInspector };
 
@@ -12,7 +17,6 @@ export function useMemory(scope: 'user' | 'agent') {
   return useQuery({
     queryKey: ['memory', scope],
     queryFn: () => apiFetch<MemoryResponse>(`/api/memory/${scope}`),
-    select: (data) => data.entries,
   });
 }
 

@@ -9,6 +9,7 @@ export type ContextInspector = {
   activeProfileId: string | null;
   activeSessionId: string | null;
   activeSessionTitle?: string;
+  activeSessionPreview?: string;
   loadedSkillIds: string[];
   model?: string;
   provider?: string;

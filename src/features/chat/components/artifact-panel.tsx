@@ -11,6 +11,10 @@ type ArtifactPanelProps = {
 export function ArtifactPanel({ artifacts, selectedArtifactId, onSelect }: ArtifactPanelProps) {
   const selected = artifacts.find((artifact) => artifact.artifactId === selectedArtifactId) ?? artifacts[0];
 
+  if (!artifacts.length) {
+    return <p className="text-sm text-muted-foreground">Artifacts will appear here when Hermes emits files, plans, or generated content.</p>;
+  }
+
   return (
     <div className="space-y-3">
       <div className="flex flex-wrap gap-2">
@@ -26,14 +30,12 @@ export function ArtifactPanel({ artifacts, selectedArtifactId, onSelect }: Artif
         ))}
       </div>
       {selected ? (
-        <div className="rounded-lg border border-border bg-background p-3">
-          <p className="text-xs uppercase tracking-wide text-muted-foreground">{selected.artifactType}</p>
-          <h4 className="mt-1 text-sm font-semibold">{selected.label}</h4>
-          <pre className="mt-3 whitespace-pre-wrap text-xs text-muted-foreground">{selected.content ?? 'No artifact content available.'}</pre>
+        <div className="rounded-[1.15rem] border border-border/70 bg-background/75 p-3 shadow-[var(--shadow-card)]">
+          <p className="text-xs uppercase tracking-[0.18em] text-muted-foreground">{selected.artifactType}</p>
+          <h4 className="mt-1 text-sm font-semibold text-foreground">{selected.label}</h4>
+          <pre className="mt-3 whitespace-pre-wrap text-xs leading-6 text-muted-foreground">{selected.content ?? 'No artifact content available.'}</pre>
         </div>
-      ) : (
-        <p className="text-sm text-muted-foreground">No artifacts emitted yet.</p>
-      )}
+      ) : null}
     </div>
   );
 }

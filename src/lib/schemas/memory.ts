@@ -11,6 +11,7 @@ export const contextInspectorSchema = z.object({
   activeProfileId: z.string().nullable(),
   activeSessionId: z.string().nullable(),
   activeSessionTitle: z.string().optional(),
+  activeSessionPreview: z.string().optional(),
   loadedSkillIds: z.array(z.string()),
   model: z.string().optional(),
   provider: z.string().optional(),

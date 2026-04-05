@@ -1,84 +1,410 @@
 'use client';
 
+import { Bot, FileText, Layers3, Search, Sparkles, TerminalSquare, X } from 'lucide-react';
+import { useMemo, type ReactNode } from 'react';
 import { ArtifactPanel } from '@/features/chat/components/artifact-panel';
-import { ToolTimeline } from '@/features/chat/components/tool-timeline';
+import { SourceCard } from '@/features/chat/components/source-card';
+import { ToolCard } from '@/features/chat/components/tool-card';
 import { useRuntimeArtifacts, useRuntimeTimeline } from '@/features/chat/api/use-runtime-history';
-import { useUIStore } from '@/lib/store/ui-store';
+import { useContextInspector } from '@/features/memory/api/use-memory';
+import { useRuntimeStatus } from '@/features/settings/api/use-runtime-status';
+import { useSession } from '@/features/sessions/api/use-sessions';
+import { StatusBadge } from '@/components/feedback/status-badge';
+import { useUIStore, type RightDrawerTab } from '@/lib/store/ui-store';
+import { governanceTone, humanizeStatus, riskTone, type RiskLevel } from '@/lib/types/runtime-status';
 import { cn } from '@/lib/utils';
+
+const tabs: Array<{ id: RightDrawerTab; label: string }> = [
+  { id: 'context', label: 'Context' },
+  { id: 'activity', label: 'Activity' },
+  { id: 'tools', label: 'Tools' },
+  { id: 'output', label: 'Output' },
+  { id: 'session', label: 'Session' },
+];
+
+function Section({ title, description, children }: { title: string; description?: string; children: ReactNode }) {
+  return (
+    <section className="space-y-3 rounded-[1.35rem] border border-border/70 bg-background/75 p-4 shadow-[var(--shadow-card)]">
+      <div>
+        <h3 className="text-sm font-semibold text-foreground">{title}</h3>
+        {description ? <p className="mt-1 text-xs leading-5 text-muted-foreground">{description}</p> : null}
+      </div>
+      {children}
+    </section>
+  );
+}
 
 export function RightDrawer() {
   const {
     rightDrawerOpen,
     closeRightDrawer,
+    rightDrawerTab,
+    setRightDrawerTab,
     runEvents,
     artifacts,
     selectedArtifactId,
     selectArtifact,
     activeSessionId,
+    selectedProfileId,
   } = useUIStore();
-  const timelineQuery = useRuntimeTimeline(activeSessionId);
-  const artifactQuery = useRuntimeArtifacts(activeSessionId);
-  const mergedEvents = timelineQuery.data?.length ? timelineQuery.data : runEvents;
-  const mergedArtifacts = artifactQuery.data?.length ? artifactQuery.data : artifacts;
+
+  const runtimeTimelineQuery = useRuntimeTimeline(activeSessionId);
+  const runtimeArtifactsQuery = useRuntimeArtifacts(activeSessionId);
+  const sessionQuery = useSession(activeSessionId);
+  const runtimeQuery = useRuntimeStatus();
+  const contextQuery = useContextInspector(selectedProfileId, activeSessionId);
+
+  const allEvents = useMemo(() => [...(runtimeTimelineQuery.data ?? []), ...runEvents], [runEvents, runtimeTimelineQuery.data]);
+  const displayedArtifacts = useMemo(() => {
+    const merged = [...(runtimeArtifactsQuery.data ?? []), ...artifacts];
+    return merged.filter((artifact, index) => merged.findIndex((candidate) => candidate.artifactId === artifact.artifactId) === index);
+  }, [artifacts, runtimeArtifactsQuery.data]);
+
+  const sourceEvents = allEvents.filter((event) => event.type === 'source.emitted');
+  const toolEvents = allEvents.filter((event) => event.type === 'tool.started' || event.type === 'tool.completed');
+  const approvalEvents = allEvents.filter((event) => event.type === 'tool.awaiting_approval');
+  const phaseEvents = allEvents.filter((event) => event.type === 'run.phase');
+  const latestPhase = phaseEvents.at(-1);
+  const skillIds = Array.from(
+    new Set([...(contextQuery.data?.loadedSkillIds ?? []), ...(sessionQuery.data?.loadedSkillIds ?? [])].filter(Boolean)),
+  );
+  const toolNames = Array.from(new Set(toolEvents.map((event) => event.toolName)));
+  const toolRiskLevels = Array.from(
+    new Set(toolEvents.map((event) => event.riskLevel).filter((risk): risk is RiskLevel => Boolean(risk))),
+  );
 
   return (
-    <>
-      <aside
-        className={cn(
-          'hidden w-80 shrink-0 border-l border-border bg-card/30 xl:block',
-          !rightDrawerOpen && 'xl:hidden',
-        )}
-      >
-      <div className="flex items-center justify-between border-b border-border px-4 py-3">
+    <aside
+      className={cn(
+        'fixed right-4 top-[calc(1rem+72px)] z-30 hidden h-[calc(100vh-5.75rem)] w-[360px] shrink-0 rounded-[1.9rem] border border-border/70 bg-card/95 shadow-[var(--shadow-elevated)] backdrop-blur-xl transition-all duration-200 xl:flex xl:flex-col',
+        rightDrawerOpen ? 'translate-x-0 opacity-100' : 'pointer-events-none translate-x-6 opacity-0',
+      )}
+    >
+      <div className="flex items-start justify-between gap-3 border-b border-border/70 px-4 py-4">
         <div>
-          <h2 className="font-medium">Run details</h2>
-          <p className="text-sm text-muted-foreground">Tool events, approvals, and artifacts land here.</p>
+          <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-muted-foreground">Workspace panel</p>
+          <h2 className="mt-1 text-base font-semibold text-foreground">Session detail rail</h2>
+          <p className="mt-1 text-xs leading-5 text-muted-foreground">Keep context, activity, tools, outputs, and session controls visible while you chat.</p>
         </div>
         <button
           type="button"
           onClick={closeRightDrawer}
-          className="rounded-md border border-border px-2 py-1 text-xs text-muted-foreground transition hover:bg-muted"
+          className="rounded-2xl border border-border/70 bg-background/80 p-2 text-muted-foreground shadow-[var(--shadow-card)]"
+          aria-label="Close details panel"
         >
-          Hide
+          <X className="h-4 w-4" />
         </button>
       </div>
-        <div className="space-y-4 p-4 text-sm text-muted-foreground">
-          <div className="rounded-lg border border-border bg-background p-3">
-            <p className="font-medium text-foreground">Timeline</p>
-            <div className="mt-3">
-              <ToolTimeline events={mergedEvents} />
-            </div>
-          </div>
-          <div className="rounded-lg border border-border bg-background p-3">
-            <p className="font-medium text-foreground">Artifacts</p>
-            <div className="mt-3">
-              <ArtifactPanel artifacts={mergedArtifacts} selectedArtifactId={selectedArtifactId} onSelect={selectArtifact} />
-            </div>
-          </div>
+
+      <div className="border-b border-border/70 px-3 py-3">
+        <div className="grid grid-cols-5 gap-1 rounded-2xl border border-border/70 bg-background/70 p-1">
+          {tabs.map((tab) => (
+            <button
+              key={tab.id}
+              type="button"
+              onClick={() => setRightDrawerTab(tab.id)}
+              className={cn(
+                'rounded-[1rem] px-2 py-2 text-xs font-medium text-muted-foreground transition',
+                rightDrawerTab === tab.id && 'bg-card text-foreground shadow-[var(--shadow-card)]',
+              )}
+            >
+              {tab.label}
+            </button>
+          ))}
         </div>
-      </aside>
-      {rightDrawerOpen ? (
-        <div className="fixed inset-x-0 bottom-0 z-30 max-h-[65vh] rounded-t-3xl border border-border bg-background p-4 shadow-2xl xl:hidden">
-          <div className="mb-3 flex items-center justify-between">
-            <h2 className="font-medium">Run details</h2>
-            <button type="button" onClick={closeRightDrawer} className="rounded-md border border-border px-2 py-1 text-xs text-muted-foreground">Hide</button>
-          </div>
-          <div className="max-h-[52vh] space-y-4 overflow-y-auto">
-            <div className="rounded-lg border border-border bg-card p-3">
-              <p className="font-medium text-foreground">Timeline</p>
-              <div className="mt-3">
-                <ToolTimeline events={mergedEvents} />
+      </div>
+
+      <div className="flex-1 space-y-4 overflow-y-auto px-4 py-4">
+        {rightDrawerTab === 'context' ? (
+          <div className="space-y-4">
+            <Section title="Live context stack" description="What Hermes is carrying into the current session right now.">
+              <div className="flex flex-wrap gap-2">
+                <StatusBadge label={contextQuery.data?.activeProfileId ?? runtimeQuery.data?.activeProfile ?? 'default'} tone="accent" />
+                <StatusBadge label={contextQuery.data?.memoryMode ?? sessionQuery.data?.settings.memoryMode ?? 'standard'} tone="muted" />
+                <StatusBadge label={contextQuery.data?.policyPreset ?? sessionQuery.data?.settings.policyPreset ?? 'safe-chat'} tone="warning" />
               </div>
-            </div>
-            <div className="rounded-lg border border-border bg-card p-3">
-              <p className="font-medium text-foreground">Artifacts</p>
-              <div className="mt-3">
-                <ArtifactPanel artifacts={mergedArtifacts} selectedArtifactId={selectedArtifactId} onSelect={selectArtifact} />
+              <div className="grid gap-3 text-sm text-muted-foreground">
+                <div className="rounded-2xl border border-border/70 bg-card/70 p-3">
+                  <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-muted-foreground">Session</p>
+                  <p className="mt-2 font-medium text-foreground">{contextQuery.data?.activeSessionTitle ?? sessionQuery.data?.title ?? 'No active session'}</p>
+                  <p className="mt-1 text-xs leading-5">{contextQuery.data?.activeSessionPreview ?? sessionQuery.data?.preview ?? 'Start chatting to build a richer working context.'}</p>
+                </div>
+                <div className="rounded-2xl border border-border/70 bg-card/70 p-3">
+                  <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-muted-foreground">Memory profile</p>
+                  <p className="mt-2 text-xs leading-5">User memory snippets: {contextQuery.data?.userMemory.length ?? 0} · Agent memory snippets: {contextQuery.data?.agentMemory.length ?? 0}</p>
+                </div>
               </div>
-            </div>
+            </Section>
+
+            <Section title="Loaded skills" description="Skills attached to the current session or recently injected into context.">
+              {skillIds.length ? (
+                <div className="flex flex-wrap gap-2">
+                  {skillIds.map((skillId) => (
+                    <StatusBadge key={skillId} label={skillId} tone="success" icon={<Sparkles className="h-3.5 w-3.5 text-success" />} />
+                  ))}
+                </div>
+              ) : (
+                <p className="text-sm text-muted-foreground">No explicit skills are attached yet. Open Skills to add reusable procedures and references.</p>
+              )}
+            </Section>
+
+            <Section title="Active memory snippets" description="Compact recall currently available to Hermes.">
+              <div className="space-y-2">
+                {[...(contextQuery.data?.userMemory ?? []), ...(contextQuery.data?.agentMemory ?? [])].slice(0, 6).map((entry, index) => (
+                  <div key={`${entry}-${index}`} className="rounded-2xl border border-border/70 bg-card/70 p-3 text-sm leading-6 text-muted-foreground">
+                    {entry}
+                  </div>
+                ))}
+                {!contextQuery.data?.userMemory.length && !contextQuery.data?.agentMemory.length ? (
+                  <p className="text-sm text-muted-foreground">No memory snippets surfaced for this session yet.</p>
+                ) : null}
+              </div>
+            </Section>
           </div>
-        </div>
-      ) : null}
-    </>
+        ) : null}
+
+        {rightDrawerTab === 'activity' ? (
+          <div className="space-y-4">
+            <Section title="Run overview" description="Current execution phase, approvals, and event volume.">
+              <div className="grid grid-cols-2 gap-3">
+                <div className="rounded-2xl border border-border/70 bg-card/70 p-3">
+                  <p className="text-[11px] uppercase tracking-[0.18em] text-muted-foreground">Phase</p>
+                  <p className="mt-2 text-sm font-semibold text-foreground">{latestPhase?.label ?? 'Idle'}</p>
+                </div>
+                <div className="rounded-2xl border border-border/70 bg-card/70 p-3">
+                  <p className="text-[11px] uppercase tracking-[0.18em] text-muted-foreground">Approvals</p>
+                  <p className="mt-2 text-sm font-semibold text-foreground">{approvalEvents.length} waiting</p>
+                </div>
+              </div>
+              {latestPhase ? <StatusBadge label={latestPhase.phase} tone="accent" /> : <StatusBadge label="No active run" tone="muted" />}
+            </Section>
+
+            {approvalEvents.length ? (
+              <Section title="Approval queue" description="High-visibility requests that need human confirmation.">
+                <div className="space-y-3">
+                  {approvalEvents.map((event) => (
+                    <div key={event.toolCallId} className="rounded-2xl border border-approval/35 bg-approval/10 p-3">
+                      <div className="flex flex-wrap items-center justify-between gap-2">
+                        <p className="text-sm font-semibold text-foreground">{event.toolName}</p>
+                        <div className="flex flex-wrap gap-2">
+                          <StatusBadge label={event.governance ?? 'approval-gated'} tone={governanceTone(event.governance ?? 'approval-gated')} />
+                          {event.riskLevel ? <StatusBadge label={event.riskLevel} tone={riskTone(event.riskLevel)} /> : null}
+                        </div>
+                      </div>
+                      <p className="mt-2 text-sm leading-6 text-muted-foreground">{event.summary}</p>
+                    </div>
+                  ))}
+                </div>
+              </Section>
+            ) : null}
+
+            <Section title="Tool timeline" description="Latest tool and phase events emitted by Hermes.">
+              <div className="space-y-3">
+                {allEvents.length ? (
+                  allEvents
+                    .filter((event) => event.type !== 'assistant.delta')
+                    .slice(-10)
+                    .reverse()
+                    .map((event, index) => {
+                    if (event.type === 'tool.started' || event.type === 'tool.completed') {
+                      return <ToolCard key={`${event.toolCallId}-${event.type}-${index}`} event={event} />;
+                    }
+
+                    if (event.type === 'run.phase') {
+                      return (
+                        <div key={`${event.type}-${event.phase}-${index}`} className="rounded-[1.35rem] border border-border/70 bg-background/75 p-4 shadow-[var(--shadow-card)]">
+                          <div className="flex items-center justify-between gap-3">
+                            <div>
+                              <p className="text-xs uppercase tracking-[0.18em] text-muted-foreground">Run phase</p>
+                              <p className="mt-1 text-sm font-semibold text-foreground">{event.label}</p>
+                            </div>
+                            <StatusBadge label={humanizeStatus(event.phase)} tone="accent" />
+                          </div>
+                        </div>
+                      );
+                    }
+
+                    if (event.type === 'source.emitted') {
+                      return (
+                        <div key={`${event.type}-${event.source.id}-${index}`} className="rounded-[1.35rem] border border-border/70 bg-background/75 p-4 shadow-[var(--shadow-card)]">
+                          <p className="text-xs uppercase tracking-[0.18em] text-muted-foreground">Source captured</p>
+                          <p className="mt-1 text-sm font-semibold text-foreground">{event.source.title}</p>
+                          <p className="mt-1 text-xs leading-5 text-muted-foreground">{event.source.snippet}</p>
+                        </div>
+                      );
+                    }
+
+                    if (event.type === 'artifact.emitted') {
+                      return (
+                        <div key={`${event.type}-${event.artifactId}-${index}`} className="rounded-[1.35rem] border border-border/70 bg-background/75 p-4 shadow-[var(--shadow-card)]">
+                          <p className="text-xs uppercase tracking-[0.18em] text-muted-foreground">Output created</p>
+                          <p className="mt-1 text-sm font-semibold text-foreground">{event.label}</p>
+                          <p className="mt-1 text-xs leading-5 text-muted-foreground">{event.artifactType}</p>
+                        </div>
+                      );
+                    }
+
+                    if (event.type === 'tool.awaiting_approval') {
+                      return (
+                        <div key={`${event.type}-${event.toolCallId}-${index}`} className="rounded-[1.35rem] border border-approval/35 bg-approval/10 p-4 shadow-[var(--shadow-card)]">
+                          <div className="flex items-center justify-between gap-3">
+                            <p className="text-sm font-semibold text-foreground">{event.toolName}</p>
+                            <StatusBadge label="approval-gated" tone="warning" />
+                          </div>
+                          <p className="mt-2 text-sm leading-6 text-muted-foreground">{event.summary}</p>
+                        </div>
+                      );
+                    }
+
+                    if (event.type === 'error') {
+                      return (
+                        <div key={`${event.type}-${index}`} className="rounded-[1.35rem] border border-danger/35 bg-danger/8 p-4 shadow-[var(--shadow-card)]">
+                          <p className="text-xs uppercase tracking-[0.18em] text-danger">Runtime error</p>
+                          <p className="mt-1 text-sm leading-6 text-foreground">{event.message}</p>
+                        </div>
+                      );
+                    }
+
+                    return null;
+                  })
+                ) : (
+                  <p className="text-sm text-muted-foreground">No activity yet. Start a run to populate the timeline.</p>
+                )}
+              </div>
+            </Section>
+          </div>
+        ) : null}
+
+        {rightDrawerTab === 'tools' ? (
+          <div className="space-y-4">
+            <Section title="Tool posture" description="What kinds of actions the current run is using and how risky they are.">
+              <div className="grid grid-cols-2 gap-3">
+                <div className="rounded-2xl border border-border/70 bg-card/70 p-3">
+                  <p className="text-[11px] uppercase tracking-[0.18em] text-muted-foreground">Distinct tools</p>
+                  <p className="mt-2 text-lg font-semibold text-foreground">{toolNames.length}</p>
+                </div>
+                <div className="rounded-2xl border border-border/70 bg-card/70 p-3">
+                  <p className="text-[11px] uppercase tracking-[0.18em] text-muted-foreground">Artifacts</p>
+                  <p className="mt-2 text-lg font-semibold text-foreground">{displayedArtifacts.length}</p>
+                </div>
+              </div>
+              <div className="flex flex-wrap gap-2">
+                {toolRiskLevels.length ? toolRiskLevels.map((risk) => <StatusBadge key={risk} label={`${risk} risk`} tone={riskTone(risk)} />) : <StatusBadge label="Read-only so far" tone="muted" />}
+              </div>
+            </Section>
+
+            <Section title="Seen tools" description="Quick inventory of tool families already used in this session.">
+              {toolNames.length ? (
+                <div className="flex flex-wrap gap-2">
+                  {toolNames.map((toolName) => (
+                    <StatusBadge key={toolName} label={toolName} tone="accent" icon={<TerminalSquare className="h-3.5 w-3.5 text-accent" />} />
+                  ))}
+                </div>
+              ) : (
+                <p className="text-sm text-muted-foreground">No tools have executed yet for this session.</p>
+              )}
+            </Section>
+
+            <Section title="Connected runtime resources" description="Runtime-provided MCP servers and execution surfaces.">
+              <div className="space-y-2">
+                {runtimeQuery.data?.mcpServers.length ? (
+                  runtimeQuery.data.mcpServers.map((server) => (
+                    <div key={server.name} className="rounded-2xl border border-border/70 bg-card/70 p-3">
+                      <div className="flex items-center justify-between gap-3">
+                        <p className="text-sm font-semibold text-foreground">{server.name}</p>
+                        <StatusBadge label={server.url ? 'remote' : 'local'} tone={server.url ? 'success' : 'accent'} />
+                      </div>
+                      <p className="mt-2 text-xs leading-5 text-muted-foreground">{server.url ?? server.command ?? 'No endpoint metadata available.'}</p>
+                    </div>
+                  ))
+                ) : (
+                  <p className="text-sm text-muted-foreground">No MCP servers reported by the runtime.</p>
+                )}
+              </div>
+            </Section>
+          </div>
+        ) : null}
+
+        {rightDrawerTab === 'output' ? (
+          <div className="space-y-4">
+            <Section title="Generated output" description="Artifacts, plans, files, and structured content emitted during the run.">
+              <ArtifactPanel artifacts={displayedArtifacts} selectedArtifactId={selectedArtifactId} onSelect={selectArtifact} />
+            </Section>
+            <Section title="Sources and citations" description="Retrieved pages, references, and snippets surfaced by Hermes.">
+              <div className="space-y-3">
+                {sourceEvents.length ? (
+                  sourceEvents.map((event, index) => <SourceCard key={`${event.source.id}-${index}`} source={event.source} />)
+                ) : (
+                  <p className="text-sm text-muted-foreground">No sources have been emitted for this session yet.</p>
+                )}
+              </div>
+            </Section>
+          </div>
+        ) : null}
+
+        {rightDrawerTab === 'session' ? (
+          <div className="space-y-4">
+            <Section title="Session summary" description="Core metadata for the active conversation thread.">
+              <div className="space-y-3">
+                <div className="rounded-2xl border border-border/70 bg-card/70 p-3">
+                  <p className="text-[11px] uppercase tracking-[0.18em] text-muted-foreground">Title</p>
+                  <p className="mt-2 text-sm font-semibold text-foreground">{sessionQuery.data?.title ?? 'Unsaved chat'}</p>
+                </div>
+                <div className="grid grid-cols-2 gap-3">
+                  <div className="rounded-2xl border border-border/70 bg-card/70 p-3">
+                    <p className="text-[11px] uppercase tracking-[0.18em] text-muted-foreground">Messages</p>
+                    <p className="mt-2 text-lg font-semibold text-foreground">{sessionQuery.data?.messages.length ?? 0}</p>
+                  </div>
+                  <div className="rounded-2xl border border-border/70 bg-card/70 p-3">
+                    <p className="text-[11px] uppercase tracking-[0.18em] text-muted-foreground">Updated</p>
+                    <p className="mt-2 text-sm font-semibold text-foreground">{sessionQuery.data?.updatedAt ? new Date(sessionQuery.data.updatedAt).toLocaleString([], { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' }) : 'Not saved'}</p>
+                  </div>
+                </div>
+                <div className="flex flex-wrap gap-2">
+                  <StatusBadge label={sessionQuery.data?.settings.model ?? runtimeQuery.data?.modelDefault ?? 'default model'} tone="accent" icon={<Bot className="h-3.5 w-3.5 text-accent" />} />
+                  <StatusBadge label={sessionQuery.data?.settings.provider ?? runtimeQuery.data?.provider ?? 'provider'} tone="success" />
+                  <StatusBadge label={sessionQuery.data?.archived ? 'archived' : 'active'} tone={sessionQuery.data?.archived ? 'muted' : 'success'} />
+                </div>
+              </div>
+            </Section>
+
+            <Section title="Session settings" description="Runtime behavior selected for this conversation.">
+              <div className="space-y-2 text-sm text-muted-foreground">
+                <div className="flex items-center justify-between gap-3 rounded-2xl border border-border/70 bg-card/70 px-3 py-2.5">
+                  <span>Policy preset</span>
+                  <StatusBadge label={sessionQuery.data?.settings.policyPreset ?? 'safe-chat'} tone="warning" />
+                </div>
+                <div className="flex items-center justify-between gap-3 rounded-2xl border border-border/70 bg-card/70 px-3 py-2.5">
+                  <span>Memory mode</span>
+                  <StatusBadge label={sessionQuery.data?.settings.memoryMode ?? 'standard'} tone="muted" />
+                </div>
+                <div className="flex items-center justify-between gap-3 rounded-2xl border border-border/70 bg-card/70 px-3 py-2.5">
+                  <span>Artifacts</span>
+                  <StatusBadge label={`${displayedArtifacts.length}`} tone="accent" icon={<FileText className="h-3.5 w-3.5 text-accent" />} />
+                </div>
+                <div className="flex items-center justify-between gap-3 rounded-2xl border border-border/70 bg-card/70 px-3 py-2.5">
+                  <span>Sources</span>
+                  <StatusBadge label={`${sourceEvents.length}`} tone="success" icon={<Search className="h-3.5 w-3.5 text-success" />} />
+                </div>
+              </div>
+            </Section>
+
+            <Section title="Workspace linkage" description="How this session relates to the broader Hermes workspace.">
+              <div className="space-y-2">
+                <div className="rounded-2xl border border-border/70 bg-card/70 p-3">
+                  <div className="flex items-center gap-2 text-foreground">
+                    <Layers3 className="h-4 w-4 text-accent" />
+                    <p className="text-sm font-semibold">{sessionQuery.data?.parentSessionId ? 'Forked thread' : 'Primary thread'}</p>
+                  </div>
+                  <p className="mt-2 text-xs leading-5 text-muted-foreground">
+                    {sessionQuery.data?.parentSessionId ? `Derived from ${sessionQuery.data.parentSessionId}. Forking preserves the old run while letting you branch.` : 'This session is the main line for its current workspace context.'}
+                  </p>
+                </div>
+              </div>
+            </Section>
+          </div>
+        ) : null}
+      </div>
+    </aside>
   );
 }

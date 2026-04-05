@@ -1,5 +1,6 @@
 import type { Skill } from '@/lib/types/skill';
 import { updateSession } from '@/server/chat/session-store';
+import { validateSkillContent } from '@/server/hermes/yaml-config';
 
 const nowIso = () => new Date().toISOString();
 
@@ -10,48 +11,62 @@ function seedSkills(): Skill[] {
       name: 'hermes-agent',
       description: 'Core Hermes Agent operational knowledge and contributor reference.',
       source: 'bundled',
+      scope: 'builtin',
+      provenance: 'built-in',
       installed: true,
       enabled: true,
       content: '# Hermes Agent\n\nBundled skill content for Hermes Agent operations and extension patterns.',
       loadedInSessions: [],
       version: '1.0.0',
       updatedAt: nowIso(),
+      impliedTools: ['shell', 'planning'],
     },
     {
       id: 'writing-plans',
       name: 'writing-plans',
       description: 'Write detailed implementation plans and phased delivery breakdowns.',
       source: 'hub',
+      scope: 'global',
+      provenance: 'verified',
       installed: true,
       enabled: true,
       content: '# Writing Plans\n\nUse this skill to turn specs into concrete engineering plans.',
       loadedInSessions: [],
       version: '1.1.0',
       updatedAt: nowIso(),
+      impliedTools: ['planning'],
     },
     {
       id: 'mcp-operator',
       name: 'mcp-operator',
       description: 'Manage MCP servers, connectivity, and safe capability exposure.',
       source: 'hub',
+      scope: 'global',
+      provenance: 'verified',
       installed: false,
       enabled: false,
       content: '# MCP Operator\n\nInstall, test, and manage MCP servers for Hermes.',
       loadedInSessions: [],
       version: '0.8.0',
       updatedAt: nowIso(),
+      impliedTools: ['mcp', 'diagnostics'],
     },
     {
       id: 'skill-authoring',
       name: 'skill-authoring',
       description: 'Create, edit, and maintain durable Hermes skills.',
       source: 'local',
+      scope: 'profile',
+      provenance: 'custom',
       installed: true,
       enabled: false,
       content: '# Skill Authoring\n\nLocal skill for creating and refining skills safely.',
       loadedInSessions: [],
       version: '0.2.0',
       updatedAt: nowIso(),
+      impliedTools: ['editor'],
+      ownerProfileId: 'default',
+      filePath: '~/.hermes/profiles/default/skills/skill-authoring/SKILL.md',
     },
   ];
 }
@@ -111,6 +126,7 @@ export function disableSkill(skillId: string) {
 }
 
 export function updateSkillContent(skillId: string, content: string) {
+  validateSkillContent(content);
   const skill = getRequiredSkill(skillId);
   skill.content = content;
   skill.updatedAt = nowIso();
@@ -135,7 +151,7 @@ export function loadSkillIntoSession(skillId: string, sessionId: string) {
   updateSession(sessionId, (session) => {
     const loadedSkills = session.loadedSkillIds ?? [];
     if (!loadedSkills.includes(skillId)) {
-      session.loadedSkillIds = [...loadedSkills, skillId];
+      session.loadedSkillIds = [skillId, ...loadedSkills];
     }
   });
 

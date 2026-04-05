@@ -1,6 +1,9 @@
 'use client';
 
+import { AlertTriangle, RefreshCcw } from 'lucide-react';
 import { useEffect, useMemo, useState } from 'react';
+import { useSearchParams } from 'next/navigation';
+import { ApiError } from '@/lib/api/client';
 import { trackClientEvent } from '@/lib/telemetry/client';
 import type { ChatSessionSettings } from '@/lib/types/chat';
 import type { Message } from '@/lib/types/message';
@@ -23,18 +26,13 @@ import { ConfirmSessionActionDialog } from '@/features/sessions/components/confi
 import { RenameSessionDialog } from '@/features/sessions/components/rename-session-dialog';
 import { SessionSidebar } from '@/features/sessions/components/session-sidebar';
 import { ChatSettingsSheet } from '@/features/settings/components/chat-settings-sheet';
+import { useRuntimeStatus } from '@/features/settings/api/use-runtime-status';
 
 export function ChatScreen() {
+  const searchParams = useSearchParams();
+  const requestedSessionId = searchParams.get('session');
+  const requestedLoadedSkillId = searchParams.get('loadedSkill');
   const [search, setSearch] = useState('');
-  const sessionsQuery = useSessions(search);
-  const createSession = useCreateSession();
-  const renameSession = useRenameSession();
-  const archiveSession = useArchiveSession();
-  const deleteSession = useDeleteSession();
-  const forkSession = useForkSession();
-  const updateSessionSettings = useUpdateSessionSettings();
-  const { runEvents, artifacts, addRunEvent, addArtifact, resetRunState, selectArtifact, updateApprovalState, activeSessionId, setActiveSessionId } = useUIStore();
-
   const [selectedSessionId, setSelectedSessionId] = useState<string | null>(null);
   const [optimisticMessages, setOptimisticMessages] = useState<Message[]>([]);
   const [streamingMessage, setStreamingMessage] = useState('');
@@ -42,22 +40,33 @@ export function ChatScreen() {
   const [archiveOpen, setArchiveOpen] = useState(false);
   const [deleteOpen, setDeleteOpen] = useState(false);
   const [settingsOpen, setSettingsOpen] = useState(false);
-  const [localSettings, setLocalSettings] = useState<ChatSessionSettings>({
-    model: 'Hermes 3 405B',
-    provider: 'mock-runtime',
-    policyPreset: 'safe-chat',
-    memoryMode: 'standard',
-  });
+  const [settingsError, setSettingsError] = useState<string | null>(null);
+  const [composerError, setComposerError] = useState<string | null>(null);
+  const [localSettings, setLocalSettings] = useState<ChatSessionSettings>({ model: '', provider: 'unknown', policyPreset: 'safe-chat', memoryMode: 'standard' });
+
+  const sessionsQuery = useSessions(search);
+  const runtimeQuery = useRuntimeStatus();
+  const createSession = useCreateSession();
+  const renameSession = useRenameSession();
+  const archiveSession = useArchiveSession();
+  const deleteSession = useDeleteSession();
+  const forkSession = useForkSession();
+  const updateSessionSettings = useUpdateSessionSettings();
   const chatStream = useChatStream();
 
+  const { runEvents, artifacts, addRunEvent, addArtifact, resetRunState, selectArtifact, updateApprovalState, activeSessionId, setActiveSessionId, selectedProfileId, recentlyLoadedSkillIds, sessionLoadedSkillIds } = useUIStore();
+
   useEffect(() => {
-    if (!selectedSessionId && sessionsQuery.data?.length) {
-      const preferred = activeSessionId && sessionsQuery.data.some((session) => session.id === activeSessionId)
-        ? activeSessionId
-        : sessionsQuery.data[0].id;
+    if (!sessionsQuery.data?.length) return;
+
+    const preferredFromRoute = requestedSessionId && sessionsQuery.data.some((session) => session.id === requestedSessionId) ? requestedSessionId : null;
+    const preferredFromStore = activeSessionId && sessionsQuery.data.some((session) => session.id === activeSessionId) ? activeSessionId : null;
+    const preferred = preferredFromRoute ?? preferredFromStore ?? sessionsQuery.data[0].id;
+
+    if (!selectedSessionId || (requestedSessionId && selectedSessionId !== requestedSessionId && preferred === requestedSessionId)) {
       setSelectedSessionId(preferred);
     }
-  }, [activeSessionId, selectedSessionId, sessionsQuery.data]);
+  }, [activeSessionId, requestedSessionId, selectedSessionId, sessionsQuery.data]);
 
   useEffect(() => {
     if (selectedSessionId && sessionsQuery.data && !sessionsQuery.data.some((session) => session.id === selectedSessionId)) {
@@ -68,23 +77,55 @@ export function ChatScreen() {
   const sessionQuery = useSession(selectedSessionId);
 
   useEffect(() => {
-    setActiveSessionId(selectedSessionId);
+    if (selectedSessionId) {
+      setActiveSessionId(selectedSessionId);
+    }
   }, [selectedSessionId, setActiveSessionId]);
 
   useEffect(() => {
     if (sessionQuery.data?.settings) {
       setLocalSettings(sessionQuery.data.settings);
+      return;
     }
-  }, [sessionQuery.data?.settings]);
+    if (runtimeQuery.data?.modelDefault) {
+      setLocalSettings((current) => ({ ...current, model: runtimeQuery.data?.modelDefault || current.model, provider: runtimeQuery.data?.provider || current.provider }));
+    }
+  }, [runtimeQuery.data?.modelDefault, runtimeQuery.data?.provider, sessionQuery.data?.settings]);
 
-  const messages = useMemo(() => {
-    return [...(sessionQuery.data?.messages ?? []), ...optimisticMessages];
-  }, [optimisticMessages, sessionQuery.data?.messages]);
+  const messages = useMemo(() => [...(sessionQuery.data?.messages ?? []), ...optimisticMessages], [optimisticMessages, sessionQuery.data?.messages]);
+
+  const runtimeConnected = runtimeQuery.data?.apiReachable ?? false;
+  const runtimeInstalled = runtimeQuery.data?.available ?? false;
+  const mockMode = runtimeQuery.data?.mockMode ?? false;
+  const runtimeUnavailable = runtimeInstalled && !runtimeConnected;
+  const controlsDisabled = (runtimeUnavailable && !mockMode) || updateSessionSettings.isPending;
+  const activeTitle = sessionQuery.data?.title ?? 'New chat';
+  const activeSettings = localSettings;
+  const activeProfileLabel = runtimeQuery.data?.activeProfile ?? selectedProfileId ?? 'default';
+  const isPersisted = Boolean(selectedSessionId && sessionQuery.data);
+  const composerChips = [
+    { key: 'model', label: `Model · ${activeSettings.model || 'default'}` },
+    { key: 'mode', label: `Mode · ${activeSettings.policyPreset}` },
+    { key: 'tools', label: `Tools · ${runtimeConnected ? 'runtime live' : 'degraded'}` },
+    { key: 'files', label: `Files · ${artifacts.length}` },
+    { key: 'profile', label: `Profile · ${activeProfileLabel}` },
+  ];
+  const optimisticSessionLoadedSkillIds = selectedSessionId ? (sessionLoadedSkillIds[selectedSessionId] ?? []) : [];
+  const visibleLoadedSkillIds = Array.from(new Set([requestedLoadedSkillId, ...(optimisticSessionLoadedSkillIds ?? []), ...(recentlyLoadedSkillIds ?? []), ...(sessionQuery.data?.loadedSkillIds ?? [])].filter(Boolean) as string[]));
+  const runtimeSummary = runtimeConnected
+    ? `Talking to ${activeSettings.provider} via the live Hermes runtime.`
+    : mockMode
+      ? 'Hermes mock mode is active for chat flows, approvals, sources, and artifacts.'
+      : runtimeInstalled
+        ? 'Hermes runtime is detected but its API is unreachable, so sending is paused until connectivity returns.'
+        : 'Hermes runtime was not detected. The UI can still show saved local state and explicit fallback labels.';
 
   const handleNewChat = async () => {
-    const result = await createSession.mutateAsync();
+    setComposerError(null);
+    setSettingsError(null);
     resetRunState();
-    setSelectedSessionId(result.session.id);
+    setSelectedSessionId(null);
+    setActiveSessionId(null);
     setOptimisticMessages([]);
     setStreamingMessage('');
   };
@@ -95,19 +136,17 @@ export function ChatScreen() {
       const created = await createSession.mutateAsync();
       sessionId = created.session.id;
       setSelectedSessionId(sessionId);
+      setActiveSessionId(sessionId);
     }
 
-    const optimisticMessage: Message = {
-      id: `optimistic-${Date.now()}`,
-      role: 'user',
-      content: message,
-      createdAt: new Date().toISOString(),
-    };
+    const optimisticMessage: Message = { id: `optimistic-${Date.now()}`, role: 'user', content: message, createdAt: new Date().toISOString() };
 
     resetRunState();
+    setComposerError(null);
     setOptimisticMessages((current) => [...current, optimisticMessage]);
     setStreamingMessage('');
 
+    let sendFailed = false;
     try {
       await chatStream.mutateAsync({
         sessionId,
@@ -120,47 +159,95 @@ export function ChatScreen() {
           }
           addRunEvent(event);
           if (event.type === 'artifact.emitted') {
-            addArtifact({
-              artifactId: event.artifactId,
-              artifactType: event.artifactType,
-              label: event.label,
-              content: event.content,
-            });
+            addArtifact({ artifactId: event.artifactId, artifactType: event.artifactType, label: event.label, content: event.content });
           }
         },
       });
-    } finally {
+    } catch (error) {
+      sendFailed = true;
+      const messageText = error instanceof Error ? error.message : 'Unable to send message.';
+      if (error instanceof ApiError && error.status === 503) {
+        setComposerError('Message saved, but the Hermes API is unavailable right now. Check runtime diagnostics or retry when the backend comes back.');
+        await Promise.all([sessionQuery.refetch(), sessionsQuery.refetch(), runtimeQuery.refetch()]);
+      } else {
+        setComposerError(messageText);
+      }
+      setOptimisticMessages([]);
+      setStreamingMessage('');
+    }
+    // On success, wait for the session refetch to settle before clearing
+    // optimistic state so there is no blank flash between clear and refetch.
+    if (!sendFailed) {
+      await sessionQuery.refetch();
       setOptimisticMessages([]);
       setStreamingMessage('');
     }
   };
 
-  const activeTitle = sessionQuery.data?.title ?? 'New chat';
-  const activeSettings = localSettings;
+  const handleInlineModelChange = async (model: string, provider: string) => {
+    if (!selectedSessionId) return;
+    const previous = localSettings;
+    setSettingsError(null);
+    setComposerError(null);
+    setLocalSettings((current) => ({ ...current, model, provider }));
+
+    try {
+      await updateSessionSettings.mutateAsync({ sessionId: selectedSessionId, settings: { model, provider } });
+    } catch (error) {
+      setLocalSettings(previous);
+      setSettingsError(error instanceof Error ? error.message : 'Unable to update session settings.');
+    }
+  };
+
+  const handleSaveSettings = async (settings: Partial<ChatSessionSettings>) => {
+    if (!selectedSessionId) return;
+    const previous = localSettings;
+    setSettingsError(null);
+    setComposerError(null);
+    setLocalSettings((current) => ({ ...current, ...settings }));
+
+    try {
+      await updateSessionSettings.mutateAsync({ sessionId: selectedSessionId, settings });
+      setSettingsOpen(false);
+    } catch (error) {
+      setLocalSettings(previous);
+      setSettingsError(error instanceof Error ? error.message : 'Unable to update session settings.');
+    }
+  };
 
   return (
     <>
-      <div className="grid min-h-[calc(100vh-4rem)] gap-6 p-4 lg:grid-cols-[280px_minmax(0,1fr)] lg:p-6">
-        <SessionSidebar
-          sessions={sessionsQuery.data ?? []}
-          selectedSessionId={selectedSessionId}
-          search={search}
-          isLoading={sessionsQuery.isLoading}
-          onSearchChange={setSearch}
-          onNewChat={() => void handleNewChat()}
-          onSelectSession={(sessionId) => {
-            resetRunState();
-            setSelectedSessionId(sessionId);
-            setOptimisticMessages([]);
-            setStreamingMessage('');
-          }}
-        />
-        <section className="flex min-h-[calc(100vh-6rem)] min-w-0 flex-col overflow-hidden rounded-2xl border border-border bg-card/50 shadow-sm">
+      <div className="grid h-full gap-5 lg:grid-cols-[320px_minmax(0,1fr)]">
+        <SessionSidebar sessions={sessionsQuery.data ?? []} selectedSessionId={selectedSessionId} search={search} isLoading={sessionsQuery.isLoading} onSearchChange={setSearch} onNewChat={() => void handleNewChat()} onSelectSession={(sessionId) => {
+          setComposerError(null);
+          setSettingsError(null);
+          resetRunState();
+          setSelectedSessionId(sessionId);
+          setActiveSessionId(sessionId);
+          setOptimisticMessages([]);
+          setStreamingMessage('');
+        }} />
+        <section className="flex min-w-0 flex-col overflow-hidden rounded-[1.9rem] border border-border/70 bg-card/75 shadow-[var(--shadow-elevated)]">
+          {mockMode ? (
+            <div className="border-b border-warning/30 bg-warning/10 px-5 py-3 text-sm text-foreground">
+              Hermes mock mode is active for chat flows, approvals, sources, and artifacts.
+            </div>
+          ) : null}
           <ChatHeader
             title={activeTitle}
             settings={activeSettings}
-            loadedSkillIds={sessionQuery.data?.loadedSkillIds}
-            onOpenSettings={() => setSettingsOpen(true)}
+            profileLabel={activeProfileLabel}
+            loadedSkillIds={visibleLoadedSkillIds}
+            runtimeConnected={runtimeConnected}
+            controlsDisabled={controlsDisabled}
+            isPersisted={isPersisted}
+            archived={sessionQuery.data?.archived}
+            runtimeSummary={runtimeSummary}
+            hasMessages={messages.length > 0}
+            onOpenSettings={() => {
+              setSettingsError(null);
+              setSettingsOpen(true);
+            }}
             onRename={() => setRenameOpen(true)}
             onArchive={() => setArchiveOpen(true)}
             onDelete={() => setDeleteOpen(true)}
@@ -170,14 +257,13 @@ export function ChatScreen() {
                 resetRunState();
                 setSearch('');
                 setSelectedSessionId(session.id);
+                setActiveSessionId(session.id);
                 setOptimisticMessages([]);
                 setStreamingMessage('');
               });
             }}
             onModelChange={(model, provider) => {
-              if (!selectedSessionId) return;
-              setLocalSettings((current) => ({ ...current, model, provider }));
-              void updateSessionSettings.mutateAsync({ sessionId: selectedSessionId, settings: { model, provider } });
+              void handleInlineModelChange(model, provider);
             }}
           />
           <ChatTranscript
@@ -199,12 +285,30 @@ export function ChatScreen() {
             }}
             onOpenArtifact={(artifactId) => selectArtifact(artifactId)}
           />
-          {chatStream.isError ? (
-            <div className="border-t border-border bg-danger/10 px-5 py-3 text-sm text-foreground">
-              {(chatStream.error as Error).message}
+          {runtimeUnavailable && !mockMode ? (
+            <div className="mx-4 mb-0 rounded-[1.5rem] border border-warning/30 bg-warning/10 px-4 py-4 text-sm text-foreground shadow-[var(--shadow-card)]">
+              <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+                <div className="flex items-start gap-3">
+                  <AlertTriangle className="mt-0.5 h-5 w-5 text-warning" />
+                  <div>
+                    <p className="font-semibold">Hermes API is currently unavailable</p>
+                    <p className="mt-1 text-muted-foreground">You can still inspect saved sessions, approvals, sources, and artifacts, but sending new messages is paused until the backend reconnects.</p>
+                  </div>
+                </div>
+                <div className="flex flex-wrap gap-2">
+                  <button type="button" onClick={() => void runtimeQuery.refetch()} className="inline-flex items-center gap-2 rounded-2xl border border-border/70 bg-background/80 px-3 py-2 text-sm font-medium text-foreground">
+                    <RefreshCcw className="h-4 w-4" />
+                    Retry runtime
+                  </button>
+                  <a href="/settings/health" className="rounded-2xl border border-border/70 bg-background/80 px-3 py-2 text-sm font-medium text-foreground">
+                    Open diagnostics
+                  </a>
+                </div>
+              </div>
             </div>
           ) : null}
-          <ChatComposer disabled={chatStream.isPending} onSend={handleSend} />
+          {composerError || settingsError ? <div className="mx-4 mt-4 rounded-[1.5rem] border border-danger/30 bg-danger/10 px-4 py-3 text-sm text-foreground shadow-[var(--shadow-card)]">{composerError || settingsError}</div> : null}
+          <ChatComposer disabled={chatStream.isPending || (runtimeUnavailable && !mockMode)} statusNote={runtimeUnavailable && !mockMode ? 'Runtime offline — sending is paused until Hermes reconnects.' : mockMode ? 'Mock mode active · Enter to send · Shift+Enter for newline · drag files to attach.' : 'Enter to send · Shift+Enter for newline · drag files to attach.'} chips={composerChips} onSend={handleSend} />
         </section>
       </div>
 
@@ -219,48 +323,24 @@ export function ChatScreen() {
         }}
       />
 
-      <ConfirmSessionActionDialog
-        open={archiveOpen}
-        title="Archive session"
-        description="Archive this conversation but keep it available in history and search."
-        confirmLabel="Archive"
-        onClose={() => setArchiveOpen(false)}
-        onConfirm={async () => {
-          if (!selectedSessionId) return;
-          await archiveSession.mutateAsync(selectedSessionId);
-          setArchiveOpen(false);
-        }}
-      />
+      <ConfirmSessionActionDialog open={archiveOpen} title="Archive session" description="Archive this conversation but keep it available in history and search." confirmLabel="Archive" onClose={() => setArchiveOpen(false)} onConfirm={async () => {
+        if (!selectedSessionId) return;
+        await archiveSession.mutateAsync(selectedSessionId);
+        setArchiveOpen(false);
+      }} />
 
-      <ConfirmSessionActionDialog
-        open={deleteOpen}
-        title="Delete session"
-        description="This permanently removes the selected conversation from the in-memory Sprint 4 session store."
-        confirmLabel="Delete"
-        confirmClassName="rounded-lg bg-danger px-4 py-2 text-sm font-medium text-white"
-        onClose={() => setDeleteOpen(false)}
-        onConfirm={async () => {
-          if (!selectedSessionId) return;
-          const deletedId = selectedSessionId;
-          await deleteSession.mutateAsync(deletedId);
-          resetRunState();
-          setDeleteOpen(false);
-          if (deletedId === selectedSessionId) {
-            setSelectedSessionId(null);
-          }
-        }}
-      />
+      <ConfirmSessionActionDialog open={deleteOpen} title="Delete session" description="This permanently removes the selected conversation from the current Hermes-backed chat history." confirmLabel="Delete" confirmClassName="rounded-2xl bg-danger px-4 py-2 text-sm font-medium text-white" onClose={() => setDeleteOpen(false)} onConfirm={async () => {
+        if (!selectedSessionId) return;
+        const deletedId = selectedSessionId;
+        await deleteSession.mutateAsync(deletedId);
+        resetRunState();
+        setDeleteOpen(false);
+        if (deletedId === selectedSessionId) {
+          setSelectedSessionId(null);
+        }
+      }} />
 
-      <ChatSettingsSheet
-        open={settingsOpen}
-        settings={activeSettings}
-        onClose={() => setSettingsOpen(false)}
-        onSave={async (settings) => {
-          if (!selectedSessionId) return;
-          setLocalSettings((current) => ({ ...current, ...settings }));
-          await updateSessionSettings.mutateAsync({ sessionId: selectedSessionId, settings });
-        }}
-      />
+      <ChatSettingsSheet open={settingsOpen} settings={activeSettings} saving={updateSessionSettings.isPending} error={settingsError} disabled={runtimeUnavailable && !mockMode} onClose={() => setSettingsOpen(false)} onSave={handleSaveSettings} />
     </>
   );
 }

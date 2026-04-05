@@ -32,11 +32,18 @@ const config: Config = {
         warning: 'hsl(var(--warning))',
         danger: 'hsl(var(--danger))',
         approval: 'hsl(var(--approval))',
+        accent: 'hsl(var(--accent))',
+        surface: 'hsl(var(--surface))',
       },
       borderRadius: {
         lg: 'var(--radius)',
         md: 'calc(var(--radius) - 2px)',
         sm: 'calc(var(--radius) - 4px)',
+        xl: 'calc(var(--radius) + 0.4rem)',
+        shell: '1.6rem',
+      },
+      boxShadow: {
+        shell: 'var(--shadow-shell)',
       },
     },
   },

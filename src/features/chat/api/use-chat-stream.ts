@@ -1,6 +1,7 @@
 'use client';
 
 import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { ApiError } from '@/lib/api/client';
 import type { ChatStreamEvent } from '@/lib/types/chat';
 import { parseSSEChunk } from '@/server/hermes/stream-parser';
 
@@ -24,7 +25,7 @@ export function useChatStream() {
 
       if (!response.ok || !response.body) {
         const body = await response.json().catch(() => null);
-        throw new Error(body?.error ?? 'Unable to stream response');
+        throw new ApiError(response.status, body?.error ?? 'Unable to stream response', body?.code, body);
       }
 
       const reader = response.body.getReader();

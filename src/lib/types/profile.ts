@@ -6,5 +6,11 @@ export type Profile = {
   sessionCount?: number;
   skillCount?: number;
   extensionCount?: number;
+  integrationsCount?: number;
+  runtimeProvider?: string;
+  runtimeSummary?: string;
+  trustMode?: string;
+  runtimeHealth?: 'healthy' | 'degraded' | 'offline';
+  profileContextLabel?: string;
   active?: boolean;
 };

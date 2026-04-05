@@ -18,6 +18,7 @@ test('user can inspect a skill, edit a local skill, and load it into the current
 
   await page.getByRole('link', { name: 'Skills', exact: true }).click();
   await expect(page).toHaveURL(/\/skills$/);
+  await expect(page.getByText(/Loaded in current session/i)).toBeVisible();
   await page.getByRole('link', { name: /skill-authoring/i }).click();
   await expect(page).toHaveURL(/\/skills\/skill-authoring$/);
 
@@ -31,6 +32,7 @@ test('user can inspect a skill, edit a local skill, and load it into the current
 
   await page.getByRole('link', { name: 'Skills', exact: true }).click();
   await page.getByRole('link', { name: /hermes-agent/i }).first().click();
+  await expect(page.getByText(/Tool expectations/i)).toBeVisible();
   await page.getByRole('button', { name: 'Load into current session' }).click();
   await expect(page.getByText(/Current chat session available/)).toBeVisible();
 

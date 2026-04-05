@@ -5,6 +5,7 @@ import { useState } from 'react';
 import { useExtension, useTestExtension, useUpdateCapability, useUpdateExtension } from '@/features/extensions/api/use-extensions';
 import { CapabilityToggle } from '@/features/extensions/components/capability-toggle';
 import { ExtensionHealthBadge } from '@/features/extensions/components/extension-health-badge';
+import { describeAuthState, describeExtensionProvenance, describeGovernance, describeRiskLevel } from '@/lib/presentation/capability-labels';
 
 export function ExtensionDetail({ extensionId }: { extensionId: string }) {
   const extensionQuery = useExtension(extensionId);
@@ -22,13 +23,16 @@ export function ExtensionDetail({ extensionId }: { extensionId: string }) {
   return (
     <div className="space-y-6 p-4 lg:p-6">
       <Link href="/extensions" className="text-sm text-muted-foreground hover:text-foreground">
-        ← Back to Extensions
+        ← Back
       </Link>
       <div className="space-y-3">
         <div className="flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
           <ExtensionHealthBadge health={extension.health} />
           <span className="rounded-full border border-border px-2 py-1">{extension.type}</span>
-          <span className="rounded-full border border-border px-2 py-1">risk {extension.riskLevel}</span>
+          <span className="rounded-full border border-border px-2 py-1">{describeRiskLevel(extension.riskLevel)}</span>
+          <span className="rounded-full border border-border px-2 py-1">{describeAuthState(extension.authState)}</span>
+          <span className="rounded-full border border-border px-2 py-1">{describeExtensionProvenance(extension.provenance)}</span>
+          <span className="rounded-full border border-border px-2 py-1">{describeGovernance(extension.governance)}</span>
           <span className="rounded-full border border-border px-2 py-1">v{extension.version ?? '0.0.0'}</span>
         </div>
         <h1 className="text-2xl font-semibold">{extension.name}</h1>
@@ -51,7 +55,18 @@ export function ExtensionDetail({ extensionId }: { extensionId: string }) {
       {tab === 'overview' ? (
         <section className="rounded-2xl border border-border bg-card p-5 shadow-sm">
           <h2 className="text-lg font-semibold">Overview</h2>
-          <p className="mt-2 text-sm text-muted-foreground">Health: {extension.health.replaceAll('_', ' ')}. This extension exposes {extension.capabilities.length} capabilities.</p>
+          <p className="mt-2 text-sm text-muted-foreground">Health: {extension.health}. This integration exposes {extension.capabilities.length} capabilities across {extension.toolCount} discovered tools.</p>
+          <div className="mt-3 flex flex-wrap gap-2 text-xs text-muted-foreground">
+            <span className="rounded-full border border-border px-2 py-1">{describeRiskLevel(extension.riskLevel)}</span>
+            <span className="rounded-full border border-border px-2 py-1">{describeAuthState(extension.authState)}</span>
+            <span className="rounded-full border border-border px-2 py-1">{describeGovernance(extension.governance)}</span>
+          </div>
+          <div className="mt-4 space-y-2 text-sm text-muted-foreground">
+            <p><strong className="text-foreground">Profiles:</strong> {extension.profilesUsing.join(', ')}</p>
+            <p><strong className="text-foreground">Probe source:</strong> {extension.diagnostics?.source ?? 'unknown'}</p>
+            <p><strong className="text-foreground">Last probe:</strong> {extension.diagnostics?.probedAt ?? 'never'}</p>
+            <p><strong className="text-foreground">Probe error:</strong> {extension.diagnostics?.errorText ?? 'none captured'}</p>
+          </div>
         </section>
       ) : null}
 
@@ -62,7 +77,7 @@ export function ExtensionDetail({ extensionId }: { extensionId: string }) {
             {extension.capabilities.map((capability) => (
               <div key={capability.id} className="rounded-xl border border-border bg-background p-4">
                 <p className="font-medium">{capability.name}</p>
-                <p className="mt-1 text-sm text-muted-foreground">Risk: {capability.riskLevel} · Scope: {capability.scope}</p>
+                <p className="mt-1 text-sm text-muted-foreground">{describeRiskLevel(capability.riskLevel)} · {capability.scope} scope</p>
               </div>
             ))}
           </div>

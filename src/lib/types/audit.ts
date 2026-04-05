@@ -5,4 +5,5 @@ export type AuditEvent = {
   targetType: string;
   targetId: string;
   detail: string;
+  severity?: 'info' | 'warning' | 'critical';
 };

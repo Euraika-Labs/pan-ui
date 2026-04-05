@@ -6,7 +6,7 @@ import { getRealSkill, loadRealSkillIntoSession } from '@/server/hermes/real-ski
 
 export async function POST(request: Request, { params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
-  const body = (await request.json()) as { sessionId?: string };
+  const body = (await request.json().catch(() => ({}))) as { sessionId?: string };
   if (!body.sessionId) {
     return NextResponse.json({ error: 'sessionId is required' }, { status: 400 });
   }

@@ -2,6 +2,9 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { execCli } from '@/server/core/cli';
 import { execPythonJson } from '@/server/core/python-exec';
+import { hermesConfig } from '@/server/hermes/config';
+import { describeHermesProfileContext, detectHermesActiveProfileFromHome } from '@/server/hermes/profile-context';
+import { getConfiguredHermesHome, getHermesHome } from '@/server/hermes/paths';
 
 type RuntimeSession = {
   id: string;
@@ -11,8 +14,22 @@ type RuntimeSession = {
   model: string | null;
 };
 
-type RuntimeStatus = {
+type RuntimeModelOption = {
+  id: string;
+  label: string;
+  provider: string;
+  source: 'runtime-default' | 'catalog' | 'session-history';
+};
+
+type RuntimeApiStatus = {
+  reachable: boolean;
+  message: string;
+  status?: number;
+};
+
+export type RuntimeStatus = {
   available: boolean;
+  mockMode?: boolean;
   hermesPath?: string;
   hermesVersion?: string;
   hermesHome?: string;
@@ -21,6 +38,11 @@ type RuntimeStatus = {
   modelDefault?: string;
   provider?: string;
   memoryProvider?: string;
+  apiBaseUrl: string;
+  apiReachable: boolean;
+  apiMessage: string;
+  apiStatus?: number;
+  modelOptions: RuntimeModelOption[];
   mcpServers: Array<{ name: string; command?: string; url?: string }>;
   profiles: string[];
   skillsCount: number;
@@ -28,6 +50,17 @@ type RuntimeStatus = {
   recentSessions: RuntimeSession[];
   userMemoryPath?: string;
   agentMemoryPath?: string;
+  profileContext?: {
+    requestedProfile: string;
+    activeProfile: string;
+    usingRequestedProfile: boolean;
+    label: string;
+  };
+  memoryFilesPresent?: string[];
+  binaryDetected?: boolean;
+  configDetected?: boolean;
+  lastFailureText?: string;
+  remediationHints?: string[];
 };
 
 function runPythonJson(script: string, args: string[] = []) {
@@ -42,22 +75,156 @@ function detectHermesPath() {
   }
 }
 
-export function getHermesHome() {
-  return process.env.HERMES_HOME || path.join(process.env.HOME || '', '.hermes');
+async function probeHermesApi(): Promise<RuntimeApiStatus> {
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), Math.min(hermesConfig.timeoutMs, 5000));
+
+  try {
+    const response = await fetch(`${hermesConfig.baseUrl}/v1/models`, {
+      method: 'GET',
+      headers: {
+        ...(hermesConfig.apiKey ? { Authorization: `Bearer ${hermesConfig.apiKey}` } : {}),
+      },
+      signal: controller.signal,
+      cache: 'no-store',
+    });
+
+    if (response.ok) {
+      return {
+        reachable: true,
+        status: response.status,
+        message: 'Hermes API reachable.',
+      };
+    }
+
+    if (response.status < 500) {
+      return {
+        reachable: true,
+        status: response.status,
+        message: `Hermes API responded with ${response.status}.`,
+      };
+    }
+
+    return {
+      reachable: false,
+      status: response.status,
+      message: `Hermes API returned ${response.status}.`,
+    };
+  } catch (error) {
+    return {
+      reachable: false,
+      message: error instanceof Error ? error.message : 'Unable to reach Hermes API.',
+    };
+  } finally {
+    clearTimeout(timeout);
+  }
 }
 
-export function getHermesRuntimeStatus(): RuntimeStatus {
-  const hermesPath = detectHermesPath();
-  const hermesHome = getHermesHome();
-  if (!hermesPath || !fs.existsSync(hermesHome)) {
-    return { available: false, profiles: [], mcpServers: [], skillsCount: 0, sessionsCount: 0, recentSessions: [] };
+async function getRuntimeModelOptions(provider: string | undefined, modelDefault: string | undefined, recentSessions: RuntimeSession[]) {
+  const options = new Map<string, RuntimeModelOption>();
+  const resolvedProvider = provider || 'unknown';
+  const fallbackModels = ['Hermes 3 405B', 'Hermes Fast'];
+
+  for (const model of fallbackModels) {
+    options.set(model, {
+      id: model,
+      label: model,
+      provider: resolvedProvider,
+      source: 'catalog',
+    });
   }
 
-  const configPath = path.join(hermesHome, 'config.yaml');
-  const memoriesDir = path.join(hermesHome, 'memories');
-  const skillsDir = path.join(hermesHome, 'skills');
+  if (modelDefault) {
+    options.set(modelDefault, {
+      id: modelDefault,
+      label: modelDefault,
+      provider: resolvedProvider,
+      source: 'runtime-default',
+    });
+  }
+
+  for (const session of recentSessions) {
+    if (!session.model) continue;
+    if (!options.has(session.model)) {
+      options.set(session.model, {
+        id: session.model,
+        label: session.model,
+        provider: resolvedProvider,
+        source: 'session-history',
+      });
+    }
+  }
+
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), Math.min(hermesConfig.timeoutMs, 5000));
+
+  try {
+    const response = await fetch(`${hermesConfig.baseUrl}/v1/models`, {
+      method: 'GET',
+      headers: {
+        ...(hermesConfig.apiKey ? { Authorization: `Bearer ${hermesConfig.apiKey}` } : {}),
+      },
+      signal: controller.signal,
+      cache: 'no-store',
+    });
+
+    if (response.ok) {
+      const payload = (await response.json().catch(() => null)) as { data?: Array<{ id?: string }> } | null;
+      for (const entry of payload?.data ?? []) {
+        if (!entry.id) continue;
+        if (!options.has(entry.id)) {
+          options.set(entry.id, {
+            id: entry.id,
+            label: entry.id,
+            provider: resolvedProvider,
+            source: 'catalog',
+          });
+        }
+      }
+    }
+  } catch {
+    // Ignore catalog probe failures and keep defaults/history-derived options.
+  } finally {
+    clearTimeout(timeout);
+  }
+
+  return Array.from(options.values());
+}
+
+export async function getHermesRuntimeStatus(): Promise<RuntimeStatus> {
+  const mockMode = process.env.HERMES_MOCK_MODE === 'true';
+  const hermesPath = detectHermesPath();
+  const configuredHermesHome = getConfiguredHermesHome();
+  const hermesHome = getHermesHome();
+  if (!hermesPath || !fs.existsSync(configuredHermesHome)) {
+    return {
+      available: false,
+      mockMode,
+      apiBaseUrl: hermesConfig.baseUrl,
+      apiReachable: false,
+      apiMessage: 'Hermes runtime is not installed or HERMES_HOME is unavailable.',
+      profiles: [],
+      mcpServers: [],
+      modelOptions: [],
+      skillsCount: 0,
+      sessionsCount: 0,
+      recentSessions: [],
+      binaryDetected: Boolean(hermesPath),
+      configDetected: fs.existsSync(configuredHermesHome),
+      profileContext: describeHermesProfileContext(null),
+      remediationHints: [
+        'Install the Hermes CLI and ensure `hermes` is on PATH.',
+        'Set HERMES_HOME to a readable Hermes home directory.',
+        'Open Settings → Health to inspect runtime detection details.',
+      ],
+    };
+  }
+
+  const configPath = path.join(configuredHermesHome, 'config.yaml');
+  const memoriesDir = path.join(configuredHermesHome, 'memories');
+  const skillsDir = path.join(configuredHermesHome, 'skills');
   const profilesDir = path.join(hermesHome, 'profiles');
-  const stateDbPath = path.join(hermesHome, 'state.db');
+  const stateDbPath = path.join(configuredHermesHome, 'state.db');
 
   const version = (() => {
     try {
@@ -74,7 +241,8 @@ export function getHermesRuntimeStatus(): RuntimeStatus {
       ) as Record<string, unknown>)
     : {};
 
-  const profiles = ['default', ...((fs.existsSync(profilesDir) ? fs.readdirSync(profilesDir).filter((name) => fs.statSync(path.join(profilesDir, name)).isDirectory()) : []) as string[])];
+  const detectedActive = detectHermesActiveProfileFromHome();
+  const profiles = [detectedActive, ...((fs.existsSync(profilesDir) ? fs.readdirSync(profilesDir).filter((name) => fs.statSync(path.join(profilesDir, name)).isDirectory()) : []) as string[])].filter((value, index, array) => array.indexOf(value) === index);
 
   const recentSessions = fs.existsSync(stateDbPath)
     ? (runPythonJson(
@@ -99,16 +267,31 @@ export function getHermesRuntimeStatus(): RuntimeStatus {
 
   const mcpServers = ((config.mcp_servers as Record<string, { command?: string; url?: string }> | undefined) || {});
 
+  const activeProfile = detectedActive;
+  const profileContext = describeHermesProfileContext(activeProfile);
+  const modelDefault = (config.model as { default?: string } | undefined)?.default;
+  const provider = (config.model as { provider?: string } | undefined)?.provider;
+  const [apiStatus, modelOptions] = await Promise.all([
+    probeHermesApi(),
+    getRuntimeModelOptions(provider, modelDefault, recentSessions),
+  ]);
+
   return {
     available: true,
+    mockMode,
     hermesPath,
     hermesVersion: version,
     hermesHome,
-    activeProfile: profiles.includes('default') ? 'default' : profiles[0],
+    activeProfile,
     configPath,
-    modelDefault: (config.model as { default?: string } | undefined)?.default,
-    provider: (config.model as { provider?: string } | undefined)?.provider,
+    modelDefault,
+    provider,
     memoryProvider: (config.memory as { provider?: string } | undefined)?.provider,
+    apiBaseUrl: hermesConfig.baseUrl,
+    apiReachable: apiStatus.reachable,
+    apiMessage: apiStatus.message,
+    apiStatus: apiStatus.status,
+    modelOptions,
     mcpServers: Object.entries(mcpServers).map(([name, value]) => ({ name, command: value.command, url: value.url })),
     profiles,
     skillsCount,
@@ -116,5 +299,15 @@ export function getHermesRuntimeStatus(): RuntimeStatus {
     recentSessions,
     userMemoryPath: path.join(memoriesDir, 'USER.md'),
     agentMemoryPath: path.join(memoriesDir, 'MEMORY.md'),
+    profileContext,
+    memoryFilesPresent: ['USER.md', 'MEMORY.md'].filter((file) => fs.existsSync(path.join(memoriesDir, file))),
+    binaryDetected: Boolean(hermesPath),
+    configDetected: fs.existsSync(configPath),
+    lastFailureText: apiStatus.reachable ? undefined : apiStatus.message,
+    remediationHints: [
+      apiStatus.reachable ? 'Hermes API responded successfully on the last probe.' : 'Check that the Hermes API is running and reachable from the configured base URL.',
+      Object.keys(mcpServers).length > 0 ? 'Review MCP diagnostics for per-server probe failures.' : 'No MCP servers are configured for the active runtime profile.',
+      fs.existsSync(configPath) ? 'Runtime config.yaml was detected.' : 'Create or restore config.yaml for this Hermes home.',
+    ],
   };
 }

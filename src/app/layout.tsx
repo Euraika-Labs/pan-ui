@@ -5,13 +5,13 @@ import { ThemeProvider } from '@/components/theme/theme-provider';
 
 export const metadata: Metadata = {
   title: 'Hermes Workspace',
-  description: 'A first-party web UI for Hermes Agent.',
+  description: 'Hermes Workspace WebUI for chat, skills, integrations, runtime trust, and workspace inspection.',
 };
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body>
+      <body className="min-h-screen bg-background text-foreground">
         <ThemeProvider>
           <QueryProvider>{children}</QueryProvider>
         </ThemeProvider>

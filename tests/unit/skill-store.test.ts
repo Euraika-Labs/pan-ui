@@ -41,4 +41,8 @@ describe('skill store', () => {
     expect(skill.loadedInSessions).toContain(session.id);
     expect(getSession(session.id)?.loadedSkillIds).toContain('writing-plans');
   });
+
+  it('rejects empty skill content updates', () => {
+    expect(() => updateSkillContent('skill-authoring', '')).toThrow(/cannot be empty/i);
+  });
 });

@@ -8,8 +8,9 @@ export function useRuntimeHealth(query = '') {
     queryKey: ['runtime-health', query],
     queryFn: () => apiFetch<{
       runtime: Record<string, unknown>;
-      checks: Record<string, boolean>;
+      checks: Array<{ key: string; ok: boolean; detail: string; remediation?: string }>;
       doctorOutput: string;
+      summary: { okCount: number; failingCount: number };
     }>(`/api/runtime/health?query=${encodeURIComponent(query)}`),
   });
 }

@@ -7,3 +7,8 @@ coverage/
 .env
 .env.local
 *.log
+.claude-flow/
+.hermes/
+.remember/
+.swarm/
+scripts/screenshots/
