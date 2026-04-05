@@ -109,3 +109,8 @@ body::before {
   background: hsl(var(--muted-foreground) / 0.4);
   background-clip: padding-box;
 }
+
+/* Reusable form field input */
+.field-input {
+  @apply w-full rounded-lg border border-border bg-background px-3 py-2 text-sm outline-none transition focus:border-primary;
+}

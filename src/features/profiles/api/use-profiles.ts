@@ -73,3 +73,38 @@ export function useDeleteProfile() {
     },
   });
 }
+
+// ── Profile Config (full editable config.yaml + SOUL.md) ──
+
+import type { ProfileConfig } from '@/lib/types/profile';
+
+type ConfigResponse = { config: ProfileConfig };
+type AiOptimizeResponse = { suggestion: Partial<ProfileConfig>; explanation: string; currentConfig: ProfileConfig };
+
+export function useProfileConfig(profileId: string | null) {
+  return useQuery({
+    queryKey: ['profile-config', profileId],
+    queryFn: () => apiFetch<ConfigResponse>(`/api/profiles/${profileId}/config`),
+    select: (data) => data.config,
+    enabled: !!profileId,
+  });
+}
+
+export function useUpdateProfileConfig() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({ profileId, config }: { profileId: string; config: Partial<ProfileConfig> }) =>
+      apiFetch<ConfigResponse>(`/api/profiles/${profileId}/config`, { method: 'PATCH', body: JSON.stringify({ config }) }),
+    onSuccess: async () => {
+      await invalidateProfileScopedQueries(queryClient);
+    },
+  });
+}
+
+export function useAiOptimizeProfile() {
+  return useMutation({
+    mutationFn: ({ profileId, purpose, mode }: { profileId: string; purpose?: string; mode?: 'optimize' | 'create' }) =>
+      apiFetch<AiOptimizeResponse>(`/api/profiles/${profileId}/config`, { method: 'POST', body: JSON.stringify({ purpose, mode }) }),
+  });
+}
+
