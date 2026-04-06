@@ -12,10 +12,10 @@ type ApprovalCardProps = {
 
 export function ApprovalCard({ event, onApprove, onReject }: ApprovalCardProps) {
   return (
-    <div className="rounded-[1.35rem] border border-approval/35 bg-approval/10 p-4 shadow-[var(--shadow-card)]">
+    <div className="rounded-lg border border-approval/35 bg-approval/10 p-4 shadow-[var(--shadow-card)]">
       <div className="flex flex-wrap items-start justify-between gap-4">
         <div>
-          <p className="text-xs uppercase tracking-[0.18em] text-muted-foreground">Approval needed</p>
+          <p className="text-xs uppercase tracking-label text-muted-foreground">Approval needed</p>
           <h4 className="mt-1 text-sm font-semibold text-foreground">{event.toolName}</h4>
           <p className="mt-2 text-sm leading-6 text-foreground">{event.summary}</p>
         </div>

@@ -16,7 +16,7 @@ export function RuntimeStatusPanel() {
 
   const status = runtimeQuery.data;
   return (
-    <section className="rounded-[1.75rem] border border-border/70 bg-card/75 p-5 shadow-[var(--shadow-soft)]">
+    <section className="rounded-xl border border-border/70 bg-card/60 p-5 shadow-[var(--shadow-soft)]">
       <div className="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
         <div>
           <h2 className="text-lg font-semibold">Runtime status</h2>
@@ -30,14 +30,14 @@ export function RuntimeStatusPanel() {
         </div>
       </div>
       <div className="mt-4 grid gap-4 md:grid-cols-2">
-        <div className="rounded-[1.35rem] border border-border/70 bg-background/80 p-4 text-sm shadow-[var(--shadow-card)]">
+        <div className="rounded-lg border border-border/70 bg-background/80 p-4 text-sm shadow-[var(--shadow-card)]">
           <p><strong>Version:</strong> {status.hermesVersion}</p>
           <p><strong>Binary:</strong> {status.hermesPath}</p>
           <p><strong>Home:</strong> {status.hermesHome}</p>
           <p><strong>Config:</strong> {status.configPath}</p>
           <p><strong>Profile context:</strong> {status.profileContext?.label ?? 'n/a'}</p>
         </div>
-        <div className="rounded-[1.35rem] border border-border/70 bg-background/80 p-4 text-sm shadow-[var(--shadow-card)]">
+        <div className="rounded-lg border border-border/70 bg-background/80 p-4 text-sm shadow-[var(--shadow-card)]">
           <p><strong>Default model:</strong> {status.modelDefault ?? 'n/a'}</p>
           <p><strong>Provider:</strong> {status.provider ?? 'n/a'}</p>
           <p><strong>Memory provider:</strong> {status.memoryProvider ?? 'n/a'}</p>
@@ -45,7 +45,7 @@ export function RuntimeStatusPanel() {
           <p><strong>API status:</strong> {status.apiMessage}</p>
         </div>
       </div>
-      {status.remediationHints?.length ? <div className="mt-4 rounded-[1.35rem] border border-border/70 bg-background/80 p-4 text-sm shadow-[var(--shadow-card)]"><p className="font-medium text-foreground">Remediation hints</p><ul className="mt-2 list-disc space-y-1 pl-5 text-muted-foreground">{status.remediationHints.map((hint) => <li key={hint}>{hint}</li>)}</ul></div> : null}
+      {status.remediationHints?.length ? <div className="mt-4 rounded-lg border border-border/70 bg-background/80 p-4 text-sm shadow-[var(--shadow-card)]"><p className="font-medium text-foreground">Remediation hints</p><ul className="mt-2 list-disc space-y-1 pl-5 text-muted-foreground">{status.remediationHints.map((hint) => <li key={hint}>{hint}</li>)}</ul></div> : null}
     </section>
   );
 }

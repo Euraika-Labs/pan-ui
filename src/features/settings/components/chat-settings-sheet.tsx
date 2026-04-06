@@ -34,7 +34,7 @@ export function ChatSettingsSheet({ open, settings, saving, error, disabled, onC
           <button type="button" onClick={onClose} className="rounded-2xl border border-border/70 bg-background/80 px-3 py-2 text-sm font-medium text-foreground">Close</button>
         </div>
 
-        <div className="mt-6 space-y-5 rounded-[1.5rem] border border-border/70 bg-card/75 p-4 shadow-[var(--shadow-card)]">
+        <div className="mt-6 space-y-5 rounded-lg border border-border/70 bg-card/60 p-4 shadow-[var(--shadow-card)]">
           <div className="space-y-2">
             <label htmlFor="chat-model" className="text-sm font-medium">Model</label>
             <div id="chat-model">

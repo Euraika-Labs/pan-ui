@@ -6,6 +6,7 @@ import { ModelSwitcher } from '@/features/settings/components/model-switcher';
 import { StatusBadge } from '@/components/feedback/status-badge';
 import type { ChatSessionSettings } from '@/lib/types/chat';
 import { connectivityTone } from '@/lib/types/runtime-status';
+import { cn } from '@/lib/utils';
 
 export function ChatHeader({
   title,
@@ -45,11 +46,11 @@ export function ChatHeader({
   const visibleLoadedSkills = (loadedSkillIds ?? []).filter((skillId) => skillId !== 'skill-authoring');
 
   return (
-    <div className={`shrink-0 border-b border-border/70 bg-card/88 px-5 ${hasMessages ? 'py-2.5' : 'py-4'}`}>
+    <div className={cn('shrink-0 border-b border-border/70 bg-card/80 px-5', hasMessages ? 'py-2.5' : 'py-4')}>
       <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
         <div className="min-w-0 space-y-4">
           <div>
-            <p className="text-xs font-semibold uppercase tracking-[0.22em] text-muted-foreground">Workspace conversation</p>
+            <p className="text-xs font-semibold uppercase tracking-label text-muted-foreground">Workspace conversation</p>
             <div className="mt-1 flex flex-wrap items-center gap-3">
               <h2 className="truncate text-xl font-semibold tracking-tight text-foreground">{title}</h2>
               {archived ? <StatusBadge label="Archived" tone="warning" /> : null}
@@ -70,8 +71,8 @@ export function ChatHeader({
 
           {!hasMessages ? (
           <div className="grid gap-3 xl:grid-cols-[minmax(0,1fr)_auto]">
-            <div className="rounded-[1.35rem] border border-border/70 bg-background/70 p-3.5">
-              <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-muted-foreground">Loaded skills</p>
+              <div className="rounded-lg border border-border/70 bg-background/60 p-3.5">
+              <p className="text-2xs font-semibold uppercase tracking-label text-muted-foreground">Loaded skills</p>
               {visibleLoadedSkills.length ? (
                 <div className="mt-3 flex flex-wrap gap-2">
                   {visibleLoadedSkills.map((skillId) => (
@@ -83,12 +84,12 @@ export function ChatHeader({
               )}
             </div>
             <div className="grid min-w-[220px] grid-cols-2 gap-3">
-              <div className="rounded-[1.35rem] border border-border/70 bg-background/70 p-3.5">
-                <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-muted-foreground">Session type</p>
+              <div className="rounded-lg border border-border/70 bg-background/60 p-3.5">
+                <p className="text-2xs font-semibold uppercase tracking-label text-muted-foreground">Session type</p>
                 <p className="mt-2 text-sm font-semibold text-foreground">{isPersisted ? 'Saved session' : 'Temporary session'}</p>
               </div>
-              <div className="rounded-[1.35rem] border border-border/70 bg-background/70 p-3.5">
-                <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-muted-foreground">Model</p>
+              <div className="rounded-lg border border-border/70 bg-background/60 p-3.5">
+                <p className="text-2xs font-semibold uppercase tracking-label text-muted-foreground">Model</p>
                 <p className="mt-2 text-sm font-semibold text-foreground">{settings.model || 'Default'}</p>
               </div>
             </div>

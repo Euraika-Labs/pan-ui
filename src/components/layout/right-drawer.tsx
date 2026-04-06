@@ -24,7 +24,7 @@ const tabs: Array<{ id: RightDrawerTab; label: string }> = [
 
 function Section({ title, description, children }: { title: string; description?: string; children: ReactNode }) {
   return (
-    <section className="space-y-3 rounded-[1.35rem] border border-border/70 bg-background/75 p-4 shadow-[var(--shadow-card)]">
+    <section className="space-y-3 rounded-lg border border-border/70 bg-background/80 p-4 shadow-[var(--shadow-card)]">
       <div>
         <h3 className="text-sm font-semibold text-foreground">{title}</h3>
         {description ? <p className="mt-1 text-xs leading-5 text-muted-foreground">{description}</p> : null}
@@ -76,13 +76,13 @@ export function RightDrawer() {
   return (
     <aside
       className={cn(
-        'fixed right-4 top-[calc(1rem+72px)] z-30 hidden h-[calc(100vh-5.75rem)] w-[360px] shrink-0 rounded-[1.9rem] border border-border/70 bg-card/95 shadow-[var(--shadow-elevated)] backdrop-blur-xl transition-all duration-200 xl:flex xl:flex-col',
+        'fixed right-4 top-[calc(1rem+72px)] z-30 hidden h-[calc(100vh-5.75rem)] w-[360px] shrink-0 rounded-xl border border-border/70 bg-card/95 shadow-[var(--shadow-elevated)] backdrop-blur-xl transition-all duration-200 xl:flex xl:flex-col',
         rightDrawerOpen ? 'translate-x-0 opacity-100' : 'pointer-events-none translate-x-6 opacity-0',
       )}
     >
       <div className="flex items-start justify-between gap-3 border-b border-border/70 px-4 py-4">
         <div>
-          <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-muted-foreground">Workspace panel</p>
+          <p className="text-2xs font-semibold uppercase tracking-label text-muted-foreground">Workspace panel</p>
           <h2 className="mt-1 text-base font-semibold text-foreground">Session detail rail</h2>
           <p className="mt-1 text-xs leading-5 text-muted-foreground">Keep context, activity, tools, outputs, and session controls visible while you chat.</p>
         </div>
@@ -97,7 +97,7 @@ export function RightDrawer() {
       </div>
 
       <div className="border-b border-border/70 px-3 py-3">
-        <div className="grid grid-cols-5 gap-1 rounded-2xl border border-border/70 bg-background/70 p-1">
+          <div className="grid grid-cols-5 gap-1 rounded-2xl border border-border/70 bg-background/60 p-1">
           {tabs.map((tab) => (
             <button
               key={tab.id}
@@ -124,13 +124,13 @@ export function RightDrawer() {
                 <StatusBadge label={contextQuery.data?.policyPreset ?? sessionQuery.data?.settings.policyPreset ?? 'safe-chat'} tone="warning" />
               </div>
               <div className="grid gap-3 text-sm text-muted-foreground">
-                <div className="rounded-2xl border border-border/70 bg-card/70 p-3">
-                  <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-muted-foreground">Session</p>
+                <div className="rounded-2xl border border-border/70 bg-card/60 p-3">
+                  <p className="text-2xs font-semibold uppercase tracking-label text-muted-foreground">Session</p>
                   <p className="mt-2 font-medium text-foreground">{contextQuery.data?.activeSessionTitle ?? sessionQuery.data?.title ?? 'No active session'}</p>
                   <p className="mt-1 text-xs leading-5">{contextQuery.data?.activeSessionPreview ?? sessionQuery.data?.preview ?? 'Start chatting to build a richer working context.'}</p>
                 </div>
-                <div className="rounded-2xl border border-border/70 bg-card/70 p-3">
-                  <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-muted-foreground">Memory profile</p>
+                <div className="rounded-2xl border border-border/70 bg-card/60 p-3">
+                  <p className="text-2xs font-semibold uppercase tracking-label text-muted-foreground">Memory profile</p>
                   <p className="mt-2 text-xs leading-5">User memory snippets: {contextQuery.data?.userMemory.length ?? 0} · Agent memory snippets: {contextQuery.data?.agentMemory.length ?? 0}</p>
                 </div>
               </div>
@@ -151,7 +151,7 @@ export function RightDrawer() {
             <Section title="Active memory snippets" description="Compact recall currently available to the agent.">
               <div className="space-y-2">
                 {[...(contextQuery.data?.userMemory ?? []), ...(contextQuery.data?.agentMemory ?? [])].slice(0, 6).map((entry, index) => (
-                  <div key={`${entry}-${index}`} className="rounded-2xl border border-border/70 bg-card/70 p-3 text-sm leading-6 text-muted-foreground">
+                  <div key={`${entry}-${index}`} className="rounded-2xl border border-border/70 bg-card/60 p-3 text-sm leading-6 text-muted-foreground">
                     {entry}
                   </div>
                 ))}
@@ -167,12 +167,12 @@ export function RightDrawer() {
           <div className="space-y-4">
             <Section title="Run overview" description="Current execution phase, approvals, and event volume.">
               <div className="grid grid-cols-2 gap-3">
-                <div className="rounded-2xl border border-border/70 bg-card/70 p-3">
-                  <p className="text-[11px] uppercase tracking-[0.18em] text-muted-foreground">Phase</p>
+                <div className="rounded-2xl border border-border/70 bg-card/60 p-3">
+                  <p className="text-2xs uppercase tracking-label text-muted-foreground">Phase</p>
                   <p className="mt-2 text-sm font-semibold text-foreground">{latestPhase?.label ?? 'Idle'}</p>
                 </div>
-                <div className="rounded-2xl border border-border/70 bg-card/70 p-3">
-                  <p className="text-[11px] uppercase tracking-[0.18em] text-muted-foreground">Approvals</p>
+                <div className="rounded-2xl border border-border/70 bg-card/60 p-3">
+                  <p className="text-2xs uppercase tracking-label text-muted-foreground">Approvals</p>
                   <p className="mt-2 text-sm font-semibold text-foreground">{approvalEvents.length} waiting</p>
                 </div>
               </div>
@@ -212,10 +212,10 @@ export function RightDrawer() {
 
                     if (event.type === 'run.phase') {
                       return (
-                        <div key={`${event.type}-${event.phase}-${index}`} className="rounded-[1.35rem] border border-border/70 bg-background/75 p-4 shadow-[var(--shadow-card)]">
+                        <div key={`${event.type}-${event.phase}-${index}`} className="rounded-lg border border-border/70 bg-background/80 p-4 shadow-[var(--shadow-card)]">
                           <div className="flex items-center justify-between gap-3">
                             <div>
-                              <p className="text-xs uppercase tracking-[0.18em] text-muted-foreground">Run phase</p>
+                              <p className="text-xs uppercase tracking-label text-muted-foreground">Run phase</p>
                               <p className="mt-1 text-sm font-semibold text-foreground">{event.label}</p>
                             </div>
                             <StatusBadge label={humanizeStatus(event.phase)} tone="accent" />
@@ -226,8 +226,8 @@ export function RightDrawer() {
 
                     if (event.type === 'source.emitted') {
                       return (
-                        <div key={`${event.type}-${event.source.id}-${index}`} className="rounded-[1.35rem] border border-border/70 bg-background/75 p-4 shadow-[var(--shadow-card)]">
-                          <p className="text-xs uppercase tracking-[0.18em] text-muted-foreground">Source captured</p>
+                        <div key={`${event.type}-${event.source.id}-${index}`} className="rounded-lg border border-border/70 bg-background/80 p-4 shadow-[var(--shadow-card)]">
+                          <p className="text-xs uppercase tracking-label text-muted-foreground">Source captured</p>
                           <p className="mt-1 text-sm font-semibold text-foreground">{event.source.title}</p>
                           <p className="mt-1 text-xs leading-5 text-muted-foreground">{event.source.snippet}</p>
                         </div>
@@ -236,8 +236,8 @@ export function RightDrawer() {
 
                     if (event.type === 'artifact.emitted') {
                       return (
-                        <div key={`${event.type}-${event.artifactId}-${index}`} className="rounded-[1.35rem] border border-border/70 bg-background/75 p-4 shadow-[var(--shadow-card)]">
-                          <p className="text-xs uppercase tracking-[0.18em] text-muted-foreground">Output created</p>
+                        <div key={`${event.type}-${event.artifactId}-${index}`} className="rounded-lg border border-border/70 bg-background/80 p-4 shadow-[var(--shadow-card)]">
+                          <p className="text-xs uppercase tracking-label text-muted-foreground">Output created</p>
                           <p className="mt-1 text-sm font-semibold text-foreground">{event.label}</p>
                           <p className="mt-1 text-xs leading-5 text-muted-foreground">{event.artifactType}</p>
                         </div>
@@ -246,7 +246,7 @@ export function RightDrawer() {
 
                     if (event.type === 'tool.awaiting_approval') {
                       return (
-                        <div key={`${event.type}-${event.toolCallId}-${index}`} className="rounded-[1.35rem] border border-approval/35 bg-approval/10 p-4 shadow-[var(--shadow-card)]">
+                        <div key={`${event.type}-${event.toolCallId}-${index}`} className="rounded-lg border border-approval/35 bg-approval/10 p-4 shadow-[var(--shadow-card)]">
                           <div className="flex items-center justify-between gap-3">
                             <p className="text-sm font-semibold text-foreground">{event.toolName}</p>
                             <StatusBadge label="approval-gated" tone="warning" />
@@ -258,8 +258,8 @@ export function RightDrawer() {
 
                     if (event.type === 'error') {
                       return (
-                        <div key={`${event.type}-${index}`} className="rounded-[1.35rem] border border-danger/35 bg-danger/8 p-4 shadow-[var(--shadow-card)]">
-                          <p className="text-xs uppercase tracking-[0.18em] text-danger">Runtime error</p>
+                        <div key={`${event.type}-${index}`} className="rounded-lg border border-danger/35 bg-danger/8 p-4 shadow-[var(--shadow-card)]">
+                          <p className="text-xs uppercase tracking-label text-danger">Runtime error</p>
                           <p className="mt-1 text-sm leading-6 text-foreground">{event.message}</p>
                         </div>
                       );
@@ -279,12 +279,12 @@ export function RightDrawer() {
           <div className="space-y-4">
             <Section title="Tool posture" description="What kinds of actions the current run is using and how risky they are.">
               <div className="grid grid-cols-2 gap-3">
-                <div className="rounded-2xl border border-border/70 bg-card/70 p-3">
-                  <p className="text-[11px] uppercase tracking-[0.18em] text-muted-foreground">Distinct tools</p>
+                <div className="rounded-2xl border border-border/70 bg-card/60 p-3">
+                  <p className="text-2xs uppercase tracking-label text-muted-foreground">Distinct tools</p>
                   <p className="mt-2 text-lg font-semibold text-foreground">{toolNames.length}</p>
                 </div>
-                <div className="rounded-2xl border border-border/70 bg-card/70 p-3">
-                  <p className="text-[11px] uppercase tracking-[0.18em] text-muted-foreground">Artifacts</p>
+                <div className="rounded-2xl border border-border/70 bg-card/60 p-3">
+                  <p className="text-2xs uppercase tracking-label text-muted-foreground">Artifacts</p>
                   <p className="mt-2 text-lg font-semibold text-foreground">{displayedArtifacts.length}</p>
                 </div>
               </div>
@@ -309,7 +309,7 @@ export function RightDrawer() {
               <div className="space-y-2">
                 {runtimeQuery.data?.mcpServers.length ? (
                   runtimeQuery.data.mcpServers.map((server) => (
-                    <div key={server.name} className="rounded-2xl border border-border/70 bg-card/70 p-3">
+                    <div key={server.name} className="rounded-2xl border border-border/70 bg-card/60 p-3">
                       <div className="flex items-center justify-between gap-3">
                         <p className="text-sm font-semibold text-foreground">{server.name}</p>
                         <StatusBadge label={server.url ? 'remote' : 'local'} tone={server.url ? 'success' : 'accent'} />
@@ -346,17 +346,17 @@ export function RightDrawer() {
           <div className="space-y-4">
             <Section title="Session summary" description="Core metadata for the active conversation thread.">
               <div className="space-y-3">
-                <div className="rounded-2xl border border-border/70 bg-card/70 p-3">
-                  <p className="text-[11px] uppercase tracking-[0.18em] text-muted-foreground">Title</p>
+                <div className="rounded-2xl border border-border/70 bg-card/60 p-3">
+                  <p className="text-2xs uppercase tracking-label text-muted-foreground">Title</p>
                   <p className="mt-2 text-sm font-semibold text-foreground">{sessionQuery.data?.title ?? 'Unsaved chat'}</p>
                 </div>
                 <div className="grid grid-cols-2 gap-3">
-                  <div className="rounded-2xl border border-border/70 bg-card/70 p-3">
-                    <p className="text-[11px] uppercase tracking-[0.18em] text-muted-foreground">Messages</p>
+                  <div className="rounded-2xl border border-border/70 bg-card/60 p-3">
+                    <p className="text-2xs uppercase tracking-label text-muted-foreground">Messages</p>
                     <p className="mt-2 text-lg font-semibold text-foreground">{sessionQuery.data?.messages.length ?? 0}</p>
                   </div>
-                  <div className="rounded-2xl border border-border/70 bg-card/70 p-3">
-                    <p className="text-[11px] uppercase tracking-[0.18em] text-muted-foreground">Updated</p>
+                  <div className="rounded-2xl border border-border/70 bg-card/60 p-3">
+                    <p className="text-2xs uppercase tracking-label text-muted-foreground">Updated</p>
                     <p className="mt-2 text-sm font-semibold text-foreground">{sessionQuery.data?.updatedAt ? new Date(sessionQuery.data.updatedAt).toLocaleString([], { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' }) : 'Not saved'}</p>
                   </div>
                 </div>
@@ -370,19 +370,19 @@ export function RightDrawer() {
 
             <Section title="Session settings" description="Runtime behavior selected for this conversation.">
               <div className="space-y-2 text-sm text-muted-foreground">
-                <div className="flex items-center justify-between gap-3 rounded-2xl border border-border/70 bg-card/70 px-3 py-2.5">
+                <div className="flex items-center justify-between gap-3 rounded-2xl border border-border/70 bg-card/60 px-3 py-2.5">
                   <span>Policy preset</span>
                   <StatusBadge label={sessionQuery.data?.settings.policyPreset ?? 'safe-chat'} tone="warning" />
                 </div>
-                <div className="flex items-center justify-between gap-3 rounded-2xl border border-border/70 bg-card/70 px-3 py-2.5">
+                <div className="flex items-center justify-between gap-3 rounded-2xl border border-border/70 bg-card/60 px-3 py-2.5">
                   <span>Memory mode</span>
                   <StatusBadge label={sessionQuery.data?.settings.memoryMode ?? 'standard'} tone="muted" />
                 </div>
-                <div className="flex items-center justify-between gap-3 rounded-2xl border border-border/70 bg-card/70 px-3 py-2.5">
+                <div className="flex items-center justify-between gap-3 rounded-2xl border border-border/70 bg-card/60 px-3 py-2.5">
                   <span>Artifacts</span>
                   <StatusBadge label={`${displayedArtifacts.length}`} tone="accent" icon={<FileText className="h-3.5 w-3.5 text-accent" />} />
                 </div>
-                <div className="flex items-center justify-between gap-3 rounded-2xl border border-border/70 bg-card/70 px-3 py-2.5">
+                <div className="flex items-center justify-between gap-3 rounded-2xl border border-border/70 bg-card/60 px-3 py-2.5">
                   <span>Sources</span>
                   <StatusBadge label={`${sourceEvents.length}`} tone="success" icon={<Search className="h-3.5 w-3.5 text-success" />} />
                 </div>
@@ -391,7 +391,7 @@ export function RightDrawer() {
 
             <Section title="Workspace linkage" description="How this session relates to the broader workspace.">
               <div className="space-y-2">
-                <div className="rounded-2xl border border-border/70 bg-card/70 p-3">
+                <div className="rounded-2xl border border-border/70 bg-card/60 p-3">
                   <div className="flex items-center gap-2 text-foreground">
                     <Layers3 className="h-4 w-4 text-accent" />
                     <p className="text-sm font-semibold">{sessionQuery.data?.parentSessionId ? 'Forked thread' : 'Primary thread'}</p>

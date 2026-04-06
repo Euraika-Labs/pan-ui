@@ -11,12 +11,12 @@ export default async function LoginPage() {
   return (
     <main className="relative flex min-h-screen items-center justify-center bg-background px-4 overflow-hidden">
       {/* Subtle Flow Gradient glow behind the card */}
-      <div className="absolute inset-0 opacity-[0.06]" style={{ background: 'var(--euraika-flow-gradient)' }} />
+      <div className="absolute inset-0 opacity-[0.12] euraika-flow-gradient" />
 
-      <div className="relative w-full max-w-md rounded-xl border border-border bg-card p-8 shadow-elevated">
-        <div className="mb-8">
+      <div className="relative w-full max-w-md rounded-lg border border-border bg-card px-8 pt-8 pb-10 shadow-elevated">
+        <div className="mb-6">
           {/* Pan logo mark */}
-          <div className="flex items-center gap-3 mb-4">
+          <div className="flex items-center gap-3 mb-3">
             <div className="flex h-10 w-10 items-center justify-center rounded-xl" style={{ background: 'var(--euraika-flow-gradient)' }}>
               <svg width="20" height="20" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <path d="M14 8h20a14 14 0 0 1 0 28H24v20h-10V8Z" fill="#FEFFEF"/>
@@ -26,7 +26,7 @@ export default async function LoginPage() {
             </div>
             <div>
               <h2 className="text-lg font-semibold">Pan</h2>
-              <p className="text-[11px] font-medium uppercase tracking-[0.2em] text-muted-foreground">by Euraika</p>
+              <p className="text-2xs font-medium uppercase tracking-label text-muted-foreground">by Euraika</p>
             </div>
           </div>
 

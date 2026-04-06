@@ -30,8 +30,8 @@ export function ArtifactPanel({ artifacts, selectedArtifactId, onSelect }: Artif
         ))}
       </div>
       {selected ? (
-        <div className="rounded-[1.15rem] border border-border/70 bg-background/75 p-3 shadow-[var(--shadow-card)]">
-          <p className="text-xs uppercase tracking-[0.18em] text-muted-foreground">{selected.artifactType}</p>
+        <div className="rounded-lg border border-border/70 bg-background/80 p-3 shadow-[var(--shadow-card)]">
+          <p className="text-xs uppercase tracking-label text-muted-foreground">{selected.artifactType}</p>
           <h4 className="mt-1 text-sm font-semibold text-foreground">{selected.label}</h4>
           <pre className="mt-3 whitespace-pre-wrap text-xs leading-6 text-muted-foreground">{selected.content ?? 'No artifact content available.'}</pre>
         </div>

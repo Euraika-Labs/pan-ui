@@ -227,7 +227,7 @@ export function ChatScreen() {
           setOptimisticMessages([]);
           setStreamingMessage('');
         }} />
-        <section className="flex min-w-0 flex-col overflow-hidden rounded-[1.9rem] border border-border/70 bg-card/75 shadow-[var(--shadow-elevated)]">
+        <section className="flex min-w-0 flex-col overflow-hidden rounded-xl border border-border/70 bg-card/60 shadow-[var(--shadow-elevated)]">
           {mockMode ? (
             <div className="border-b border-warning/30 bg-warning/10 px-5 py-3 text-sm text-foreground">
               Mock mode is active for chat flows, approvals, sources, and artifacts.
@@ -286,7 +286,7 @@ export function ChatScreen() {
             onOpenArtifact={(artifactId) => selectArtifact(artifactId)}
           />
           {runtimeUnavailable && !mockMode ? (
-            <div className="mx-4 mb-0 rounded-[1.5rem] border border-warning/30 bg-warning/10 px-4 py-4 text-sm text-foreground shadow-[var(--shadow-card)]">
+            <div className="mx-4 mb-0 rounded-lg border border-warning/30 bg-warning/10 px-4 py-4 text-sm text-foreground shadow-[var(--shadow-card)]">
               <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
                 <div className="flex items-start gap-3">
                   <AlertTriangle className="mt-0.5 h-5 w-5 text-warning" />
@@ -307,7 +307,7 @@ export function ChatScreen() {
               </div>
             </div>
           ) : null}
-          {composerError || settingsError ? <div className="mx-4 mt-4 rounded-[1.5rem] border border-danger/30 bg-danger/10 px-4 py-3 text-sm text-foreground shadow-[var(--shadow-card)]">{composerError || settingsError}</div> : null}
+          {composerError || settingsError ? <div className="mx-4 mt-4 rounded-lg border border-danger/30 bg-danger/10 px-4 py-3 text-sm text-foreground shadow-[var(--shadow-card)]">{composerError || settingsError}</div> : null}
           <ChatComposer disabled={chatStream.isPending || (runtimeUnavailable && !mockMode)} statusNote={runtimeUnavailable && !mockMode ? 'Runtime offline — sending is paused until it reconnects.' : mockMode ? 'Mock mode active · Enter to send · Shift+Enter for newline · drag files to attach.' : 'Enter to send · Shift+Enter for newline · drag files to attach.'} chips={composerChips} onSend={handleSend} />
         </section>
       </div>

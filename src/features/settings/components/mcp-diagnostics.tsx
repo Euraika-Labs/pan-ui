@@ -17,15 +17,15 @@ export function McpDiagnosticsPanel() {
       </div>
       <div className="grid gap-3 md:grid-cols-3">
         <div className="rounded-xl border border-border bg-card p-4 text-sm shadow-sm">
-          <p className="text-xs uppercase tracking-[0.18em] text-muted-foreground">Runtime profile</p>
+          <p className="text-xs uppercase tracking-label text-muted-foreground">Runtime profile</p>
           <p className="mt-2 font-semibold">{status?.profileContext?.label ?? status?.activeProfile ?? 'unknown'}</p>
         </div>
         <div className="rounded-xl border border-border bg-card p-4 text-sm shadow-sm">
-          <p className="text-xs uppercase tracking-[0.18em] text-muted-foreground">Configured servers</p>
+          <p className="text-xs uppercase tracking-label text-muted-foreground">Configured servers</p>
           <p className="mt-2 font-semibold">{status?.mcpServers.length ?? 0}</p>
         </div>
         <div className="rounded-xl border border-border bg-card p-4 text-sm shadow-sm">
-          <p className="text-xs uppercase tracking-[0.18em] text-muted-foreground">Probe records</p>
+          <p className="text-xs uppercase tracking-label text-muted-foreground">Probe records</p>
           <p className="mt-2 font-semibold">{probes.length}</p>
         </div>
       </div>

@@ -31,30 +31,30 @@ export function LoginForm() {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4">
-      <label htmlFor="username" className="block space-y-2 text-sm">
+    <form onSubmit={handleSubmit} className="space-y-5">
+      <label htmlFor="username" className="block space-y-1.5 text-sm">
         <span>Username</span>
         <input
           id="username"
           name="username"
           defaultValue="admin"
-          className="w-full rounded-lg border border-input bg-background px-3 py-2 outline-none ring-0 transition focus:border-primary"
+          className="w-full rounded-md border border-input bg-background px-3 py-2.5 outline-none ring-0 transition focus:border-primary"
         />
       </label>
-      <label htmlFor="password" className="block space-y-2 text-sm">
+      <label htmlFor="password" className="block space-y-1.5 text-sm">
         <span>Password</span>
         <input
           id="password"
           name="password"
           type="password"
-          className="w-full rounded-lg border border-input bg-background px-3 py-2 outline-none ring-0 transition focus:border-primary"
+          className="w-full rounded-md border border-input bg-background px-3 py-2.5 outline-none ring-0 transition focus:border-primary"
         />
       </label>
       {error ? <p className="text-sm text-danger">{error}</p> : null}
       <button
         type="submit"
         disabled={isSubmitting}
-        className="w-full rounded-lg bg-primary px-4 py-2 font-medium text-primary-foreground transition hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50"
+        className="w-full rounded-md bg-primary px-4 py-2.5 font-medium text-primary-foreground transition hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50"
       >
         {isSubmitting ? 'Signing in…' : 'Continue'}
       </button>

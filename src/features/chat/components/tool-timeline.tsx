@@ -30,7 +30,7 @@ export function ToolTimeline({ events }: { events: ChatStreamEvent[] }) {
     <div className="space-y-2">
       {items.length === 0 ? <p className="text-sm text-muted-foreground">No activity yet.</p> : null}
       {items.map((event, index) => (
-        <div key={`${event.type}-${index}`} className="rounded-[1.15rem] border border-border/70 bg-background/75 p-3 text-sm shadow-[var(--shadow-card)]">
+        <div key={`${event.type}-${index}`} className="rounded-lg border border-border/70 bg-background/80 p-3 text-sm shadow-[var(--shadow-card)]">
           <p className="font-medium text-foreground">{event.type.replace('.', ' ')}</p>
           <p className="mt-1 leading-6 text-muted-foreground">{describeEvent(event)}</p>
         </div>

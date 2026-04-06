@@ -20,7 +20,7 @@ export function SkillCard({ skill, loadedInCurrentSession = false, sessionId }: 
           <div className="flex items-center gap-2">
             <h3 className="truncate text-sm font-semibold">{skill.name}</h3>
             {skill.category ? (
-              <span className="hidden shrink-0 items-center gap-1 rounded-md bg-muted/60 px-1.5 py-0.5 text-[10px] text-muted-foreground sm:inline-flex">
+              <span className="hidden shrink-0 items-center gap-1 rounded-md bg-muted/60 px-1.5 py-0.5 text-3xs text-muted-foreground sm:inline-flex">
                 <FolderOpen className="h-2.5 w-2.5" />
                 {skill.category}
               </span>
@@ -28,7 +28,7 @@ export function SkillCard({ skill, loadedInCurrentSession = false, sessionId }: 
           </div>
           <p className="mt-1 line-clamp-2 text-xs leading-5 text-muted-foreground">{skill.description}</p>
         </div>
-        <div className="space-y-1.5 text-right text-[10px]">
+        <div className="space-y-1.5 text-right text-3xs">
           <p className="rounded-full border border-border/60 px-2 py-0.5">{describeSkillScope(skill.scope, skill.ownerProfileId)}</p>
           <p className="rounded-full border border-border/60 px-2 py-0.5">{describeSkillProvenance(skill.provenance)}</p>
         </div>
@@ -38,13 +38,13 @@ export function SkillCard({ skill, loadedInCurrentSession = false, sessionId }: 
       {skill.tags && skill.tags.length > 0 ? (
         <div className="mt-2 flex flex-wrap gap-1">
           {skill.tags.slice(0, 4).map((tag) => (
-            <span key={tag} className="inline-flex items-center gap-0.5 rounded-md bg-primary/8 px-1.5 py-0.5 text-[10px] text-muted-foreground">
+            <span key={tag} className="inline-flex items-center gap-0.5 rounded-md bg-primary/8 px-1.5 py-0.5 text-3xs text-muted-foreground">
               <Tag className="h-2 w-2" />
               {tag}
             </span>
           ))}
           {skill.tags.length > 4 ? (
-            <span className="rounded-md bg-muted/50 px-1.5 py-0.5 text-[10px] text-muted-foreground">+{skill.tags.length - 4}</span>
+            <span className="rounded-md bg-muted/50 px-1.5 py-0.5 text-3xs text-muted-foreground">+{skill.tags.length - 4}</span>
           ) : null}
         </div>
       ) : null}

@@ -57,11 +57,18 @@ const config: Config = {
         },
       },
       borderRadius: {
-        lg: 'var(--radius)',         /* 12px */
-        md: 'calc(var(--radius) - 4px)', /* 8px */
-        sm: 'calc(var(--radius) - 8px)', /* 4px */
-        xl: 'calc(var(--radius) + 4px)', /* 16px */
-        shell: '1.6rem',
+        sm: '0.5rem',      /* 8px — inputs, small buttons, dropdown items */
+        md: '0.75rem',     /* 12px — cards, badges */
+        lg: '1.25rem',     /* 20px — panels, composer, info cards */
+        xl: '1.6rem',      /* 25.6px — shell containers, sidebar */
+        full: '9999px',    /* pills */
+      },
+      fontSize: {
+        '2xs': ['0.6875rem', { lineHeight: '1rem' }],  /* 11px */
+        '3xs': ['0.625rem', { lineHeight: '0.875rem' }], /* 10px */
+      },
+      letterSpacing: {
+        label: '0.15em',
       },
       boxShadow: {
         shell: 'var(--shadow-shell)',

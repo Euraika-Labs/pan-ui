@@ -31,15 +31,15 @@ export function ApprovalsBrowser() {
 
       <div className="grid gap-3 md:grid-cols-3">
         <div className="rounded-xl border border-border bg-card p-4 shadow-sm">
-          <p className="text-xs uppercase tracking-[0.18em] text-muted-foreground">Scope</p>
+          <p className="text-xs uppercase tracking-label text-muted-foreground">Scope</p>
           <p className="mt-2 font-semibold">{activeSessionId ? 'Active session' : 'All runtime sessions'}</p>
         </div>
         <div className="rounded-xl border border-border bg-card p-4 shadow-sm">
-          <p className="text-xs uppercase tracking-[0.18em] text-muted-foreground">Pending</p>
+          <p className="text-xs uppercase tracking-label text-muted-foreground">Pending</p>
           <p className="mt-2 font-semibold">{pendingCount}</p>
         </div>
         <div className="rounded-xl border border-border bg-card p-4 shadow-sm">
-          <p className="text-xs uppercase tracking-[0.18em] text-muted-foreground">Resolved</p>
+          <p className="text-xs uppercase tracking-label text-muted-foreground">Resolved</p>
           <p className="mt-2 font-semibold">{resolvedCount}</p>
         </div>
       </div>

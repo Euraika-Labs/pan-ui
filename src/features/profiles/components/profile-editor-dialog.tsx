@@ -128,7 +128,7 @@ export function ProfileEditorDialog({ profileId, profileName, open, onClose }: P
                 <p className="mt-1 text-xs text-muted-foreground">{aiExplanation}</p>
                 <div className="mt-2 flex flex-wrap gap-1.5">
                   {Object.keys(aiPending).map((key) => (
-                    <span key={key} className="rounded-md bg-purple-500/20 px-2 py-0.5 text-[10px] font-medium text-purple-300">
+                    <span key={key} className="rounded-md bg-purple-500/20 px-2 py-0.5 text-3xs font-medium text-purple-300">
                       {key}
                     </span>
                   ))}
@@ -197,7 +197,7 @@ export function ProfileEditorDialog({ profileId, profileName, open, onClose }: P
                           }`}
                         >
                           <p className="text-sm font-medium">{opt.label}</p>
-                          <p className="mt-0.5 text-[11px] text-muted-foreground">{opt.desc}</p>
+                          <p className="mt-0.5 text-2xs text-muted-foreground">{opt.desc}</p>
                         </button>
                       ))}
                     </div>
@@ -304,7 +304,7 @@ export function ProfileEditorDialog({ profileId, profileName, open, onClose }: P
                             onChange={(e) => updateField('compressionThreshold', Number(e.target.value))}
                             className="mt-1 w-full accent-primary"
                           />
-                          <div className="flex justify-between text-[10px] text-muted-foreground">
+                          <div className="flex justify-between text-3xs text-muted-foreground">
                             <span>Aggressive</span>
                             <span>Conservative</span>
                           </div>
@@ -375,7 +375,7 @@ function Toggle({ label, desc, checked, onChange }: { label: string; desc: strin
     <label className="flex cursor-pointer items-center justify-between rounded-xl border border-border p-3 transition hover:bg-muted/30">
       <div>
         <p className="text-sm font-medium">{label}</p>
-        <p className="text-[11px] text-muted-foreground">{desc}</p>
+        <p className="text-2xs text-muted-foreground">{desc}</p>
       </div>
       <button
         type="button"

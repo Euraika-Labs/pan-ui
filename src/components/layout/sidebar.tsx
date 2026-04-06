@@ -25,9 +25,9 @@ export function Sidebar() {
   const nav = (
     <div className="flex h-full flex-col">
       <div className="border-b border-border/70 px-5 py-5">
-        <div className="rounded-[1.6rem] border border-border/80 bg-card/90 p-4 shadow-[var(--shadow-card)]">
+        <div className="rounded-xl border border-border/80 bg-card/80 p-4 shadow-[var(--shadow-card)]">
           <div className="flex items-center gap-3">
-            <div className="flex h-11 w-11 items-center justify-center rounded-2xl text-primary-foreground shadow-[var(--shadow-card)]" style={{ background: 'var(--euraika-flow-gradient)' }}>
+            <div className="flex h-11 w-11 items-center justify-center rounded-2xl text-primary-foreground shadow-[var(--shadow-card)] euraika-flow-gradient">
               <svg width="22" height="22" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <path d="M14 8h20a14 14 0 0 1 0 28H24v20h-10V8Z" fill="#FEFFEF"/>
                 <path d="M24 18h9a6 6 0 0 1 0 12h-9V18Z" fill="#073455" fillOpacity="0.3"/>
@@ -35,18 +35,18 @@ export function Sidebar() {
               </svg>
             </div>
             <div>
-              <p className="text-[11px] font-semibold uppercase tracking-[0.24em] text-muted-foreground">by Euraika</p>
+              <p className="text-2xs font-semibold uppercase tracking-label text-muted-foreground">by Euraika</p>
               <h1 className="text-lg font-semibold">Pan</h1>
             </div>
           </div>
-          <div className="mt-3 rounded-2xl border border-border/60 bg-background/70 px-3 py-2.5 text-xs leading-5 text-muted-foreground">
+          <div className="mt-3 rounded-2xl border border-border/70 bg-background/60 px-3 py-2.5 text-xs leading-5 text-muted-foreground">
             Your AI workspace — chat, skills, extensions, memory, and runtime controls in one place.
           </div>
         </div>
       </div>
 
       <div className="px-3 pt-3">
-        <p className="px-3 text-[11px] font-semibold uppercase tracking-[0.22em] text-muted-foreground">Navigate</p>
+        <p className="px-3 text-2xs font-semibold uppercase tracking-label text-muted-foreground">Navigate</p>
       </div>
       <nav className="space-y-1 p-3">
         {navItems.map(({ href, label, icon: Icon, description }) => {
@@ -67,8 +67,8 @@ export function Sidebar() {
               className={cn(
                 'group flex items-start gap-3 rounded-2xl px-3 py-3 text-sm transition',
                 active
-                  ? 'border border-primary/20 bg-primary/10 text-foreground shadow-[var(--shadow-card)]'
-                  : 'border border-transparent text-muted-foreground hover:border-border/70 hover:bg-card/70 hover:text-foreground',
+                  ? 'border-l-[3px] border-l-accent bg-primary/8 text-foreground'
+                  : 'border-l-[3px] border-l-transparent text-muted-foreground hover:border-border/70 hover:bg-card/60 hover:text-foreground',
               )}
             >
               <span
@@ -91,7 +91,7 @@ export function Sidebar() {
       </nav>
 
       <div className="px-3">
-        <div className="rounded-[1.5rem] border border-border/70 bg-card/80 p-4 text-xs leading-5 text-muted-foreground shadow-[var(--shadow-card)]">
+        <div className="rounded-lg border border-border/70 bg-card/80 p-4 text-xs leading-5 text-muted-foreground shadow-[var(--shadow-card)]">
           <div className="flex items-center gap-2 text-foreground">
             <Workflow className="h-4 w-4 text-primary" />
             <p className="font-semibold">Workspace contract</p>

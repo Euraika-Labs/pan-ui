@@ -20,17 +20,17 @@ export function MessageBubble({ message }: MessageBubbleProps) {
       ) : null}
       <div className={cn('max-w-[88%] space-y-2', isUser && 'items-end')}>
         <div className="flex items-center gap-2 px-1">
-          <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">{isUser ? 'You' : 'Pan'}</p>
-          <p className="text-[11px] uppercase tracking-[0.18em] text-muted-foreground">
+          <p className="text-2xs font-semibold uppercase tracking-label text-muted-foreground">{isUser ? 'You' : 'Pan'}</p>
+          <p className="text-2xs uppercase tracking-label text-muted-foreground">
             {new Date(message.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
           </p>
         </div>
         <div
           className={cn(
-            'rounded-[1.5rem] border px-4 py-3 text-sm shadow-[var(--shadow-card)]',
+            'rounded-lg border px-4 py-3 text-sm shadow-[var(--shadow-card)]',
             isUser
               ? 'border-primary/15 bg-[linear-gradient(135deg,hsl(var(--primary))/0.98,hsl(var(--accent))/0.92)] text-primary-foreground'
-              : 'border-border/70 bg-card/92 text-card-foreground',
+              : 'border-border/70 bg-card/80 text-card-foreground',
           )}
         >
           <p className="whitespace-pre-wrap leading-7">{message.content}</p>

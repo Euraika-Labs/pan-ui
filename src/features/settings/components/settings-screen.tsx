@@ -42,19 +42,19 @@ export function SettingsScreen() {
             </div>
             <div className="grid gap-2 text-sm sm:grid-cols-2">
               <div className="rounded-xl border border-border bg-background px-4 py-3">
-                <p className="text-xs uppercase tracking-[0.18em] text-muted-foreground">Connection</p>
+                <p className="text-xs uppercase tracking-label text-muted-foreground">Connection</p>
                 <p className="mt-2 font-semibold">{runtime?.apiReachable ? 'Runtime live' : runtime?.available ? 'Runtime degraded' : 'Runtime unavailable'}</p>
               </div>
               <div className="rounded-xl border border-border bg-background px-4 py-3">
-                <p className="text-xs uppercase tracking-[0.18em] text-muted-foreground">Profile context</p>
+                <p className="text-xs uppercase tracking-label text-muted-foreground">Profile context</p>
                 <p className="mt-2 font-semibold">{runtime?.profileContext?.label ?? runtime?.activeProfile ?? 'Loading'}</p>
               </div>
               <div className="rounded-xl border border-border bg-background px-4 py-3">
-                <p className="text-xs uppercase tracking-[0.18em] text-muted-foreground">MCP servers</p>
+                <p className="text-xs uppercase tracking-label text-muted-foreground">MCP servers</p>
                 <p className="mt-2 font-semibold">{runtime?.mcpServers.length ?? 0}</p>
               </div>
               <div className="rounded-xl border border-border bg-background px-4 py-3">
-                <p className="text-xs uppercase tracking-[0.18em] text-muted-foreground">Skills indexed</p>
+                <p className="text-xs uppercase tracking-label text-muted-foreground">Skills indexed</p>
                 <p className="mt-2 font-semibold">{runtime?.skillsCount ?? 0}</p>
               </div>
             </div>
@@ -77,7 +77,7 @@ export function SettingsScreen() {
             <p className="mt-1 text-sm text-muted-foreground">The selected profile controls memory scope, default guardrails, and which integrations are visible across the workspace.</p>
             <div className="mt-4 space-y-3 text-sm text-muted-foreground">
               <div className="rounded-xl border border-border bg-background px-4 py-3">
-                <p className="text-xs uppercase tracking-[0.18em] text-muted-foreground">Selected profile</p>
+                <p className="text-xs uppercase tracking-label text-muted-foreground">Selected profile</p>
                 <p className="mt-2 font-semibold text-foreground">{activeProfile.name}</p>
               </div>
               <PolicyPresetSelector

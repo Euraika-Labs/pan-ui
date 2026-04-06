@@ -27,11 +27,11 @@
 
   /* ── Muted / Secondary ── */
   --muted: 207 20% 94%;               /* Surface Cool */
-  --muted-foreground: 210 12% 33%;    /* #51545A Steel Gray */
+  --muted-foreground: 220 15% 38%;    /* Improved contrast */
 
   /* ── Borders & Inputs ── */
-  --border: 200 4% 60%;               /* #91999A Cloud Gray */
-  --input: 200 4% 72%;
+  --border: 220 18% 78%;               /* Stronger light mode borders */
+  --input: 220 18% 78%;
   --ring: 206 84% 22%;                /* #094668 Euraika Teal */
 
   /* ── Semantic (§6.11) ── */
@@ -161,4 +161,17 @@ body::before {
 /* ── Euraika Flow Gradient utility ── */
 .euraika-flow-gradient {
   background: var(--euraika-flow-gradient);
+}
+
+/* ── Standardized opacity backdrop utilities ── */
+.surface-subtle { @apply bg-background/60; }
+.surface-default { @apply bg-background/80; }
+.surface-solid { @apply bg-background/95; }
+.card-subtle { @apply bg-card/60; }
+.card-default { @apply bg-card/80; }
+.card-solid { @apply bg-card/95; }
+
+/* ── Brand gradient on interactive elements ── */
+.brand-gradient {
+  background: linear-gradient(135deg, hsl(var(--primary)), hsl(var(--accent)));
 }

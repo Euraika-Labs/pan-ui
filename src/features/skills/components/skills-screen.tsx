@@ -9,9 +9,9 @@ import { useSkills, useSkillCategories, useHubSkills, useInstallHubSkill, type H
 import { useUIStore } from '@/lib/store/ui-store';
 
 function TrustBadge({ level }: { level: string }) {
-  if (level === 'trusted') return <span className="inline-flex items-center gap-1 rounded-full bg-emerald-500/15 px-2 py-0.5 text-[10px] font-medium text-emerald-400"><ShieldCheck className="h-2.5 w-2.5" />Trusted</span>;
-  if (level === 'official') return <span className="inline-flex items-center gap-1 rounded-full bg-blue-500/15 px-2 py-0.5 text-[10px] font-medium text-blue-400"><Shield className="h-2.5 w-2.5" />Official</span>;
-  return <span className="inline-flex items-center gap-1 rounded-full bg-amber-500/15 px-2 py-0.5 text-[10px] font-medium text-amber-400"><ShieldAlert className="h-2.5 w-2.5" />Community</span>;
+  if (level === 'trusted') return <span className="inline-flex items-center gap-1 rounded-full bg-emerald-500/15 px-2 py-0.5 text-3xs font-medium text-emerald-400"><ShieldCheck className="h-2.5 w-2.5" />Trusted</span>;
+  if (level === 'official') return <span className="inline-flex items-center gap-1 rounded-full bg-blue-500/15 px-2 py-0.5 text-3xs font-medium text-blue-400"><Shield className="h-2.5 w-2.5" />Official</span>;
+  return <span className="inline-flex items-center gap-1 rounded-full bg-amber-500/15 px-2 py-0.5 text-3xs font-medium text-amber-400"><ShieldAlert className="h-2.5 w-2.5" />Community</span>;
 }
 
 function SecurityBadges({ audits }: { audits?: Record<string, string> }) {
@@ -43,10 +43,10 @@ function HubSkillCard({ skill, onInstall, installing }: { skill: HubSkill; onIns
             <h3 className="truncate text-sm font-semibold">{skill.name}</h3>
             <TrustBadge level={skill.trustLevel} />
           </div>
-          <p className="mt-0.5 text-[11px] text-muted-foreground">{skill.repo}</p>
+          <p className="mt-0.5 text-2xs text-muted-foreground">{skill.repo}</p>
         </div>
         {skill.installs != null ? (
-          <span className="shrink-0 rounded-lg bg-muted/50 px-2 py-0.5 text-[10px] text-muted-foreground">
+          <span className="shrink-0 rounded-lg bg-muted/50 px-2 py-0.5 text-3xs text-muted-foreground">
             <Download className="mr-0.5 inline h-2.5 w-2.5" />
             {skill.installs.toLocaleString()}
           </span>
@@ -284,7 +284,7 @@ export function SkillsScreen() {
           ) : null}
 
           {!skillsQuery.isLoading && filteredSkills.length === 0 ? (
-            <div className="rounded-2xl border border-dashed border-border/70 bg-card/70 p-5 text-sm text-muted-foreground">
+            <div className="rounded-2xl border border-dashed border-border/70 bg-card/60 p-5 text-sm text-muted-foreground">
               {searchQuery || selectedCategory
                 ? `No skills match "${searchQuery || selectedCategory}". Try a different filter.`
                 : 'No installed skills were detected for the current runtime/profile scope.'}
@@ -310,7 +310,7 @@ export function SkillsScreen() {
           {hubQuery.isLoading ? <p className="text-sm text-muted-foreground">Searching skills.sh…</p> : null}
 
           {!hubQuery.isLoading && hubSkills.length === 0 ? (
-            <div className="rounded-2xl border border-dashed border-border/70 bg-card/70 p-5 text-sm text-muted-foreground">
+            <div className="rounded-2xl border border-dashed border-border/70 bg-card/60 p-5 text-sm text-muted-foreground">
               {hubSearchQuery
                 ? `No skills found for "${hubSearchQuery}". Try a different search term.`
                 : 'No discoverable skills found. The skills.sh cache may need to be populated — run `hermes skills browse` in your terminal.'}

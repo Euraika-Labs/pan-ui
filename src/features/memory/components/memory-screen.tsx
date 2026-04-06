@@ -22,19 +22,19 @@ export function MemoryScreen() {
 
       <section className="grid gap-3 md:grid-cols-2 xl:grid-cols-4">
         <div className="rounded-2xl border border-border bg-card p-4 shadow-sm">
-          <p className="text-xs uppercase tracking-[0.18em] text-muted-foreground">Selected profile</p>
+          <p className="text-xs uppercase tracking-label text-muted-foreground">Selected profile</p>
           <p className="mt-2 font-semibold">{context?.activeProfileId ?? selectedProfileId ?? 'No profile'}</p>
         </div>
         <div className="rounded-2xl border border-border bg-card p-4 shadow-sm">
-          <p className="text-xs uppercase tracking-[0.18em] text-muted-foreground">Active session</p>
+          <p className="text-xs uppercase tracking-label text-muted-foreground">Active session</p>
           <p className="mt-2 font-semibold">{context?.activeSessionTitle ?? activeSessionId ?? 'No session'}</p>
         </div>
         <div className="rounded-2xl border border-border bg-card p-4 shadow-sm">
-          <p className="text-xs uppercase tracking-[0.18em] text-muted-foreground">Loaded skills</p>
+          <p className="text-xs uppercase tracking-label text-muted-foreground">Loaded skills</p>
           <p className="mt-2 font-semibold">{context?.loadedSkillIds.length ?? 0}</p>
         </div>
         <div className="rounded-2xl border border-border bg-card p-4 shadow-sm">
-          <p className="text-xs uppercase tracking-[0.18em] text-muted-foreground">Memory mode</p>
+          <p className="text-xs uppercase tracking-label text-muted-foreground">Memory mode</p>
           <p className="mt-2 font-semibold">{context?.memoryMode ?? 'standard'}</p>
         </div>
       </section>

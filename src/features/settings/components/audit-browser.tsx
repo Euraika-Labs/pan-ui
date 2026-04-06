@@ -21,11 +21,11 @@ export function AuditBrowser() {
 
       <div className="grid gap-3 md:grid-cols-2">
         <div className="rounded-xl border border-border bg-card p-4 shadow-sm">
-          <p className="text-xs uppercase tracking-[0.18em] text-muted-foreground">Events</p>
+          <p className="text-xs uppercase tracking-label text-muted-foreground">Events</p>
           <p className="mt-2 font-semibold">{events.length}</p>
         </div>
         <div className="rounded-xl border border-border bg-card p-4 shadow-sm">
-          <p className="text-xs uppercase tracking-[0.18em] text-muted-foreground">Actions seen</p>
+          <p className="text-xs uppercase tracking-label text-muted-foreground">Actions seen</p>
           <p className="mt-2 text-sm text-muted-foreground">{Object.entries(actionCounts).map(([action, count]) => `${action}: ${count}`).join(' · ') || 'No audit actions yet'}</p>
         </div>
       </div>

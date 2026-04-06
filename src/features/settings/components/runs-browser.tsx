@@ -22,15 +22,15 @@ export function RunsBrowser() {
 
       <div className="grid gap-3 md:grid-cols-3">
         <div className="rounded-xl border border-border bg-card p-4 shadow-sm">
-          <p className="text-xs uppercase tracking-[0.18em] text-muted-foreground">Scope</p>
+          <p className="text-xs uppercase tracking-label text-muted-foreground">Scope</p>
           <p className="mt-2 font-semibold">{activeSessionId ? 'Active session' : 'All sessions'}</p>
         </div>
         <div className="rounded-xl border border-border bg-card p-4 shadow-sm">
-          <p className="text-xs uppercase tracking-[0.18em] text-muted-foreground">Runs</p>
+          <p className="text-xs uppercase tracking-label text-muted-foreground">Runs</p>
           <p className="mt-2 font-semibold">{filtered.length}</p>
         </div>
         <div className="rounded-xl border border-border bg-card p-4 shadow-sm">
-          <p className="text-xs uppercase tracking-[0.18em] text-muted-foreground">Failures</p>
+          <p className="text-xs uppercase tracking-label text-muted-foreground">Failures</p>
           <p className="mt-2 font-semibold">{failedCount}</p>
         </div>
       </div>

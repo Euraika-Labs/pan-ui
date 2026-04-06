@@ -14,7 +14,7 @@ export function TTSButton({ text }: TTSButtonProps) {
           window.speechSynthesis.speak(new SpeechSynthesisUtterance(text));
         }
       }}
-      className="rounded-md border border-border px-2 py-1 text-[11px] text-muted-foreground"
+      className="rounded-md border border-border px-2 py-1 text-2xs text-muted-foreground"
       aria-label="Play voice"
     >
       TTS

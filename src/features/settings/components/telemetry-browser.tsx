@@ -22,11 +22,11 @@ export function TelemetryBrowser() {
 
       <div className="grid gap-3 md:grid-cols-3">
         <div className="rounded-xl border border-border bg-card p-4 shadow-sm">
-          <p className="text-xs uppercase tracking-[0.18em] text-muted-foreground">Events returned</p>
+          <p className="text-xs uppercase tracking-label text-muted-foreground">Events returned</p>
           <p className="mt-2 font-semibold">{events.length}</p>
         </div>
         <div className="rounded-xl border border-border bg-card p-4 shadow-sm md:col-span-2">
-          <p className="text-xs uppercase tracking-[0.18em] text-muted-foreground">Sources</p>
+          <p className="text-xs uppercase tracking-label text-muted-foreground">Sources</p>
           <p className="mt-2 text-sm text-muted-foreground">{Object.entries(sourceCounts).map(([source, count]) => `${source}: ${count}`).join(' · ') || 'No telemetry sources yet'}</p>
         </div>
       </div>

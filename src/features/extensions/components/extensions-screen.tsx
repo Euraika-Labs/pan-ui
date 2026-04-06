@@ -40,22 +40,22 @@ export function ExtensionsScreen({ initialTab = 'installed' }: { initialTab?: 'i
 
       <section className="grid gap-3 md:grid-cols-2 xl:grid-cols-4">
         <div className="rounded-2xl border border-border bg-card p-4 shadow-sm">
-          <p className="text-xs uppercase tracking-[0.18em] text-muted-foreground">Extensions</p>
+          <p className="text-xs uppercase tracking-label text-muted-foreground">Extensions</p>
           <p className="mt-2 text-2xl font-semibold">{extensions.length}</p>
           <p className="mt-1 text-sm text-muted-foreground">Runtime-visible integrations across builtin, native, and MCP sources.</p>
         </div>
         <div className="rounded-2xl border border-border bg-card p-4 shadow-sm">
-          <p className="text-xs uppercase tracking-[0.18em] text-muted-foreground">Callable tools</p>
+          <p className="text-xs uppercase tracking-label text-muted-foreground">Callable tools</p>
           <p className="mt-2 text-2xl font-semibold">{tools.length}</p>
           <p className="mt-1 text-sm text-muted-foreground">Capabilities normalized into operator-facing tool inventory.</p>
         </div>
         <div className="rounded-2xl border border-border bg-card p-4 shadow-sm">
-          <p className="text-xs uppercase tracking-[0.18em] text-muted-foreground">Session scoped</p>
+          <p className="text-xs uppercase tracking-label text-muted-foreground">Session scoped</p>
           <p className="mt-2 text-2xl font-semibold">{sessionScopedTools.length}</p>
           <p className="mt-1 text-sm text-muted-foreground">Tools limited to {activeSessionId ? 'the active session' : 'a session context'} for safer experimentation.</p>
         </div>
         <div className="rounded-2xl border border-border bg-card p-4 shadow-sm">
-          <p className="text-xs uppercase tracking-[0.18em] text-muted-foreground">Profile context</p>
+          <p className="text-xs uppercase tracking-label text-muted-foreground">Profile context</p>
           <p className="mt-2 text-lg font-semibold">{runtimeQuery.data?.profileContext?.label ?? runtimeQuery.data?.activeProfile ?? 'Unknown profile'}</p>
           <p className="mt-1 text-sm text-muted-foreground">{profileScopedTools.length} tools respect the current profile boundary.</p>
         </div>

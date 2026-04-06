@@ -18,11 +18,11 @@ export function ArtifactsBrowser() {
       </div>
       <div className="grid gap-3 md:grid-cols-2">
         <div className="rounded-xl border border-border bg-card p-4 shadow-sm">
-          <p className="text-xs uppercase tracking-[0.18em] text-muted-foreground">Active session</p>
+          <p className="text-xs uppercase tracking-label text-muted-foreground">Active session</p>
           <p className="mt-2 font-semibold">{activeSessionId ?? 'No active session'}</p>
         </div>
         <div className="rounded-xl border border-border bg-card p-4 shadow-sm">
-          <p className="text-xs uppercase tracking-[0.18em] text-muted-foreground">Artifacts returned</p>
+          <p className="text-xs uppercase tracking-label text-muted-foreground">Artifacts returned</p>
           <p className="mt-2 font-semibold">{artifacts.length}</p>
         </div>
       </div>

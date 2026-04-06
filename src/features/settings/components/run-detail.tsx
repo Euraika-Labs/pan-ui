@@ -31,19 +31,19 @@ export function RunDetail({ runId }: { runId: string }) {
 
       <section className="grid gap-3 md:grid-cols-4">
         <div className="rounded-xl border border-border bg-card p-4 shadow-sm">
-          <p className="text-xs uppercase tracking-[0.18em] text-muted-foreground">Run</p>
+          <p className="text-xs uppercase tracking-label text-muted-foreground">Run</p>
           <p className="mt-2 font-semibold">{String(run.id).slice(0, 8)}</p>
         </div>
         <div className="rounded-xl border border-border bg-card p-4 shadow-sm">
-          <p className="text-xs uppercase tracking-[0.18em] text-muted-foreground">Status</p>
+          <p className="text-xs uppercase tracking-label text-muted-foreground">Status</p>
           <p className="mt-2 font-semibold">{String(run.status)}</p>
         </div>
         <div className="rounded-xl border border-border bg-card p-4 shadow-sm">
-          <p className="text-xs uppercase tracking-[0.18em] text-muted-foreground">Approvals</p>
+          <p className="text-xs uppercase tracking-label text-muted-foreground">Approvals</p>
           <p className="mt-2 font-semibold">{(approvalsQuery.data ?? []).length}</p>
         </div>
         <div className="rounded-xl border border-border bg-card p-4 shadow-sm">
-          <p className="text-xs uppercase tracking-[0.18em] text-muted-foreground">Artifacts</p>
+          <p className="text-xs uppercase tracking-label text-muted-foreground">Artifacts</p>
           <p className="mt-2 font-semibold">{(artifactsQuery.data ?? []).length}</p>
         </div>
       </section>

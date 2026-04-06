@@ -97,7 +97,7 @@ export function CreateProfileDialog({ open, onClose, onSubmit }: CreateProfileDi
             <Sparkles className="h-4 w-4 text-purple-400" />
             <p className="text-xs font-medium text-purple-300">AI-Assisted Setup</p>
           </div>
-          <p className="mt-1 text-[11px] text-muted-foreground">Describe what this profile is for and AI will suggest the best settings.</p>
+          <p className="mt-1 text-2xs text-muted-foreground">Describe what this profile is for and AI will suggest the best settings.</p>
           <div className="mt-2 flex gap-2">
             <input
               value={purpose}

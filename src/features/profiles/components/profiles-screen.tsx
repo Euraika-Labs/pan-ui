@@ -64,19 +64,19 @@ export function ProfilesScreen() {
           <p className="mt-1 text-sm text-muted-foreground">The UI selection and the runtime-selected profile should match. This panel makes any drift obvious.</p>
           <div className="mt-4 grid gap-3 sm:grid-cols-2">
             <div className="rounded-xl border border-border bg-background px-4 py-3">
-              <p className="text-xs uppercase tracking-[0.18em] text-muted-foreground">UI selection</p>
+              <p className="text-xs uppercase tracking-label text-muted-foreground">UI selection</p>
               <p className="mt-2 font-semibold">{selectedProfile?.name ?? 'No profile selected'}</p>
             </div>
             <div className="rounded-xl border border-border bg-background px-4 py-3">
-              <p className="text-xs uppercase tracking-[0.18em] text-muted-foreground">Runtime context</p>
+              <p className="text-xs uppercase tracking-label text-muted-foreground">Runtime context</p>
               <p className="mt-2 font-semibold">{runtimeQuery.data?.profileContext?.label ?? runtimeQuery.data?.activeProfile ?? 'Unknown runtime profile'}</p>
             </div>
             <div className="rounded-xl border border-border bg-background px-4 py-3">
-              <p className="text-xs uppercase tracking-[0.18em] text-muted-foreground">Profiles available</p>
+              <p className="text-xs uppercase tracking-label text-muted-foreground">Profiles available</p>
               <p className="mt-2 font-semibold">{profiles.length}</p>
             </div>
             <div className="rounded-xl border border-border bg-background px-4 py-3">
-              <p className="text-xs uppercase tracking-[0.18em] text-muted-foreground">Runtime health</p>
+              <p className="text-xs uppercase tracking-label text-muted-foreground">Runtime health</p>
               <p className="mt-2 font-semibold">{selectedProfile?.runtimeHealth ?? 'offline'}</p>
             </div>
           </div>

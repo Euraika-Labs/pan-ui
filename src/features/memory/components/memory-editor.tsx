@@ -34,7 +34,7 @@ export function MemoryEditor({ scope }: { scope: 'user' | 'agent' }) {
             <div className="flex items-center gap-2">
               <Globe className="h-4 w-4 text-blue-400" />
               <h2 className="text-lg font-semibold">Global {scope === 'user' ? 'user' : 'agent'} memory</h2>
-              <span className="rounded-full bg-blue-500/10 px-2 py-0.5 text-[10px] font-medium text-blue-400">shared</span>
+              <span className="rounded-full bg-blue-500/10 px-2 py-0.5 text-3xs font-medium text-blue-400">shared</span>
             </div>
             <div className="rounded-xl border border-border bg-background px-4 py-2 text-sm text-muted-foreground">
               <strong className="text-foreground">{globalEntries.length}</strong> {globalEntries.length === 1 ? 'entry' : 'entries'}

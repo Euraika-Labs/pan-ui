@@ -74,13 +74,13 @@ export function ChatTranscript({
   return (
     <div ref={scrollRef} className="flex min-h-0 flex-1 flex-col gap-5 overflow-y-auto px-5 py-5">
       {isLoading ? (
-        <div className="rounded-[1.6rem] border border-border/70 bg-card/75 p-8 text-sm text-muted-foreground shadow-[var(--shadow-card)]">
+        <div className="rounded-xl border border-border/70 bg-card/60 p-8 text-sm text-muted-foreground shadow-[var(--shadow-card)]">
           Loading conversation…
         </div>
       ) : null}
 
       {!isLoading && messages.length === 0 ? (
-        <div className="rounded-[1.8rem] border border-dashed border-border/70 p-8 text-sm text-muted-foreground shadow-[var(--shadow-card)]" style={{ background: 'linear-gradient(135deg, hsl(var(--primary) / 0.06), hsl(var(--accent) / 0.03))' }}>
+        <div className="rounded-xl border border-dashed border-border/70 bg-gradient-to-br from-primary/[0.06] to-accent/[0.03] p-8 text-sm text-muted-foreground shadow-[var(--shadow-card)]">
           <div className="flex items-center gap-2 text-foreground">
             <Sparkles className="h-4 w-4 text-primary" />
             <p className="font-semibold">Start a conversation</p>
@@ -97,10 +97,10 @@ export function ChatTranscript({
       ) : null}
 
       {(isStreaming || visibleEvents.length > 0) && !isLoading ? (
-        <div className="rounded-[1.4rem] border border-border/70 bg-background/70 p-4 shadow-[var(--shadow-card)]">
+        <div className="rounded-lg border border-border/70 bg-background/60 p-4 shadow-[var(--shadow-card)]">
           <div className="flex flex-wrap items-start justify-between gap-3">
             <div>
-              <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-muted-foreground">Runtime activity</p>
+              <p className="text-2xs font-semibold uppercase tracking-label text-muted-foreground">Runtime activity</p>
               <p className="mt-1 text-sm font-medium text-foreground">{isStreaming ? streamingLabel(runEvents) : latestPhase?.label ?? 'No active tool run'}</p>
             </div>
             <div className="flex flex-wrap gap-2">
@@ -129,14 +129,14 @@ export function ChatTranscript({
         }
         if (event.type === 'run.phase') {
           return (
-            <div key={`${event.type}-${index}`} className="rounded-[1.3rem] border border-border/70 bg-background/75 px-4 py-3 text-sm text-muted-foreground shadow-[var(--shadow-card)]">
+            <div key={`${event.type}-${index}`} className="rounded-lg border border-border/70 bg-background/80 px-4 py-3 text-sm text-muted-foreground shadow-[var(--shadow-card)]">
               {event.label}
             </div>
           );
         }
         if (event.type === 'error') {
           return (
-            <div key={`${event.type}-${index}`} className="rounded-[1.5rem] border border-danger/30 bg-danger/10 p-4 text-sm text-foreground shadow-[var(--shadow-card)]">
+            <div key={`${event.type}-${index}`} className="rounded-lg border border-danger/30 bg-danger/10 p-4 text-sm text-foreground shadow-[var(--shadow-card)]">
               <div className="flex items-start gap-2">
                 <AlertTriangle className="mt-0.5 h-4 w-4 text-danger" />
                 <p>{event.message}</p>
@@ -152,9 +152,9 @@ export function ChatTranscript({
           <div className="mt-1 flex h-9 w-9 items-center justify-center rounded-2xl bg-[linear-gradient(135deg,hsl(var(--primary)),hsl(var(--accent)))] text-primary-foreground shadow-[var(--shadow-card)]">
             <Sparkles className="h-4 w-4" />
           </div>
-          <div className="max-w-[88%] rounded-[1.55rem] border border-border/70 bg-card/92 px-4 py-3 text-sm shadow-[var(--shadow-card)]">
+          <div className="max-w-[88%] rounded-lg border border-border/70 bg-card/80 px-4 py-3 text-sm shadow-[var(--shadow-card)]">
             <p className="whitespace-pre-wrap leading-7">{streamingMessage || '…'}</p>
-            <p className="mt-3 text-[11px] uppercase tracking-[0.18em] text-muted-foreground">{streamingLabel(runEvents)}</p>
+            <p className="mt-3 text-2xs uppercase tracking-label text-muted-foreground">{streamingLabel(runEvents)}</p>
           </div>
         </div>
       ) : null}

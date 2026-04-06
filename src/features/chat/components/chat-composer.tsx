@@ -47,9 +47,9 @@ export function ChatComposer({
   };
 
   return (
-    <form onSubmit={handleSubmit} className="shrink-0 border-t border-border/70 bg-background/75 p-2 md:p-3">
+    <form onSubmit={handleSubmit} className="shrink-0 border-t border-border/70 bg-background/80 p-2 md:p-3">
       <div
-        className="rounded-[1.8rem] border border-border/70 bg-card/88 p-3 shadow-[var(--shadow-soft)]"
+        className="rounded-xl border border-border/70 card-default p-3 shadow-[var(--shadow-soft)]"
         onDragOver={(event) => event.preventDefault()}
         onDrop={(event) => {
           event.preventDefault();
@@ -68,7 +68,7 @@ export function ChatComposer({
           <button
             type="button"
             onClick={() => setAdvancedOpen((current) => !current)}
-            className="inline-flex items-center gap-1 rounded-full border border-border/70 bg-background/65 px-3 py-1 text-xs font-medium text-muted-foreground"
+            className="inline-flex items-center gap-1 rounded-full border border-border/70 bg-background/60 px-3 py-1 text-xs font-medium text-muted-foreground"
           >
             Advanced
             <ChevronDown className={`h-3.5 w-3.5 transition ${advancedOpen ? 'rotate-180' : ''}`} />
@@ -76,17 +76,17 @@ export function ChatComposer({
         </div>
 
         {advancedOpen ? (
-          <div className="mb-3 grid gap-3 rounded-[1.3rem] border border-border/70 bg-background/60 p-3 text-xs text-muted-foreground md:grid-cols-3">
-            <div className="rounded-xl border border-border/60 bg-card/75 p-3">
-              <p className="font-semibold text-foreground">Prompt focus</p>
+          <div className="mb-3 grid gap-3 rounded-lg border border-border/70 bg-background/60 p-3 text-xs text-muted-foreground md:grid-cols-3">
+            <div className="rounded-xl border border-border/70 bg-card/60 p-3">
+             <p className="font-semibold text-foreground">Prompt focus</p>
               <p className="mt-1">The main prompt stays dominant. Lower-frequency context and controls live here so the composer stays calm.</p>
             </div>
-            <div className="rounded-xl border border-border/60 bg-card/75 p-3">
-              <p className="font-semibold text-foreground">Visible trust cues</p>
+            <div className="rounded-xl border border-border/70 bg-card/60 p-3">
+             <p className="font-semibold text-foreground">Visible trust cues</p>
               <p className="mt-1">Model, mode, tools, files, and profile remain visible before you send anything.</p>
             </div>
-            <div className="rounded-xl border border-border/60 bg-card/75 p-3">
-              <p className="font-semibold text-foreground">Attachments</p>
+            <div className="rounded-xl border border-border/70 bg-card/60 p-3">
+             <p className="font-semibold text-foreground">Attachments</p>
               <p className="mt-1">Drop a file anywhere on the composer or use Attach to add screenshots, notes, and code snippets.</p>
             </div>
           </div>
@@ -110,7 +110,7 @@ export function ChatComposer({
             }
           }}
           placeholder={disabled ? 'Agent is unavailable right now.' : 'Message Pan…'}
-          className="min-h-14 w-full resize-none bg-transparent px-1 text-sm leading-7 outline-none placeholder:text-muted-foreground"
+          className="min-h-14 w-full resize-none bg-transparent px-3 text-sm leading-7 outline-none placeholder:text-muted-foreground"
           disabled={disabled}
         />
 
@@ -146,7 +146,7 @@ export function ChatComposer({
             <button
               type="submit"
               disabled={disabled || (!value.trim() && attachments.length === 0)}
-              className="inline-flex items-center justify-center gap-2 rounded-2xl bg-[linear-gradient(135deg,hsl(var(--primary)),hsl(var(--accent)))] px-4 py-2.5 text-sm font-semibold text-primary-foreground shadow-[var(--shadow-card)] transition hover:-translate-y-0.5 disabled:cursor-not-allowed disabled:opacity-50"
+              className="inline-flex items-center justify-center gap-2 rounded-2xl brand-gradient px-4 py-2.5 text-sm font-semibold text-primary-foreground shadow-[var(--shadow-card)] transition hover:-translate-y-0.5 disabled:cursor-not-allowed disabled:opacity-50"
             >
               <SendHorizonal className="h-4 w-4" />
               Send

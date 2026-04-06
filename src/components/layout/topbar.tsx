@@ -56,8 +56,8 @@ export function Topbar() {
   const meta = resolvePageMeta(pathname);
 
   return (
-    <header className="sticky top-0 z-20 border-b border-border/60 bg-background/72 px-3 py-3 backdrop-blur-xl sm:px-4 lg:px-6">
-      <div className="flex flex-col gap-3 rounded-[1.65rem] border border-border/70 bg-card/80 px-4 py-3 shadow-[var(--shadow-soft)] lg:flex-row lg:items-center lg:justify-between lg:px-5">
+    <header className="sticky top-0 z-20 border-b border-border/70 bg-background/80 px-3 py-3 backdrop-blur-xl sm:px-4 lg:px-6">
+      <div className="flex flex-col gap-3 rounded-xl border border-border/70 card-default px-4 py-3 shadow-[var(--shadow-soft)] lg:flex-row lg:items-center lg:justify-between lg:px-5">
         <div className="flex min-w-0 items-center gap-3">
           <button
             type="button"
@@ -72,22 +72,22 @@ export function Topbar() {
           </div>
           <div className="min-w-0 space-y-1">
             <div className="flex flex-wrap items-center gap-2">
-              <p className="text-[11px] font-semibold uppercase tracking-[0.24em] text-muted-foreground">{meta.eyebrow}</p>
+              <p className="text-2xs font-semibold uppercase tracking-label text-muted-foreground">{meta.eyebrow}</p>
               <span
                 className={cn(
-                  'inline-flex items-center gap-1 rounded-full border px-2 py-0.5 text-[11px] font-medium',
+                  'inline-flex items-center gap-1 rounded-full border px-2 py-0.5 text-2xs font-medium',
                   runtimeConnected ? 'border-success/30 bg-success/10 text-foreground' : 'border-warning/30 bg-warning/10 text-foreground',
                 )}
               >
                 <Activity className={cn('h-3 w-3', runtimeConnected ? 'text-success' : 'text-warning')} />
                 {runtimeConnected ? 'Runtime live' : 'Runtime degraded'}
               </span>
-              <span className="inline-flex items-center gap-1 rounded-full border border-border/70 bg-background/80 px-2 py-0.5 text-[11px] font-medium text-foreground">
+              <span className="inline-flex items-center gap-1 rounded-full border border-border/70 bg-background/80 px-2 py-0.5 text-2xs font-medium text-foreground">
                 <ShieldCheck className="h-3 w-3 text-approval" />
                 {runtime?.profileContext?.label || 'Profile context loading'}
               </span>
               {activeSessionId ? (
-                <span className="inline-flex items-center gap-1 rounded-full border border-border/70 bg-background/80 px-2 py-0.5 text-[11px] font-medium text-muted-foreground">
+                <span className="inline-flex items-center gap-1 rounded-full border border-border/70 bg-background/80 px-2 py-0.5 text-2xs font-medium text-muted-foreground">
                   Saved session
                 </span>
               ) : null}
@@ -111,12 +111,14 @@ export function Topbar() {
             <Plus className="h-4 w-4" />
             New chat
           </Link>
+          <span className="hidden h-5 w-px bg-border/70 lg:block" />
           <Link href="/settings/approvals" className="rounded-2xl border border-border/70 bg-background/80 px-3 py-2 text-sm font-medium text-foreground shadow-[var(--shadow-card)]">
             Approvals
           </Link>
           <Link href="/settings/health" className="rounded-2xl border border-border/70 bg-background/80 px-3 py-2 text-sm font-medium text-foreground shadow-[var(--shadow-card)]">
             Diagnostics
           </Link>
+          <span className="hidden h-5 w-px bg-border/70 lg:block" />
           <button
             type="button"
             onClick={() => openRightDrawer('activity')}

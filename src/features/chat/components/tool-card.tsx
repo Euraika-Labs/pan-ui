@@ -12,10 +12,10 @@ export function ToolCard({ event }: ToolCardProps) {
   const isStarted = event.type === 'tool.started';
 
   return (
-    <div className="rounded-[1.35rem] border border-border/70 bg-background/75 p-4 shadow-[var(--shadow-card)]">
+    <div className="rounded-lg border border-border/70 bg-background/80 p-4 shadow-[var(--shadow-card)]">
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
-          <p className="text-xs uppercase tracking-[0.18em] text-muted-foreground">Tool activity</p>
+          <p className="text-xs uppercase tracking-label text-muted-foreground">Tool activity</p>
           <h4 className="mt-1 text-sm font-semibold text-foreground">{event.toolName}</h4>
           <p className="mt-1 text-xs text-muted-foreground">Call {event.toolCallId}</p>
         </div>
