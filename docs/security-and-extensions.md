@@ -1,4 +1,4 @@
-# Hermes Workspace Security and Extensions Spec
+# Pan Security and Extensions Spec
 
 ## Security Goals
 - prevent accidental exposure of dangerous Hermes capabilities in the browser

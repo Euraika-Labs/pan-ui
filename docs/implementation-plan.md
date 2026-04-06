@@ -1,7 +1,7 @@
-# Hermes Workspace Implementation Plan
+# Pan Implementation Plan
 
 ## Goal
-Turn the current Next.js Hermes Workspace app into a beautiful, first-party-feeling Hermes WebUI: premium chat UX, real runtime transparency, robust skills/integrations management, and an operator-grade settings surface.
+Turn the current Next.js Pan app into a beautiful, first-party-feeling Hermes WebUI: premium chat UX, real runtime transparency, robust skills/integrations management, and an operator-grade settings surface.
 
 ## Delivery Strategy
 Build in layers:
@@ -11,7 +11,7 @@ Build in layers:
 4. deepen runtime-backed data and diagnostics
 5. harden quality, performance, and mobile behavior
 
-This plan assumes the existing app at `/opt/projects/hermesagentwebui` remains the base.
+This plan assumes the existing app at `/opt/projects/pan-ui` remains the base.
 
 ## Current App Baseline
 Existing route structure already covers most of the product surface:

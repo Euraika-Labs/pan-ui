@@ -1,4 +1,4 @@
-# Hermes Workspace Alpha Release Checklist
+# Pan Alpha Release Checklist
 
 Product readiness
 - [x] Authentication flow works

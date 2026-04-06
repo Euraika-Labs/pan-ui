@@ -1,7 +1,25 @@
 {
-  "name": "hermes-workspace",
+  "name": "pan-ui",
   "version": "0.2.0",
-  "private": true,
+  "description": "Beautiful WebUI for Hermes Agent — chat, skills, plugins, memory, profiles, and runtime diagnostics in one workspace.",
+  "keywords": ["hermes", "agent", "webui", "workspace", "chat", "skills", "plugins", "mcp", "nous-research"],
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Euraika-Labs/pan-ui"
+  },
+  "homepage": "https://github.com/Euraika-Labs/pan-ui",
+  "bin": {
+    "pan-ui": "./bin/pan-ui.mjs"
+  },
+  "files": [
+    "bin/",
+    ".next/standalone/",
+    ".next/static/",
+    "public/",
+    ".env.example",
+    "README.md"
+  ],
   "scripts": {
     "dev": "next dev",
     "build": "next build",
@@ -9,7 +27,9 @@
     "lint": "eslint .",
     "test": "vitest run",
     "test:watch": "vitest",
-    "test:e2e": "playwright test"
+    "test:e2e": "playwright test",
+    "package": "npm run build && node scripts/package.mjs",
+    "prepublishOnly": "npm run package"
   },
   "dependencies": {
     "@radix-ui/react-dialog": "^1.1.2",
@@ -48,5 +68,8 @@
     "tailwindcss": "^3.4.15",
     "typescript": "^5.6.3",
     "vitest": "^4.1.2"
+  },
+  "engines": {
+    "node": ">=18.18.0"
   }
 }

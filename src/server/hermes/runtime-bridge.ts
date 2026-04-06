@@ -123,18 +123,12 @@ async function probeHermesApi(): Promise<RuntimeApiStatus> {
 async function getRuntimeModelOptions(provider: string | undefined, modelDefault: string | undefined, recentSessions: RuntimeSession[]) {
   const options = new Map<string, RuntimeModelOption>();
   const resolvedProvider = provider || 'unknown';
-  const fallbackModels = ['Hermes 3 405B', 'Hermes Fast'];
 
-  for (const model of fallbackModels) {
-    options.set(model, {
-      id: model,
-      label: model,
-      provider: resolvedProvider,
-      source: 'catalog',
-    });
-  }
+  // Filter out placeholder/bogus model names that were hardcoded in earlier versions.
+  const bogusModels = new Set(['hermes 3 405b', 'hermes fast', 'hermes-agent', 'default']);
+  const isBogus = (id: string) => bogusModels.has(id.toLowerCase());
 
-  if (modelDefault) {
+  if (modelDefault && !isBogus(modelDefault)) {
     options.set(modelDefault, {
       id: modelDefault,
       label: modelDefault,
@@ -145,6 +139,7 @@ async function getRuntimeModelOptions(provider: string | undefined, modelDefault
 
   for (const session of recentSessions) {
     if (!session.model) continue;
+    if (isBogus(session.model)) continue;
     if (!options.has(session.model)) {
       options.set(session.model, {
         id: session.model,
@@ -155,37 +150,40 @@ async function getRuntimeModelOptions(provider: string | undefined, modelDefault
     }
   }
 
-  const controller = new AbortController();
-  const timeout = setTimeout(() => controller.abort(), Math.min(hermesConfig.timeoutMs, 5000));
-
+  // Fetch available models from the provider using Hermes's own Python catalog.
   try {
-    const response = await fetch(`${hermesConfig.baseUrl}/v1/models`, {
-      method: 'GET',
-      headers: {
-        ...(hermesConfig.apiKey ? { Authorization: `Bearer ${hermesConfig.apiKey}` } : {}),
-      },
-      signal: controller.signal,
-      cache: 'no-store',
-    });
+    const providerModels = execPythonJson<string[]>(`
+import json, sys
+provider = sys.argv[1]
+try:
+    sys.path.insert(0, sys.argv[2])
+    from hermes_cli.models import fetch_github_model_catalog, _PROVIDER_MODELS
+    if provider == 'copilot':
+        catalog = fetch_github_model_catalog(timeout=4.0)
+        if catalog:
+            models = [item.get('id','') for item in catalog if item.get('id')]
+        else:
+            models = _PROVIDER_MODELS.get('copilot', [])
+    else:
+        models = _PROVIDER_MODELS.get(provider, [])
+    print(json.dumps(models))
+except Exception as e:
+    print(json.dumps([]))
+`, [resolvedProvider, path.join(getHermesHome(), 'hermes-agent')], { timeout: 8000, suppressStderr: true });
 
-    if (response.ok) {
-      const payload = (await response.json().catch(() => null)) as { data?: Array<{ id?: string }> } | null;
-      for (const entry of payload?.data ?? []) {
-        if (!entry.id) continue;
-        if (!options.has(entry.id)) {
-          options.set(entry.id, {
-            id: entry.id,
-            label: entry.id,
-            provider: resolvedProvider,
-            source: 'catalog',
-          });
-        }
+    for (const modelId of providerModels) {
+      if (!modelId || isBogus(modelId)) continue;
+      if (!options.has(modelId)) {
+        options.set(modelId, {
+          id: modelId,
+          label: modelId,
+          provider: resolvedProvider,
+          source: 'catalog',
+        });
       }
     }
   } catch {
-    // Ignore catalog probe failures and keep defaults/history-derived options.
-  } finally {
-    clearTimeout(timeout);
+    // Provider catalog unavailable — fall through with what we have.
   }
 
   return Array.from(options.values());

@@ -1,4 +1,4 @@
-# Hermes Workspace Roadmap
+# Pan Roadmap
 
 ## Roadmap Summary
 The roadmap is structured to ship a useful self-hostable product quickly, then deepen Hermes-native functionality, then add team and ecosystem features.
@@ -120,14 +120,14 @@ Target window: 8-12 weeks
 - secrets management UX
 
 ### Exit criteria
-- teams can deploy Hermes Workspace safely in shared environments
+- teams can deploy Pan safely in shared environments
 - admins can control risk without blocking usability
 
 ## Phase 4: Ecosystem / Marketplace
 Target window: 8-16 weeks
 
 ### Goals
-- turn Hermes Workspace into the main ecosystem surface for extensions and skills
+- turn Pan into the main ecosystem surface for extensions and skills
 
 ### Deliverables
 - curated skill marketplace

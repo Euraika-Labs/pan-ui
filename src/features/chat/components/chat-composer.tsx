@@ -109,7 +109,7 @@ export function ChatComposer({
               void handleSubmit(event as unknown as FormEvent<HTMLFormElement>);
             }
           }}
-          placeholder={disabled ? 'Hermes is unavailable right now.' : 'Message Hermes…'}
+          placeholder={disabled ? 'Agent is unavailable right now.' : 'Message Pan…'}
           className="min-h-14 w-full resize-none bg-transparent px-1 text-sm leading-7 outline-none placeholder:text-muted-foreground"
           disabled={disabled}
         />

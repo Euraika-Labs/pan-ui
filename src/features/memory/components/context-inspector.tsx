@@ -11,7 +11,7 @@ export function ContextInspectorPanel() {
   return (
     <section className="rounded-2xl border border-border bg-card p-5 shadow-sm">
       <h2 className="text-lg font-semibold">Context inspector</h2>
-      <p className="mt-1 text-sm text-muted-foreground">See what Hermes is currently using as session and profile context.</p>
+      <p className="mt-1 text-sm text-muted-foreground">See what the agent is currently using as session and profile context.</p>
       {context ? (
         <div className="mt-4 space-y-4 text-sm">
           <div className="grid gap-3 md:grid-cols-2">

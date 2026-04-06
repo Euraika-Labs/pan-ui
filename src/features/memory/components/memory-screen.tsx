@@ -49,7 +49,7 @@ export function MemoryScreen() {
             </div>
             <div className="rounded-xl border border-border bg-background p-4">
               <p className="font-medium text-foreground">Agent memory</p>
-              <p className="mt-1">Operational notes about the environment, conventions, and workflow details that help Hermes behave consistently later.</p>
+              <p className="mt-1">Operational notes about the environment, conventions, and workflow details that help the agent behave consistently later.</p>
             </div>
           </div>
         </div>

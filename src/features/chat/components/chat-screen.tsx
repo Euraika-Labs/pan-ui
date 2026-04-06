@@ -113,12 +113,12 @@ export function ChatScreen() {
   const optimisticSessionLoadedSkillIds = selectedSessionId ? (sessionLoadedSkillIds[selectedSessionId] ?? []) : [];
   const visibleLoadedSkillIds = Array.from(new Set([requestedLoadedSkillId, ...(optimisticSessionLoadedSkillIds ?? []), ...(recentlyLoadedSkillIds ?? []), ...(sessionQuery.data?.loadedSkillIds ?? [])].filter(Boolean) as string[]));
   const runtimeSummary = runtimeConnected
-    ? `Talking to ${activeSettings.provider} via the live Hermes runtime.`
+    ? `Talking to ${activeSettings.provider} via the live runtime.`
     : mockMode
-      ? 'Hermes mock mode is active for chat flows, approvals, sources, and artifacts.'
+      ? 'Mock mode is active for chat flows, approvals, sources, and artifacts.'
       : runtimeInstalled
-        ? 'Hermes runtime is detected but its API is unreachable, so sending is paused until connectivity returns.'
-        : 'Hermes runtime was not detected. The UI can still show saved local state and explicit fallback labels.';
+        ? 'Runtime is detected but the API is unreachable, so sending is paused until connectivity returns.'
+        : 'Runtime was not detected. The UI can still show saved local state and explicit fallback labels.';
 
   const handleNewChat = async () => {
     setComposerError(null);
@@ -167,7 +167,7 @@ export function ChatScreen() {
       sendFailed = true;
       const messageText = error instanceof Error ? error.message : 'Unable to send message.';
       if (error instanceof ApiError && error.status === 503) {
-        setComposerError('Message saved, but the Hermes API is unavailable right now. Check runtime diagnostics or retry when the backend comes back.');
+        setComposerError('Message saved, but the runtime API is unavailable right now. Check diagnostics or retry when the backend comes back.');
         await Promise.all([sessionQuery.refetch(), sessionsQuery.refetch(), runtimeQuery.refetch()]);
       } else {
         setComposerError(messageText);
@@ -230,7 +230,7 @@ export function ChatScreen() {
         <section className="flex min-w-0 flex-col overflow-hidden rounded-[1.9rem] border border-border/70 bg-card/75 shadow-[var(--shadow-elevated)]">
           {mockMode ? (
             <div className="border-b border-warning/30 bg-warning/10 px-5 py-3 text-sm text-foreground">
-              Hermes mock mode is active for chat flows, approvals, sources, and artifacts.
+              Mock mode is active for chat flows, approvals, sources, and artifacts.
             </div>
           ) : null}
           <ChatHeader
@@ -291,7 +291,7 @@ export function ChatScreen() {
                 <div className="flex items-start gap-3">
                   <AlertTriangle className="mt-0.5 h-5 w-5 text-warning" />
                   <div>
-                    <p className="font-semibold">Hermes API is currently unavailable</p>
+                    <p className="font-semibold">Runtime API is currently unavailable</p>
                     <p className="mt-1 text-muted-foreground">You can still inspect saved sessions, approvals, sources, and artifacts, but sending new messages is paused until the backend reconnects.</p>
                   </div>
                 </div>
@@ -308,7 +308,7 @@ export function ChatScreen() {
             </div>
           ) : null}
           {composerError || settingsError ? <div className="mx-4 mt-4 rounded-[1.5rem] border border-danger/30 bg-danger/10 px-4 py-3 text-sm text-foreground shadow-[var(--shadow-card)]">{composerError || settingsError}</div> : null}
-          <ChatComposer disabled={chatStream.isPending || (runtimeUnavailable && !mockMode)} statusNote={runtimeUnavailable && !mockMode ? 'Runtime offline — sending is paused until Hermes reconnects.' : mockMode ? 'Mock mode active · Enter to send · Shift+Enter for newline · drag files to attach.' : 'Enter to send · Shift+Enter for newline · drag files to attach.'} chips={composerChips} onSend={handleSend} />
+          <ChatComposer disabled={chatStream.isPending || (runtimeUnavailable && !mockMode)} statusNote={runtimeUnavailable && !mockMode ? 'Runtime offline — sending is paused until it reconnects.' : mockMode ? 'Mock mode active · Enter to send · Shift+Enter for newline · drag files to attach.' : 'Enter to send · Shift+Enter for newline · drag files to attach.'} chips={composerChips} onSend={handleSend} />
         </section>
       </div>
 
@@ -329,7 +329,7 @@ export function ChatScreen() {
         setArchiveOpen(false);
       }} />
 
-      <ConfirmSessionActionDialog open={deleteOpen} title="Delete session" description="This permanently removes the selected conversation from the current Hermes-backed chat history." confirmLabel="Delete" confirmClassName="rounded-2xl bg-danger px-4 py-2 text-sm font-medium text-white" onClose={() => setDeleteOpen(false)} onConfirm={async () => {
+      <ConfirmSessionActionDialog open={deleteOpen} title="Delete session" description="This permanently removes the selected conversation from the current chat history." confirmLabel="Delete" confirmClassName="rounded-2xl bg-danger px-4 py-2 text-sm font-medium text-white" onClose={() => setDeleteOpen(false)} onConfirm={async () => {
         if (!selectedSessionId) return;
         const deletedId = selectedSessionId;
         await deleteSession.mutateAsync(deletedId);

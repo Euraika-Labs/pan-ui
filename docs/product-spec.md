@@ -1,7 +1,7 @@
-# Hermes Workspace Product Spec
+# Pan Product Spec
 
 ## Product Name
-Hermes Workspace
+Pan
 
 ## Problem Statement
 Hermes Agent has strong backend capabilities, but users currently interact with many of them through CLI-first or platform-specific interfaces. There is no canonical first-party WebUI that brings together chat, tool visibility, skills, memory, profiles, and extension management into one polished experience.

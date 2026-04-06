@@ -1,17 +1,17 @@
-# Hermes Workspace WebUI
+# Pan by Euraika
 
-[![CI](https://github.com/Euraika-Labs/hermesagentwebui/actions/workflows/ci.yml/badge.svg)](https://github.com/Euraika-Labs/hermesagentwebui/actions/workflows/ci.yml)
-[![CodeQL](https://github.com/Euraika-Labs/hermesagentwebui/actions/workflows/codeql.yml/badge.svg)](https://github.com/Euraika-Labs/hermesagentwebui/actions/workflows/codeql.yml)
-[![Release](https://img.shields.io/github/v/release/Euraika-Labs/hermesagentwebui?display_name=tag)](https://github.com/Euraika-Labs/hermesagentwebui/releases)
+[![CI](https://github.com/Euraika-Labs/pan-ui/actions/workflows/ci.yml/badge.svg)](https://github.com/Euraika-Labs/pan-ui/actions/workflows/ci.yml)
+[![CodeQL](https://github.com/Euraika-Labs/pan-ui/actions/workflows/codeql.yml/badge.svg)](https://github.com/Euraika-Labs/pan-ui/actions/workflows/codeql.yml)
+[![Release](https://img.shields.io/github/v/release/Euraika-Labs/pan-ui?display_name=tag)](https://github.com/Euraika-Labs/pan-ui/releases)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](./LICENSE)
 
-A self-hosted web interface for [Hermes Agent](https://github.com/NousResearch/hermes-agent) — the AI agent by Nous Research. Chat with Hermes, manage skills from the skills.sh marketplace, control extensions and MCP integrations, inspect memory, and operate profiles — all from a single dashboard with live runtime awareness.
+A self-hosted web interface for [Hermes Agent](https://github.com/NousResearch/hermes-agent) — the AI agent by Nous Research. Chat with your agent, manage skills from the skills.sh marketplace, control extensions and MCP integrations, inspect memory, and operate profiles — all from a single dashboard with live runtime awareness.
 
-![Hermes Workspace chat with runtime tools](docs/assets/screenshots/chat-runtime.png)
+![Pan chat with runtime tools](docs/assets/screenshots/chat-runtime.png)
 
-## Why Hermes Workspace
+## Why Pan
 
-This is not a generic chat wrapper. Hermes Workspace exposes the full operational surface of a running Hermes Agent instance:
+Pan is not a generic chat wrapper. It exposes the full operational surface of a running Hermes Agent instance:
 
 - **Chat with streaming** — SSE-based streaming connected to a real Hermes runtime, with tool timelines, approval cards, and artifact rendering
 - **Skills marketplace** — Browse 112+ installed skills across 27 categories, discover and install 268+ more from [skills.sh](https://skills.sh) with one click
@@ -73,7 +73,7 @@ Runtime status, health monitoring, model selection, run history, audit browser, 
 ## Tech Stack
 
 | Layer | Technology |
-|-------|-----------|
+|-------|-----------| 
 | Framework | Next.js 15 (App Router) |
 | Language | TypeScript |
 | State | TanStack Query v5 |
@@ -83,17 +83,27 @@ Runtime status, health monitoring, model selection, run history, audit browser, 
 
 ## Quick Start
 
+### Via npx (recommended)
+
+```bash
+npx pan-ui
+```
+
+The setup wizard will guide you through connecting to your Hermes runtime on first launch.
+
+### From source
+
 ```bash
 # 1. Clone and install
-git clone https://github.com/Euraika-Labs/hermesagentwebui.git
-cd hermesagentwebui
+git clone https://github.com/Euraika-Labs/pan-ui.git
+cd pan-ui
 npm install
 
 # 2. Start in dev mode (connects to local Hermes instance)
 npm run dev
 
 # 3. Open in browser
-open http://localhost:3000
+open http://localhost:3199
 ```
 
 Default credentials: `admin` / `changeme`
@@ -109,7 +119,7 @@ Default credentials: `admin` / `changeme`
 | `HERMES_WORKSPACE_USERNAME` | `admin` | Login username |
 | `HERMES_WORKSPACE_PASSWORD` | `changeme` | Login password |
 | `HERMES_WORKSPACE_SESSION_SECRET` | — | Cookie signing secret |
-| `PORT` | `3000` | WebUI port |
+| `PORT` | `3199` | Pan UI port |
 
 ## Architecture
 
@@ -136,7 +146,7 @@ Default credentials: `admin` / `changeme`
                   └──────────────────────────────┘
 ```
 
-- **Chat streaming** bridges Hermes's OpenAI-compatible `/v1/chat/completions` SSE endpoint to the WebUI
+- **Chat streaming** bridges the Hermes OpenAI-compatible `/v1/chat/completions` SSE endpoint to Pan
 - **Skills** are read from `~/.hermes/skills/` with YAML frontmatter parsing; hub skills come from the skills.sh cache
 - **Sessions** are read from `state.db` (SQLite) via the Hermes filesystem
 - **Memory** reads/writes `USER.md` and `MEMORY.md` files at both global and profile scope

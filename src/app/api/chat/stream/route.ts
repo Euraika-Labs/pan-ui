@@ -20,7 +20,7 @@ function toSSE(data: unknown) {
 
 function mockResponseFor(message: string, attachmentNames: string[]) {
   const attachmentNote = attachmentNames.length ? `\n\nAttachments received: ${attachmentNames.join(', ')}.` : '';
-  return `Hermes mock mode is active. You said: ${message}${attachmentNote}\n\nSprint 8 now includes attachments, voice tools, and mobile polish on top of the earlier agent UI.`;
+  return `Mock mode is active. You said: ${message}${attachmentNote}\n\nSprint 8 now includes attachments, voice tools, and mobile polish on top of the earlier agent UI.`;
 }
 
 function sessionInputFromHistory(session: ChatSession) {
@@ -119,7 +119,7 @@ function createMockStream(runId: string, profileId: string | null | undefined, s
         artifactId: 'artifact-plan',
         artifactType: 'text/markdown',
         label: 'Implementation sketch',
-        content: `# Hermes Workspace\n\nUser prompt: ${message}\n\n- Research references gathered\n- Initial plan drafted\n- Ready for deeper implementation`,
+        content: `# Pan Workspace\n\nUser prompt: ${message}\n\n- Research references gathered\n- Initial plan drafted\n- Ready for deeper implementation`,
       } as const;
       persistArtifact(sessionId, artifact);
       controller.enqueue(toSSE(artifact));

@@ -15,7 +15,7 @@ function createMessage(role: Message['role'], content: string, attachments?: Mes
 }
 
 const defaultSessionSettings: ChatSessionSettings = {
-  model: 'Hermes 3 405B',
+  model: 'default',
   provider: 'real-hermes',
   policyPreset: 'safe-chat',
   memoryMode: 'standard',
@@ -24,9 +24,9 @@ const defaultSessionSettings: ChatSessionSettings = {
 function createSeedSession(): ChatSession {
   return {
     id: crypto.randomUUID(),
-    title: 'Welcome to Hermes Workspace',
+    title: 'Welcome to Pan',
     updatedAt: nowIso(),
-    preview: 'Ask Hermes to help with research, coding, and automation.',
+    preview: 'Your AI workspace — research, code, manage skills, and more.',
     messages: [
       createMessage(
         'assistant',
@@ -41,14 +41,14 @@ function createSeedSession(): ChatSession {
 
 declare global {
   // eslint-disable-next-line no-var
-  var __hermesWorkspaceSessions: Map<string, ChatSession> | undefined;
+  var __panUiSessions: Map<string, ChatSession> | undefined;
 }
 
 const seedSession = createSeedSession();
 const sessions =
-  globalThis.__hermesWorkspaceSessions ?? new Map<string, ChatSession>([[seedSession.id, seedSession]]);
+  globalThis.__panUiSessions ?? new Map<string, ChatSession>([[seedSession.id, seedSession]]);
 
-globalThis.__hermesWorkspaceSessions = sessions;
+globalThis.__panUiSessions = sessions;
 
 function summarize(session: ChatSession): ChatSessionSummary {
   return {
@@ -88,7 +88,7 @@ export function createSession(): ChatSession {
     id: crypto.randomUUID(),
     title: 'New chat',
     updatedAt: nowIso(),
-    preview: 'Start chatting with Hermes.',
+    preview: 'Start a new conversation.',
     messages: [],
     archived: false,
     loadedSkillIds: [],

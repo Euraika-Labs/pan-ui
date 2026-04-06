@@ -324,7 +324,7 @@ export function ProfileEditorDialog({ profileId, profileName, open, onClose }: P
                     value={draft.soul ?? ''}
                     onChange={(e) => updateField('soul', e.target.value)}
                     className="min-h-72 w-full rounded-2xl border border-border bg-background p-4 font-mono text-sm leading-6 outline-none focus:border-primary"
-                    placeholder="You are Hermes, an AI assistant created by Nous Research..."
+                    placeholder="You are Pan, an AI workspace assistant by Euraika..."
                   />
                 </div>
               )}

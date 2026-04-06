@@ -21,8 +21,8 @@ declare global {
 }
 
 const seedProfiles: Profile[] = [
-  { ...nowProfile('default', 'safe-chat', 'Hermes 3 405B'), active: true },
-  { ...nowProfile('builder', 'builder', 'Hermes Fast'), active: false },
+  { ...nowProfile('default', 'safe-chat', 'default'), active: true },
+  { ...nowProfile('builder', 'builder', 'default'), active: false },
 ];
 
 const profiles = globalThis.__hermesWorkspaceProfiles ?? seedProfiles;
@@ -33,7 +33,7 @@ export function listProfiles() {
 }
 
 export function createProfile(name: string, policyPreset: Profile['policyPreset'] = 'safe-chat') {
-  const profile = nowProfile(name, policyPreset, 'Hermes 3 405B');
+  const profile = nowProfile(name, policyPreset, 'default');
   profiles.push(profile);
   return profile;
 }

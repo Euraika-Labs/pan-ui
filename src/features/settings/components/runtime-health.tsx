@@ -9,7 +9,7 @@ export function RuntimeHealthPanel() {
   const [query, setQuery] = useState('');
   const healthQuery = useRuntimeHealth(query);
 
-  if (healthQuery.isLoading) return <LoadingState message="Running Hermes health diagnostics…" />;
+  if (healthQuery.isLoading) return <LoadingState message="Running health diagnostics…" />;
   const data = healthQuery.data;
   if (!data) return null;
 
@@ -19,7 +19,7 @@ export function RuntimeHealthPanel() {
         <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
           <div>
             <h2 className="text-lg font-semibold">Runtime health</h2>
-            <p className="mt-1 text-sm text-muted-foreground">Configuration, provider, MCP, profile context, memory files, and Hermes doctor diagnostics.</p>
+            <p className="mt-1 text-sm text-muted-foreground">Configuration, provider, MCP, profile context, memory files, and runtime diagnostics.</p>
           </div>
           <div className="grid gap-3 text-sm sm:grid-cols-2">
             <div className="rounded-xl border border-border bg-background px-4 py-3">

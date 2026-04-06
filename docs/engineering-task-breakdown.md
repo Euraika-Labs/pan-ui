@@ -1,4 +1,4 @@
-# Hermes Workspace Engineering Task Breakdown
+# Pan Engineering Task Breakdown
 
 > For Hermes: Use subagent-driven-development skill to implement this plan task-by-task.
 

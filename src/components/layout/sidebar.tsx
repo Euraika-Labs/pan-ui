@@ -2,13 +2,13 @@
 
 import Link from 'next/link';
 import { usePathname, useSearchParams } from 'next/navigation';
-import { Bot, Brain, FolderTree, Library, MessageSquare, Settings, Sparkles, Workflow } from 'lucide-react';
+import { Bot, Brain, FolderTree, Library, MessageSquare, Settings, Workflow } from 'lucide-react';
 import { useUIStore } from '@/lib/store/ui-store';
 import { cn } from '@/lib/utils';
 
 const navItems = [
   { href: '/chat', label: 'Chat', icon: MessageSquare, description: 'Active workspace runs and transcripts' },
-  { href: '/skills', label: 'Skills', icon: Library, description: 'Reusable Hermes skills and local edits' },
+  { href: '/skills', label: 'Skills', icon: Library, description: 'Reusable skills and local edits' },
   { href: '/extensions', label: 'Integrations', icon: Bot, description: 'Installed · MCP Servers · Tools · Approvals · Diagnostics' },
   { href: '/memory', label: 'Memory', icon: Brain, description: 'User profile, agent memory, context, and session recall' },
   { href: '/profiles', label: 'Profiles', icon: FolderTree, description: 'Active profile, policies, and session scope' },
@@ -27,16 +27,20 @@ export function Sidebar() {
       <div className="border-b border-border/70 px-5 py-5">
         <div className="rounded-[1.6rem] border border-border/80 bg-card/90 p-4 shadow-[var(--shadow-card)]">
           <div className="flex items-center gap-3">
-            <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-[linear-gradient(135deg,hsl(var(--primary)),hsl(var(--accent)))] text-primary-foreground shadow-[var(--shadow-card)]">
-              <Sparkles className="h-5 w-5" />
+            <div className="flex h-11 w-11 items-center justify-center rounded-2xl text-primary-foreground shadow-[var(--shadow-card)]" style={{ background: 'var(--euraika-flow-gradient)' }}>
+              <svg width="22" height="22" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M14 8h20a14 14 0 0 1 0 28H24v20h-10V8Z" fill="#FEFFEF"/>
+                <path d="M24 18h9a6 6 0 0 1 0 12h-9V18Z" fill="#073455" fillOpacity="0.3"/>
+                <rect x="14" y="58" width="24" height="4" rx="2" fill="#E9C819"/>
+              </svg>
             </div>
             <div>
-              <p className="text-[11px] font-semibold uppercase tracking-[0.24em] text-muted-foreground">Project workspace</p>
-              <h1 className="text-lg font-semibold">Hermes Workspace</h1>
+              <p className="text-[11px] font-semibold uppercase tracking-[0.24em] text-muted-foreground">by Euraika</p>
+              <h1 className="text-lg font-semibold">Pan</h1>
             </div>
           </div>
           <div className="mt-3 rounded-2xl border border-border/60 bg-background/70 px-3 py-2.5 text-xs leading-5 text-muted-foreground">
-            Session-backed today, ready for future project and workspace entities without changing your chat flow.
+            Your AI workspace — chat, skills, extensions, memory, and runtime controls in one place.
           </div>
         </div>
       </div>

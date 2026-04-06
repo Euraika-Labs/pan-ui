@@ -30,7 +30,7 @@ export function SettingsScreen() {
     <div className="h-full overflow-y-auto space-y-6 p-4 lg:p-6">
       <div className="space-y-2">
         <h1 className="text-2xl font-semibold">Settings cockpit</h1>
-        <p className="text-sm text-muted-foreground">Operate Hermes with explicit visibility into runtime state, policy posture, diagnostics, and durable history.</p>
+        <p className="text-sm text-muted-foreground">Operate with explicit visibility into runtime state, policy posture, diagnostics, and durable history.</p>
       </div>
 
       <section className="grid gap-4 lg:grid-cols-[1.2fr_0.8fr]">
@@ -38,7 +38,7 @@ export function SettingsScreen() {
           <div className="flex flex-wrap items-start justify-between gap-4">
             <div>
               <h2 className="text-lg font-semibold">Runtime posture</h2>
-              <p className="mt-1 text-sm text-muted-foreground">This panel tells you whether the Hermes runtime is live, which profile is active, and what the workspace can safely do right now.</p>
+              <p className="mt-1 text-sm text-muted-foreground">This panel tells you whether the runtime is live, which profile is active, and what the workspace can safely do right now.</p>
             </div>
             <div className="grid gap-2 text-sm sm:grid-cols-2">
               <div className="rounded-xl border border-border bg-background px-4 py-3">

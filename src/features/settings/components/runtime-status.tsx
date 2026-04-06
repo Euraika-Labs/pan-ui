@@ -8,10 +8,10 @@ import { cn } from '@/lib/utils';
 export function RuntimeStatusPanel() {
   const runtimeQuery = useRuntimeStatus();
 
-  if (runtimeQuery.isLoading) return <LoadingState message="Inspecting Hermes runtime…" />;
+  if (runtimeQuery.isLoading) return <LoadingState message="Inspecting runtime…" />;
   if (runtimeQuery.isError) return <ErrorState message={(runtimeQuery.error as Error).message} />;
   if (!runtimeQuery.data?.available) {
-    return <EmptyState title="Hermes runtime not detected" description="Set HERMES_HOME and install Hermes locally to enable runtime-backed chat, skill, and extension views." action={<button type="button" onClick={() => void runtimeQuery.refetch()} className="rounded-2xl border border-border/70 bg-background/80 px-4 py-2 text-sm font-medium text-foreground">Retry detection</button>} />;
+    return <EmptyState title="Runtime not detected" description="Set HERMES_HOME and install the Hermes runtime to enable live chat, skill, and extension views." action={<button type="button" onClick={() => void runtimeQuery.refetch()} className="rounded-2xl border border-border/70 bg-background/80 px-4 py-2 text-sm font-medium text-foreground">Retry detection</button>} />;
   }
 
   const status = runtimeQuery.data;
@@ -19,7 +19,7 @@ export function RuntimeStatusPanel() {
     <section className="rounded-[1.75rem] border border-border/70 bg-card/75 p-5 shadow-[var(--shadow-soft)]">
       <div className="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
         <div>
-          <h2 className="text-lg font-semibold">Real Hermes runtime</h2>
+          <h2 className="text-lg font-semibold">Runtime status</h2>
           <p className="mt-1 text-sm text-muted-foreground">Installed runtime, profile context, API reachability, memory files, and recent persisted sessions.</p>
         </div>
         <div className="flex items-center gap-2">

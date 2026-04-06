@@ -1,4 +1,4 @@
-# Hermes Workspace Sprint Tickets
+# Pan Sprint Tickets
 
 > For Hermes: Use subagent-driven-development skill to execute these tickets sprint-by-sprint.
 

@@ -67,7 +67,7 @@ export function MemoryEditor({ scope }: { scope: 'user' | 'agent' }) {
           </div>
           <div className="rounded-xl border border-border bg-background px-4 py-3 text-sm text-muted-foreground">
             <p><strong className="text-foreground">Entries:</strong> {profileEntries.length}</p>
-            <p><strong className="text-foreground">Audience:</strong> {scope === 'user' ? 'About the user' : 'About Hermes and the environment'}</p>
+            <p><strong className="text-foreground">Audience:</strong> {scope === 'user' ? 'About the user' : 'About the agent and the environment'}</p>
           </div>
         </div>
         <div className="mt-4 rounded-xl border border-border bg-background p-4 text-sm text-muted-foreground">

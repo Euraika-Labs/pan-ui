@@ -1,4 +1,4 @@
-# Hermes Workspace Release Candidate Checklist
+# Pan Release Candidate Checklist
 
 Build and test
 - [x] `npm run lint`

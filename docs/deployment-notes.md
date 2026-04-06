@@ -1,4 +1,4 @@
-# Hermes Workspace Deployment Notes
+# Pan Deployment Notes
 
 Environment variables
 - `HERMES_WORKSPACE_USERNAME` — login username, default `admin`
@@ -51,10 +51,10 @@ Deeper real-backed integration now in place
 - Skills browsing/detail/editing target the real skills filesystem when present
 - Skill enable/disable now maps to real `skills.disabled` / `skills.platform_disabled.cli`
 - Profile create/activate/delete uses real Hermes CLI/profile directories
-- Durable audit events are written to `/opt/projects/hermesagentwebui/.data/audit.db`
-- Upload metadata/content is persisted under `/opt/projects/hermesagentwebui/.data/uploads`
+- Durable audit events are written to `/opt/projects/pan-ui/.data/audit.db`
+- Upload metadata/content is persisted under `/opt/projects/pan-ui/.data/uploads`
 - Stream parsing understands richer Responses-style SSE items and maps them into UI timeline events
-- Runtime history is durably stored in `/opt/projects/hermesagentwebui/.data/runtime.db`
+- Runtime history is durably stored in `/opt/projects/pan-ui/.data/runtime.db`
 - Dedicated browser pages exist for audit, approvals, artifacts, telemetry, runs explorer, runtime health, and MCP diagnostics
 - Settings/ops pages are guarded by admin-only route checks
 - MCP diagnostics now persist and surface last probe status, explicit error text, and last probe timestamp

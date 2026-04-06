@@ -139,7 +139,7 @@ export const useUIStore = create<UIState>()(
         })),
     }),
     {
-      name: 'hermes-workspace-ui',
+      name: 'pan-ui',
       partialize: (state) => ({
         selectedProfileId: state.selectedProfileId,
         activeSessionId: state.activeSessionId,

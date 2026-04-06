@@ -1,7 +1,7 @@
-# Hermes Workspace Architecture
+# Pan Architecture
 
 ## Architecture Summary
-Build Hermes Workspace as a web frontend plus a Hermes-specific control plane sitting in front of the Hermes API server and local Hermes runtime resources.
+Build Pan as a web frontend plus a Hermes-specific control plane sitting in front of the Hermes API server and local Hermes runtime resources.
 
 Recommended architecture:
 - Frontend: Next.js application

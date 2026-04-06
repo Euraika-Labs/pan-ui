@@ -20,7 +20,7 @@ export function MessageBubble({ message }: MessageBubbleProps) {
       ) : null}
       <div className={cn('max-w-[88%] space-y-2', isUser && 'items-end')}>
         <div className="flex items-center gap-2 px-1">
-          <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">{isUser ? 'You' : 'Hermes'}</p>
+          <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">{isUser ? 'You' : 'Pan'}</p>
           <p className="text-[11px] uppercase tracking-[0.18em] text-muted-foreground">
             {new Date(message.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
           </p>

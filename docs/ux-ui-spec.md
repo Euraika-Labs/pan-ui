@@ -1,10 +1,10 @@
-# Hermes Workspace UX / UI Spec
+# Pan UX / UI Spec
 
 ## Purpose
-This document turns the Hermes Workspace product direction into a screen-by-screen spec for the current WebUI. It is intentionally concrete so design and implementation can move without guessing.
+This document turns the Pan product direction into a screen-by-screen spec for the current WebUI. It is intentionally concrete so design and implementation can move without guessing.
 
 ## Product Shape
-Hermes Workspace should feel like a profile-scoped runtime cockpit:
+Pan should feel like a profile-scoped runtime cockpit:
 - Claude-like calm chat surface
 - Perplexity-like provenance and source transparency
 - Cursor/Copilot-like agent activity visibility

@@ -1,5 +1,10 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none">
-  <rect width="64" height="64" rx="16" fill="#0B1220"/>
-  <path d="M18 19h10l4 7 4-7h10v26H36V34h-8v11H18V19Z" fill="#E5EEF8"/>
-  <path d="M28 34h8" stroke="#60A5FA" stroke-width="4" stroke-linecap="round"/>
+  <!-- Pan by Euraika — App Icon -->
+  <!-- Euraika Blue bg with Gold accent, per brandbook §6.1 -->
+  <rect width="64" height="64" rx="16" fill="#073455"/>
+  <!-- Stylised "P" in Off-White -->
+  <path d="M22 16h14a10 10 0 0 1 0 20H30v12h-8V16Z" fill="#FEFFEF"/>
+  <path d="M30 24h5a3 3 0 0 1 0 6h-5v-6Z" fill="#073455"/>
+  <!-- Gold accent bar — Euraika Gold §6.1 -->
+  <rect x="22" y="50" width="20" height="3" rx="1.5" fill="#E9C819"/>
 </svg>

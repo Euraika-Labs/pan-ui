@@ -117,7 +117,7 @@ export function RightDrawer() {
       <div className="flex-1 space-y-4 overflow-y-auto px-4 py-4">
         {rightDrawerTab === 'context' ? (
           <div className="space-y-4">
-            <Section title="Live context stack" description="What Hermes is carrying into the current session right now.">
+            <Section title="Live context stack" description="What the agent is carrying into the current session right now.">
               <div className="flex flex-wrap gap-2">
                 <StatusBadge label={contextQuery.data?.activeProfileId ?? runtimeQuery.data?.activeProfile ?? 'default'} tone="accent" />
                 <StatusBadge label={contextQuery.data?.memoryMode ?? sessionQuery.data?.settings.memoryMode ?? 'standard'} tone="muted" />
@@ -148,7 +148,7 @@ export function RightDrawer() {
               )}
             </Section>
 
-            <Section title="Active memory snippets" description="Compact recall currently available to Hermes.">
+            <Section title="Active memory snippets" description="Compact recall currently available to the agent.">
               <div className="space-y-2">
                 {[...(contextQuery.data?.userMemory ?? []), ...(contextQuery.data?.agentMemory ?? [])].slice(0, 6).map((entry, index) => (
                   <div key={`${entry}-${index}`} className="rounded-2xl border border-border/70 bg-card/70 p-3 text-sm leading-6 text-muted-foreground">
@@ -198,7 +198,7 @@ export function RightDrawer() {
               </Section>
             ) : null}
 
-            <Section title="Tool timeline" description="Latest tool and phase events emitted by Hermes.">
+            <Section title="Tool timeline" description="Latest tool and phase events emitted by the agent.">
               <div className="space-y-3">
                 {allEvents.length ? (
                   allEvents
@@ -330,7 +330,7 @@ export function RightDrawer() {
             <Section title="Generated output" description="Artifacts, plans, files, and structured content emitted during the run.">
               <ArtifactPanel artifacts={displayedArtifacts} selectedArtifactId={selectedArtifactId} onSelect={selectArtifact} />
             </Section>
-            <Section title="Sources and citations" description="Retrieved pages, references, and snippets surfaced by Hermes.">
+            <Section title="Sources and citations" description="Retrieved pages, references, and snippets surfaced by the agent.">
               <div className="space-y-3">
                 {sourceEvents.length ? (
                   sourceEvents.map((event, index) => <SourceCard key={`${event.source.id}-${index}`} source={event.source} />)
@@ -389,7 +389,7 @@ export function RightDrawer() {
               </div>
             </Section>
 
-            <Section title="Workspace linkage" description="How this session relates to the broader Hermes workspace.">
+            <Section title="Workspace linkage" description="How this session relates to the broader workspace.">
               <div className="space-y-2">
                 <div className="rounded-2xl border border-border/70 bg-card/70 p-3">
                   <div className="flex items-center gap-2 text-foreground">

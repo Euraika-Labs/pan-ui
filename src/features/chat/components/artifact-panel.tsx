@@ -12,7 +12,7 @@ export function ArtifactPanel({ artifacts, selectedArtifactId, onSelect }: Artif
   const selected = artifacts.find((artifact) => artifact.artifactId === selectedArtifactId) ?? artifacts[0];
 
   if (!artifacts.length) {
-    return <p className="text-sm text-muted-foreground">Artifacts will appear here when Hermes emits files, plans, or generated content.</p>;
+    return <p className="text-sm text-muted-foreground">Artifacts will appear here when the agent emits files, plans, or generated content.</p>;
   }
 
   return (

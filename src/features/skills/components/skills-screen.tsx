@@ -274,7 +274,7 @@ export function SkillsScreen() {
             </div>
           ) : null}
 
-          {skillsQuery.isLoading ? <p className="text-sm text-muted-foreground">Loading Hermes skill data…</p> : null}
+          {skillsQuery.isLoading ? <p className="text-sm text-muted-foreground">Loading skill data…</p> : null}
 
           {loadedSkillIds.size ? (
             <div className="rounded-2xl border border-border/70 bg-card/80 p-3 text-sm text-muted-foreground">

@@ -12,12 +12,12 @@ import { cn } from '@/lib/utils';
 const pageMeta: Record<string, { eyebrow: string; title: string; description: string }> = {
   '/': {
     eyebrow: 'Workspace',
-    title: 'Hermes chat workspace',
+    title: 'Pan workspace',
     description: 'Chat, tools, approvals, skills, and runtime context stay visible in one place.',
   },
   '/chat': {
     eyebrow: 'Workspace',
-    title: 'Hermes chat workspace',
+    title: 'Pan workspace',
     description: 'Chat, tools, approvals, skills, and runtime context stay visible in one place.',
   },
   '/skills': {
@@ -33,12 +33,12 @@ const pageMeta: Record<string, { eyebrow: string; title: string; description: st
   '/memory': {
     eyebrow: 'Memory',
     title: 'User and agent memory',
-    description: 'Understand what Hermes remembers and what context is active in chat.',
+    description: 'Understand what the agent remembers and what context is active in chat.',
   },
   '/settings': {
     eyebrow: 'Settings',
     title: 'Runtime and governance controls',
-    description: 'Configuration, approvals, and diagnostics for the Hermes runtime.',
+    description: 'Configuration, approvals, and runtime diagnostics.',
   },
 };
 

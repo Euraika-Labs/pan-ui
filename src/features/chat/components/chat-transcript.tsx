@@ -14,10 +14,10 @@ function streamingLabel(events: ChatStreamEvent[]) {
   const lastPhase = [...events].reverse().find((event) => event.type === 'run.phase');
   if (lastPhase?.type === 'run.phase') return lastPhase.label;
   const awaitingApproval = [...events].reverse().find((event) => event.type === 'tool.awaiting_approval');
-  if (awaitingApproval) return 'Waiting for approval before Hermes can continue.';
+  if (awaitingApproval) return 'Waiting for approval before the agent can continue.';
   const latestTool = [...events].reverse().find((event) => event.type === 'tool.started');
   if (latestTool?.type === 'tool.started') return `${latestTool.toolName} is running.`;
-  return 'Hermes is responding…';
+  return 'Pan is responding…';
 }
 
 export function ChatTranscript({
@@ -80,13 +80,13 @@ export function ChatTranscript({
       ) : null}
 
       {!isLoading && messages.length === 0 ? (
-        <div className="rounded-[1.8rem] border border-dashed border-border/70 bg-[linear-gradient(135deg,hsl(var(--primary))/0.08,hsl(var(--accent))/0.04)] p-8 text-sm text-muted-foreground shadow-[var(--shadow-card)]">
+        <div className="rounded-[1.8rem] border border-dashed border-border/70 p-8 text-sm text-muted-foreground shadow-[var(--shadow-card)]" style={{ background: 'linear-gradient(135deg, hsl(var(--primary) / 0.06), hsl(var(--accent) / 0.03))' }}>
           <div className="flex items-center gap-2 text-foreground">
             <Sparkles className="h-4 w-4 text-primary" />
-            <p className="font-semibold">Start the workspace conversation</p>
+            <p className="font-semibold">Start a conversation</p>
           </div>
           <p className="mt-3 max-w-2xl leading-7">
-            Ask Hermes to research, plan, debug, or build. Runtime activity, approvals, sources, and generated outputs stay legible instead of being buried inside assistant prose.
+            Research, plan, debug, or build. Runtime activity, approvals, sources, and generated outputs stay legible instead of being buried inside assistant prose.
           </p>
           <div className="mt-4 flex flex-wrap gap-2">
             <StatusBadge label="Chat-first" tone="accent" />

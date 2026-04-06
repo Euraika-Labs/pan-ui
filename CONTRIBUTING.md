@@ -1,6 +1,6 @@
 # Contributing
 
-Thanks for contributing to Hermes Workspace WebUI.
+Thanks for contributing to Pan by Euraika.
 
 Development workflow
 1. Create a branch from `main`

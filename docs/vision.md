@@ -1,4 +1,4 @@
-# Hermes Workspace Vision
+# Pan Vision
 
 ## Vision
 Build a beautiful, agent-native web interface for Hermes Agent where users can chat with Hermes, inspect tool activity, manage skills, configure plugins and MCP servers, edit memory, and switch between isolated profiles.
@@ -80,11 +80,11 @@ Users should be able to:
 - Social/community features
 
 ## Product Positioning
-Hermes Workspace should combine:
+Pan should combine:
 - the calm polish of Claude
 - the breadth of Open WebUI / LibreChat
 - the agent-native interaction model of assistant-ui
 - the speed and simplicity of NextChat
 
 ## One-sentence summary
-Hermes Workspace is a self-hostable, beautiful control room for Hermes Agent where chat, tools, skills, memory, extensions, and profiles all feel native and coherent.
+Pan is a self-hostable, beautiful control room for Hermes Agent where chat, tools, skills, memory, extensions, and profiles all feel native and coherent.

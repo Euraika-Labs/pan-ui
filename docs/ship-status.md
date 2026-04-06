@@ -1,4 +1,4 @@
-# Hermes Workspace Ship Status
+# Pan Ship Status
 
 Status: release-candidate quality for local/self-hosted admin usage
 

@@ -2,59 +2,100 @@
 @tailwind components;
 @tailwind utilities;
 
+/* ─── Pan by Euraika — Brand Theme ─────────────────────────────────────────
+   Based on Euraika Brand Book v6.4
+   Colors: §6, Typography: §7, Spacing: §8, Components: §10, Motion: §11
+   ────────────────────────────────────────────────────────────────────────── */
+
 :root {
-  --background: 220 33% 98%;
-  --foreground: 222 40% 10%;
-  --card: 0 0% 100%;
-  --card-foreground: 222 40% 10%;
-  --surface: 220 25% 97%;
-  --surface-2: 220 24% 95%;
-  --surface-elevated: 0 0% 100%;
-  --primary: 247 90% 64%;
-  --primary-foreground: 210 40% 98%;
-  --muted: 220 24% 95%;
-  --muted-foreground: 222 20% 36%;
-  --border: 220 22% 84%;
-  --input: 220 22% 89%;
-  --ring: 247 90% 64%;
-  --success: 151 64% 43%;
-  --warning: 38 92% 50%;
-  --danger: 0 84% 60%;
-  --approval: 271 91% 65%;
-  --accent: 191 92% 48%;
-  --shadow-color: 240 45% 22%;
-  --shadow-soft: 0 20px 60px -28px hsl(var(--shadow-color) / 0.18);
-  --shadow-card: 0 16px 40px -24px hsl(var(--shadow-color) / 0.14);
-  --shadow-elevated: 0 28px 80px -34px hsl(var(--shadow-color) / 0.22);
-  --shadow-shell: 0 36px 100px -48px hsl(var(--shadow-color) / 0.18);
-  --radius: 1rem;
+  /* ── Surfaces & Text (Off-White / Charcoal) ── */
+  --background: 60 100% 97%;          /* #FEFFEF Off-White */
+  --foreground: 207 31% 17%;          /* #1E2D39 Charcoal */
+  --card: 0 0% 100%;                  /* #FFFFFF White */
+  --card-foreground: 207 31% 17%;     /* #1E2D39 Charcoal */
+  --surface: 207 20% 94%;             /* ~#E6ECF0 Surface Cool */
+  --surface-2: 210 18% 92%;
+  --surface-elevated: 0 0% 100%;      /* White */
+
+  /* ── Primary: Euraika Blue ── */
+  --primary: 209 85% 18%;             /* #073455 Euraika Blue */
+  --primary-foreground: 60 100% 97%;  /* #FEFFEF Off-White */
+
+  /* ── Accent: Euraika Gold ── */
+  --accent: 51 84% 51%;               /* #E9C819 Euraika Gold */
+  --accent-foreground: 207 31% 17%;   /* #1E2D39 Charcoal (gold-on-dark text) */
+
+  /* ── Muted / Secondary ── */
+  --muted: 207 20% 94%;               /* Surface Cool */
+  --muted-foreground: 210 12% 33%;    /* #51545A Steel Gray */
+
+  /* ── Borders & Inputs ── */
+  --border: 200 4% 60%;               /* #91999A Cloud Gray */
+  --input: 200 4% 72%;
+  --ring: 206 84% 22%;                /* #094668 Euraika Teal */
+
+  /* ── Semantic (§6.11) ── */
+  --success: 155 73% 22%;             /* #0F5F44 */
+  --warning: 51 84% 51%;              /* #E9C819 Gold */
+  --danger: 5 80% 40%;                /* #B42318 */
+  --approval: 206 84% 22%;            /* #094668 Teal */
+
+  /* ── Shadows ── */
+  --shadow-color: 209 85% 18%;
+  --shadow-soft: 0 20px 60px -28px hsl(var(--shadow-color) / 0.10);
+  --shadow-card: 0 1px 3px rgba(0, 0, 0, 0.1);
+  --shadow-elevated: 0 4px 12px rgba(0, 0, 0, 0.1);
+  --shadow-shell: 0 36px 100px -48px hsl(var(--shadow-color) / 0.12);
+
+  /* ── Radius (§8: 8px base) ── */
+  --radius: 0.75rem;                  /* 12px — radius-lg from brandbook */
+
+  /* ── Brand tokens (direct access) ── */
+  --euraika-blue: #073455;
+  --euraika-teal: #094668;
+  --euraika-gold: #E9C819;
+  --euraika-charcoal: #1E2D39;
+  --euraika-mist: #558B82;
+  --euraika-night-black: #0A0C10;
+  --euraika-offwhite: #FEFFEF;
+  --euraika-flow-gradient: linear-gradient(35deg, #073455 0%, #094668 55%, #E9C819 100%);
 }
 
+/* ── Dark Mode (§6.9 provisional palette) ── */
 .dark {
-  --background: 228 29% 8%;
-  --foreground: 210 40% 98%;
-  --card: 227 24% 11%;
-  --card-foreground: 210 40% 98%;
-  --surface: 228 27% 10%;
-  --surface-2: 227 25% 13%;
-  --surface-elevated: 228 26% 14%;
-  --primary: 252 92% 71%;
-  --primary-foreground: 0 0% 100%;
-  --muted: 227 20% 18%;
-  --muted-foreground: 219 16% 71%;
-  --border: 226 19% 22%;
-  --input: 226 19% 22%;
-  --ring: 252 92% 71%;
-  --success: 151 64% 43%;
-  --warning: 38 92% 56%;
-  --danger: 0 72% 58%;
-  --approval: 271 88% 74%;
-  --accent: 189 94% 58%;
+  --background: 213 15% 12%;          /* #1A1F23 Dark Surface */
+  --foreground: 60 100% 97%;          /* #FEFFEF Off-White */
+  --card: 212 14% 16%;                /* #242A30 Dark Card */
+  --card-foreground: 60 100% 97%;     /* #FEFFEF */
+  --surface: 213 15% 12%;             /* #1A1F23 */
+  --surface-2: 212 13% 20%;           /* #2D343B Dark Elevated */
+  --surface-elevated: 212 13% 20%;    /* #2D343B */
+
+  --primary: 206 84% 22%;             /* #094668 Teal (brighter on dark) */
+  --primary-foreground: 60 100% 97%;  /* #FEFFEF */
+
+  --accent: 49 77% 46%;               /* #D2B416 Gold hover (muted for dark) */
+  --accent-foreground: 60 100% 97%;
+
+  --muted: 211 13% 22%;               /* ~Dark border zone */
+  --muted-foreground: 216 9% 64%;     /* #9CA3AF Light Gray */
+
+  --border: 216 16% 27%;              /* #374151 Dark Border */
+  --input: 216 16% 27%;
+  --ring: 175 25% 43%;                /* #558B82 Mist */
+
+  --success: 155 32% 53%;             /* #6F9F8F Success Border (brighter) */
+  --warning: 51 84% 51%;              /* #E9C819 unchanged */
+  --danger: 5 48% 62%;                /* #D27B74 Error Border (brighter) */
+  --approval: 204 23% 53%;            /* #6B90A4 Info Border (brighter) */
+
   --shadow-color: 240 30% 3%;
   --shadow-soft: 0 28px 80px -34px hsl(var(--shadow-color) / 0.58);
   --shadow-card: 0 18px 42px -26px hsl(var(--shadow-color) / 0.54);
   --shadow-elevated: 0 36px 110px -40px hsl(var(--shadow-color) / 0.72);
   --shadow-shell: 0 44px 140px -56px hsl(var(--shadow-color) / 0.78);
+
+  --euraika-flow-gradient: linear-gradient(35deg, #094668 0%, #558B82 55%, #D2B416 100%);
 }
 
 * {
@@ -73,15 +114,16 @@ html {
 
 body {
   @apply bg-background text-foreground antialiased;
-  background-image: linear-gradient(180deg, hsl(var(--background)), hsl(var(--surface)) 100%);
+  font-family: Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
 }
 
+/* Subtle brand glow — Euraika Blue tint at top */
 body::before {
   content: '';
   position: fixed;
   inset: 0;
   pointer-events: none;
-  background: radial-gradient(circle at top, hsl(var(--primary) / 0.06), transparent 26%);
+  background: radial-gradient(circle at top, hsl(var(--primary) / 0.04), transparent 26%);
   opacity: 0.8;
 }
 
@@ -89,6 +131,7 @@ body::before {
   background: hsl(var(--primary) / 0.2);
 }
 
+/* ── Scrollbar (brand-colored) ── */
 ::-webkit-scrollbar {
   width: 12px;
   height: 12px;
@@ -113,4 +156,9 @@ body::before {
 /* Reusable form field input */
 .field-input {
   @apply w-full rounded-lg border border-border bg-background px-3 py-2 text-sm outline-none transition focus:border-primary;
+}
+
+/* ── Euraika Flow Gradient utility ── */
+.euraika-flow-gradient {
+  background: var(--euraika-flow-gradient);
 }

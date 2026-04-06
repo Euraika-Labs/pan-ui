@@ -51,7 +51,7 @@ export function ProfilesScreen() {
       <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
         <div>
           <h1 className="text-2xl font-semibold">Profiles</h1>
-          <p className="mt-2 max-w-3xl text-sm text-muted-foreground">Each profile is its own Hermes workspace boundary. Keep identity, policy, model defaults, and integration trust visible before you start a run.</p>
+          <p className="mt-2 max-w-3xl text-sm text-muted-foreground">Each profile is its own workspace boundary. Keep identity, policy, model defaults, and integration trust visible before you start a run.</p>
         </div>
         <button type="button" onClick={() => setDialogOpen(true)} className="rounded-lg bg-primary px-4 py-2 text-sm font-medium text-primary-foreground">
           Create profile
