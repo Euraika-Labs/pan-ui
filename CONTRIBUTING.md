@@ -52,6 +52,8 @@ Use the [Feature Request](https://github.com/Euraika-Labs/pan-ui/issues/new?temp
 
 ## Code Conventions
 
+For a detailed overview of how Pan works, see [docs/architecture.md](docs/architecture.md).
+
 ### Project Structure
 
 - **`src/app/api/`** — Server-side API routes (Next.js Route Handlers)

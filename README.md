@@ -9,91 +9,81 @@
 </p>
 
 <p align="center">
+  <a href="https://www.npmjs.com/package/@euraika-labs/pan-ui"><img src="https://img.shields.io/npm/v/@euraika-labs/pan-ui" alt="npm" /></a>
   <a href="https://github.com/Euraika-Labs/pan-ui/actions/workflows/ci.yml"><img src="https://github.com/Euraika-Labs/pan-ui/actions/workflows/ci.yml/badge.svg" alt="CI" /></a>
   <a href="https://github.com/Euraika-Labs/pan-ui/actions/workflows/codeql.yml"><img src="https://github.com/Euraika-Labs/pan-ui/actions/workflows/codeql.yml/badge.svg" alt="CodeQL" /></a>
-  <a href="https://www.npmjs.com/package/@euraika-labs/pan-ui"><img src="https://img.shields.io/npm/v/@euraika-labs/pan-ui" alt="npm" /></a>
-  <a href="https://github.com/Euraika-Labs/pan-ui/releases"><img src="https://img.shields.io/github/v/release/Euraika-Labs/pan-ui?display_name=tag" alt="Release" /></a>
   <a href="./LICENSE"><img src="https://img.shields.io/badge/License-MIT-yellow.svg" alt="License: MIT" /></a>
 </p>
 
 <p align="center">
-  <a href="#quick-start">Quick Start</a> •
+  <a href="#install">Install</a> •
   <a href="#features">Features</a> •
   <a href="#screenshots">Screenshots</a> •
-  <a href="#architecture">Architecture</a> •
   <a href="#configuration">Configuration</a> •
-  <a href="CHANGELOG.md">Changelog</a> •
-  <a href="CONTRIBUTING.md">Contributing</a>
+  <a href="#development">Development</a> •
+  <a href="CHANGELOG.md">Changelog</a>
 </p>
 
 ---
 
-Pan is a self-hosted web interface for [Hermes Agent](https://github.com/NousResearch/hermes-agent) — the open-source AI agent by Nous Research. Chat with your agent, manage skills from the [skills.sh](https://skills.sh) marketplace, control extensions and MCP integrations, inspect memory, and operate profiles — all from a single dashboard with live runtime awareness.
+Pan is a self-hosted web dashboard for [Hermes Agent](https://github.com/NousResearch/hermes-agent). Chat with your agent, manage skills from [skills.sh](https://skills.sh), control MCP integrations, inspect memory, and operate profiles — all from one place.
 
 ![Pan chat with runtime tools](docs/assets/screenshots/chat-runtime.png)
 
-## Quick Start
+## Install
 
-### Install and run (one command)
+### Prerequisites
+
+- [Node.js](https://nodejs.org/) 18+ installed
+- [Hermes Agent](https://github.com/NousResearch/hermes-agent) installed and configured (`~/.hermes`)
+
+### One command
 
 ```bash
 npx @euraika-labs/pan-ui
 ```
 
-The setup wizard runs on first launch to configure your Hermes connection. After setup, Pan starts on [localhost:3199](http://localhost:3199).
+A setup wizard runs on first launch to connect Pan to your Hermes instance. After setup, open [localhost:3199](http://localhost:3199).
 
-### Run as a background service
+> **First time?** The wizard auto-detects your Hermes home directory, API server, and installed binary. Just press Enter through the defaults to get started.
 
-```bash
-# Quick daemon — fork to background
-npx @euraika-labs/pan-ui --daemon
-
-# Check status, view logs, stop
-npx pan-ui status
-npx pan-ui logs
-npx pan-ui stop
-```
-
-### Install as a system service (Linux)
+### Run in the background
 
 ```bash
-# Installs a systemd user service — starts on login, survives logout
-npx @euraika-labs/pan-ui service install
-
-# Manage with standard systemctl commands
-systemctl --user status pan-ui
-systemctl --user restart pan-ui
-journalctl --user -u pan-ui -f
-
-# Remove when done
-npx pan-ui service remove
+npx @euraika-labs/pan-ui --daemon       # Fork to background
+npx pan-ui status                        # Check if running
+npx pan-ui logs                          # Tail log output
+npx pan-ui stop                          # Stop the daemon
 ```
 
-### From source
+### Run as a system service (Linux)
 
 ```bash
-git clone https://github.com/Euraika-Labs/pan-ui.git
-cd pan-ui
-npm install
-npm run dev
+npx @euraika-labs/pan-ui service install   # Creates a systemd user service
+npx pan-ui service remove                  # Uninstall it
 ```
 
-Open [localhost:3199](http://localhost:3199). Default credentials: `admin` / `changeme`.
+The service starts on login and survives logout. Manage it with standard `systemctl --user` commands.
+
+### Update
+
+```bash
+npx @euraika-labs/pan-ui@latest
+```
+
+Your configuration in `~/.pan-ui/` is preserved across updates.
 
 ## Features
 
-Pan is not a generic chat wrapper. It exposes the full operational surface of a running Hermes Agent instance:
-
 | Feature | Description |
 |---------|-------------|
-| **Chat with streaming** | SSE-based streaming connected to a real Hermes runtime, with tool timelines, approval cards, and artifact rendering |
-| **Skills marketplace** | Browse 112+ installed skills across 27 categories, discover and install 268+ more from [skills.sh](https://skills.sh) |
-| **MCP integrations** | View installed MCP servers, their tools, health status, and diagnostics |
-| **Persistent memory** | Inspect and edit global and profile-scoped user/agent memory |
-| **Profile isolation** | Each profile is a full workspace boundary — sessions, skills, memory, API keys, and policy presets |
-| **Runtime operations** | Approvals, run history, audit trails, telemetry, health monitoring, and JSON/CSV exports |
-| **Daemon mode** | Run as a background process with PID management and log tailing |
-| **Systemd integration** | Install as a persistent Linux user service with auto-start |
+| **Chat** | SSE streaming connected to a live Hermes runtime, with tool timelines, approval cards, and artifact rendering |
+| **Skills** | Browse installed skills, discover and install 268+ more from [skills.sh](https://skills.sh) |
+| **Extensions** | View MCP servers, their tools, health status, and diagnostics |
+| **Memory** | Inspect and edit global and profile-scoped agent memory |
+| **Profiles** | Isolated workspaces — each with its own sessions, skills, memory, and API keys |
+| **Operations** | Approvals, run history, audit trails, telemetry, health monitoring, and exports |
+| **Daemon** | Background process with PID management, log tailing, and systemd integration |
 
 ## Screenshots
 
@@ -106,32 +96,23 @@ Pan is not a generic chat wrapper. It exposes the full operational surface of a 
 <details open>
 <summary><strong>Chat</strong></summary>
 
-Streaming chat connected to a live Hermes runtime. Session sidebar with search, pinning, and archiving. Tool timelines expand inline. Composer shows active model, mode, tools, and profile.
+Streaming chat with session sidebar, tool timelines, and runtime-aware composer.
 
 ![Empty chat workspace](docs/assets/screenshots/chat-empty.png)
 ![Active chat with runtime output](docs/assets/screenshots/chat-runtime.png)
 </details>
 
 <details>
-<summary><strong>Skills — Installed</strong></summary>
+<summary><strong>Skills</strong></summary>
 
-112 installed skills across 27 categories. Search by name, tag, or category. Each card shows source, tags, linked files count, and whether it's loaded in the current session.
+Installed skills with search and category filters. Discover tab for the skills.sh hub.
 
 ![Skills installed tab](docs/assets/screenshots/skills-installed.png)
-</details>
-
-<details>
-<summary><strong>Skills — Discover</strong></summary>
-
-Browse and install skills from the skills.sh hub. Trust badges (Trusted / Official / Community), install counts, and direct links to repos.
-
 ![Skills discover tab](docs/assets/screenshots/skills-discover.png)
 </details>
 
 <details>
 <summary><strong>Extensions & MCP</strong></summary>
-
-Installed MCP servers with tool inventories, health badges, and capability toggles.
 
 ![Extensions page](docs/assets/screenshots/extensions.png)
 </details>
@@ -139,15 +120,11 @@ Installed MCP servers with tool inventories, health badges, and capability toggl
 <details>
 <summary><strong>Memory</strong></summary>
 
-Global memory (shared across profiles) displayed as read-only cards. Profile-scoped memory is editable.
-
 ![Memory page](docs/assets/screenshots/memory.png)
 </details>
 
 <details>
 <summary><strong>Profiles</strong></summary>
-
-Profile-based workspace isolation. Each profile scopes sessions, skills, memory, extensions, and API keys.
 
 ![Profiles page](docs/assets/screenshots/profiles.png)
 </details>
@@ -155,129 +132,89 @@ Profile-based workspace isolation. Each profile scopes sessions, skills, memory,
 <details>
 <summary><strong>Settings</strong></summary>
 
-Runtime status, health monitoring, model selection, run history, audit browser, telemetry, approvals, and MCP diagnostics.
-
 ![Settings page](docs/assets/screenshots/settings.png)
 </details>
 
 ## Configuration
 
-### CLI Options
+### CLI Reference
 
-```
-npx pan-ui                     Start in foreground (interactive)
-npx pan-ui --daemon | -d       Start in background
-npx pan-ui stop                Stop the background daemon
-npx pan-ui status              Check if Pan is running
-npx pan-ui logs                Tail daemon log output
-npx pan-ui setup               Re-run the setup wizard
-npx pan-ui service install     Install systemd user service
-npx pan-ui service remove      Remove systemd service
-npx pan-ui --port 8080         Override the port
-npx pan-ui --help              Show all options
-```
+| Command | Description |
+|---------|-------------|
+| `npx pan-ui` | Start in foreground |
+| `npx pan-ui --daemon` | Start in background |
+| `npx pan-ui stop` | Stop daemon |
+| `npx pan-ui status` | Show running state |
+| `npx pan-ui logs` | Tail daemon logs |
+| `npx pan-ui setup` | Re-run setup wizard |
+| `npx pan-ui --port 8080` | Override port |
+| `npx pan-ui service install` | Install systemd service |
+| `npx pan-ui service remove` | Remove systemd service |
 
 ### Environment Variables
 
-Create a `.env.local` file or use the setup wizard (`npx pan-ui setup`):
+The setup wizard writes these to `.env.local`. You can also edit them directly or re-run `npx pan-ui setup`.
 
 | Variable | Default | Description |
 |----------|---------|-------------|
 | `HERMES_HOME` | `~/.hermes` | Hermes home directory |
 | `HERMES_API_BASE_URL` | `http://127.0.0.1:8642` | Hermes API endpoint |
-| `HERMES_API_KEY` | — | API key for Hermes (if configured) |
+| `HERMES_API_KEY` | — | API key (if Hermes requires one) |
 | `HERMES_WORKSPACE_USERNAME` | `admin` | Login username |
 | `HERMES_WORKSPACE_PASSWORD` | `changeme` | Login password |
 | `HERMES_WORKSPACE_SECRET` | *(auto-generated)* | Cookie signing secret |
 | `HERMES_MOCK_MODE` | `false` | Use mock data when runtime is unavailable |
 | `PORT` | `3199` | Server port |
 
-## Architecture
+### File Locations
+
+| Path | Purpose |
+|------|---------|
+| `~/.pan-ui/pan-ui.pid` | Daemon PID file |
+| `~/.pan-ui/pan-ui.log` | Daemon log output |
+| `~/.config/systemd/user/pan-ui.service` | Systemd service unit (when installed) |
+| `.env.local` (in package dir) | Configuration from setup wizard |
+
+## How It Works
+
+Pan runs as a standalone Next.js server that bridges your browser to the Hermes runtime:
 
 ```
-┌─────────────────────────────────────────────────┐
-│                    Browser                       │
-│  Next.js App Router + TanStack Query + Tailwind  │
-└───────────────────────┬─────────────────────────┘
-                        │ fetch / SSE
-┌───────────────────────▼─────────────────────────┐
-│              Next.js API Routes                  │
-│  /api/chat/stream    /api/skills    /api/memory  │
-│  /api/profiles       /api/extensions /api/runtime│
-└──────┬────────────────┬─────────────────────────┘
-       │                │
-       ▼                ▼
-┌──────────────┐  ┌──────────────────────────────┐
-│ Hermes API   │  │ Hermes Filesystem            │
-│ :8642        │  │ ~/.hermes/                   │
-│ OpenAI-compat│  │  ├─ profiles/                │
-│ SSE streaming│  │  ├─ skills/                  │
-└──────────────┘  │  ├─ memories/                │
-                  │  └─ state.db                 │
-                  └──────────────────────────────┘
+  Browser ──── fetch / SSE ────▶ Pan (Next.js API routes)
+                                    │             │
+                                    ▼             ▼
+                              Hermes API    Hermes Filesystem
+                              :8642         ~/.hermes/
+                              (streaming)   (skills, memory, profiles, state.db)
 ```
 
-### Tech Stack
-
-| Layer | Technology |
-|-------|------------|
-| Framework | [Next.js 15](https://nextjs.org/) (App Router, standalone output) |
-| Language | TypeScript |
-| State | [TanStack Query](https://tanstack.com/query) v5 |
-| Styling | [Tailwind CSS](https://tailwindcss.com/) 4 |
-| Testing | [Vitest](https://vitest.dev/) + [Playwright](https://playwright.dev/) |
-| Runtime | Node.js 18+ |
-
-### Project Structure
-
-```
-src/
-├── app/                  # Next.js routes and API endpoints
-│   ├── api/              # Server-side API routes
-│   │   ├── chat/         # Chat stream, sessions
-│   │   ├── skills/       # Skills CRUD, hub, categories
-│   │   ├── memory/       # User/agent memory, context inspector
-│   │   ├── profiles/     # Profile CRUD
-│   │   ├── extensions/   # MCP extensions
-│   │   └── runtime/      # Health, approvals, runs, export
-│   └── [page]/           # Client page routes
-├── features/             # UI feature modules
-│   ├── chat/             # Chat screen, composer, transcript
-│   ├── skills/           # Skills browser, detail, hub cards
-│   ├── memory/           # Memory editor
-│   ├── extensions/       # Extension cards, tool inventory
-│   ├── profiles/         # Profile management
-│   ├── sessions/         # Session sidebar
-│   └── settings/         # Runtime, health, audit, approvals
-├── server/               # Hermes filesystem bridge
-├── components/           # Shared layout and UI components
-├── lib/                  # Types, schemas, stores, utilities
-└── styles/               # Global CSS and theme tokens
-bin/
-└── pan-ui.mjs            # CLI launcher, setup wizard, daemon
-tests/
-├── unit/                 # Vitest unit tests
-└── e2e/                  # Playwright end-to-end tests
-```
+- **Chat** streams through Hermes's OpenAI-compatible SSE endpoint
+- **Skills** are read from `~/.hermes/skills/` with YAML frontmatter parsing
+- **Memory** reads/writes `USER.md` and `MEMORY.md` at global and profile scope
+- **Profiles** map to `~/.hermes/profiles/<name>/` directories
 
 ## Development
 
+Want to contribute or run from source? See [CONTRIBUTING.md](CONTRIBUTING.md) for full setup instructions.
+
 ```bash
-npm run dev           # Start dev server (hot reload)
-npm run lint          # ESLint
-npm run test          # Vitest unit tests
-npm run build         # Production build
-npm run test:e2e      # Playwright e2e (requires dev server running)
+git clone https://github.com/Euraika-Labs/pan-ui.git
+cd pan-ui
+npm install
+npm run dev
 ```
+
+| Command | Description |
+|---------|-------------|
+| `npm run dev` | Dev server with hot reload |
+| `npm run build` | Production build |
+| `npm run lint` | ESLint |
+| `npm run test` | Vitest unit tests |
+| `npm run test:e2e` | Playwright end-to-end tests |
 
 ## Security
 
-- CLI commands use an allowlist guard before `execFileSync` — no arbitrary command injection
-- Profile isolation ensures each workspace boundary has its own sessions, memory, and API keys
-- CodeQL scanning runs on every push and PR
-- File path parameters are sanitized to prevent directory traversal
-- Login is cookie-based with `httpOnly` secure cookies
-- See [SECURITY.md](SECURITY.md) for reporting vulnerabilities
+See [SECURITY.md](SECURITY.md) for reporting vulnerabilities.
 
 ## License
 
