@@ -209,9 +209,13 @@ export function installHubSkill(identifier: string, category?: string): { succes
   try {
     const args = ['skills', 'install', identifier, '--yes'];
     if (category) args.push('--category', category);
+    // Override HERMES_HOME to the root (~/.hermes) so skills install to the
+    // global dir and survive profile resets.
+    const env = { ...process.env, HERMES_HOME: getHermesHome() };
     execFileSync('hermes', args, {
       encoding: 'utf-8',
       timeout: 30000,
+      env,
     });
     return { success: true };
   } catch (error) {

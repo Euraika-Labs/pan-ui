@@ -173,20 +173,22 @@ export function getRealSkill(profileId: string | null | undefined, skillId: stri
 export function updateRealSkill(profileId: string | null | undefined, skillId: string, content: string): Skill {
   validateSkillContent(content);
   const hermesHome = getHermesHome();
-  const candidates = [
-    path.join(getProfileSkillsDir(profileId), skillId, 'SKILL.md'),
-    path.join(hermesHome, 'skills', skillId, 'SKILL.md'),
-  ];
-  const existing = candidates.find((filePath) => fs.existsSync(filePath));
-  const target = existing || candidates[0];
+  const globalPath = path.join(hermesHome, 'skills', skillId, 'SKILL.md');
+  const profilePath = path.join(getProfileSkillsDir(profileId), skillId, 'SKILL.md');
+  // Prefer updating in-place if the skill already exists somewhere;
+  // for NEW skills, always write to the global dir so they survive profile resets.
+  const existing = [profilePath, globalPath].find((fp) => fs.existsSync(fp));
+  const target = existing || globalPath;
   fs.mkdirSync(path.dirname(target), { recursive: true });
   fs.writeFileSync(target, content, 'utf-8');
   return getRealSkill(profileId, skillId)!;
 }
 
 export function installRealSkill(profileId: string | null | undefined, skillId: string): Skill {
-  const builtins = path.join(getHermesHome(), 'hermes-agent', 'skills', skillId, 'SKILL.md');
-  const target = path.join(getProfileSkillsDir(profileId), skillId, 'SKILL.md');
+  const hermesHome = getHermesHome();
+  const builtins = path.join(hermesHome, 'hermes-agent', 'skills', skillId, 'SKILL.md');
+  // Always install to global dir so skills survive profile resets
+  const target = path.join(hermesHome, 'skills', skillId, 'SKILL.md');
   if (fs.existsSync(builtins)) {
     fs.mkdirSync(path.dirname(target), { recursive: true });
     fs.copyFileSync(builtins, target);
@@ -196,12 +198,21 @@ export function installRealSkill(profileId: string | null | undefined, skillId: 
 }
 
 export function uninstallRealSkill(profileId: string | null | undefined, skillId: string) {
-  const targetDir = path.join(getProfileSkillsDir(profileId), skillId);
-  if (fs.existsSync(targetDir)) {
-    fs.rmSync(targetDir, { recursive: true, force: true });
-    return true;
+  const hermesHome = getHermesHome();
+  // Remove from both profile and global dirs to fully uninstall
+  const profileDir = path.join(getProfileSkillsDir(profileId), skillId);
+  const globalDir = path.join(hermesHome, 'skills', skillId);
+  let removed = false;
+  if (fs.existsSync(profileDir)) {
+    fs.rmSync(profileDir, { recursive: true, force: true });
+    removed = true;
   }
-  throw new Error('Installed real skill not found');
+  if (fs.existsSync(globalDir)) {
+    fs.rmSync(globalDir, { recursive: true, force: true });
+    removed = true;
+  }
+  if (!removed) throw new Error('Installed real skill not found');
+  return true;
 }
 
 export function setRealSkillEnabled(profileId: string | null | undefined, skillId: string, enabled: boolean): Skill {
