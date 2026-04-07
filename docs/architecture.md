@@ -8,15 +8,31 @@ Pan is a Next.js application that bridges a web browser to a local Hermes Agent 
   Browser ──── fetch / SSE ────▶ Pan (Next.js standalone server)
                                     │             │
                                     ▼             ▼
-                              Hermes API    Hermes Filesystem
-                              :8642         ~/.hermes/
-                              (streaming)   (skills, memory, profiles, state.db)
+                              Hermes Gateway   Hermes Filesystem
+                              :8642            ~/.hermes/
+                              (auto-managed)   (skills, memory, profiles, state.db)
+                                    │
+                                    ▼
+                              Hermes Agent sessions
+                              (tools, memory, streaming)
 ```
 
 Pan is both the frontend and the backend. It runs as a standalone Next.js 15 server (no separate API server needed) and communicates with Hermes through two channels:
 
-1. **Hermes API** — OpenAI-compatible HTTP/SSE endpoint at `:8642` for chat streaming and runtime operations
+1. **Hermes Gateway** — OpenAI-compatible HTTP/SSE endpoint at `:8642` for chat streaming and runtime operations. Pan auto-starts this if it isn't already running.
 2. **Hermes filesystem** — direct reads/writes to `~/.hermes/` for skills, memory, profiles, and session data
+
+## Gateway lifecycle management
+
+Pan includes a gateway manager (`src/server/hermes/gateway-manager.ts`) that runs at startup via Next.js instrumentation:
+
+1. **Health check** — on boot, Pan probes the configured gateway URL (`/health`)
+2. **Auto-start** — if unreachable, it locates the `hermes` binary via `which` and spawns `hermes gateway run` as a child process
+3. **Health monitor** — every 30 seconds, checks if the managed gateway is still alive. Auto-restarts on crash.
+4. **Graceful shutdown** — on SIGINT/SIGTERM/exit, sends SIGTERM to the gateway child (SIGKILL after 5 s)
+5. **External gateway detection** — if a gateway is already running (systemd, manual, etc.), Pan uses it as-is without spawning a duplicate
+
+No profile names or paths are hardcoded. The gateway inherits the active Hermes profile automatically.
 
 ## Key design decisions
 
@@ -48,9 +64,15 @@ src/
 │   ├── chat/             # Chat screen, composer, message rendering
 │   └── sessions/         # Session sidebar, source badges, source filtering
 ├── server/               # Server-side Hermes bridge (filesystem reads, API calls)
+│   └── hermes/
+│       ├── gateway-manager.ts  # Auto-start and monitor the Hermes gateway
+│       ├── client.ts           # HTTP client for Hermes API
+│       ├── config.ts           # Gateway URL, API key, timeout config
+│       └── ...
 ├── components/           # Shared layout and UI components
 ├── lib/                  # Types, schemas, Zustand stores, utilities
 └── styles/               # CSS custom properties and theme tokens
+instrumentation.ts        # Next.js startup hook — bootstraps gateway manager
 middleware.ts             # Auth middleware (cookie check, redirect to /login)
 bin/
 └── pan-ui.mjs            # CLI entry point: setup wizard, standalone server, daemon, systemd

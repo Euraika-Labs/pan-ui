@@ -4,6 +4,21 @@ All notable changes to Pan by Euraika are documented here.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/), and this project adheres to [Semantic Versioning](https://semver.org/).
 
+## [0.4.0] — 2026-04-07
+
+### Added
+- **Automatic gateway management** — Pan now auto-detects and starts the Hermes gateway (`hermes gateway run`) on boot. No manual gateway setup required; just start Pan and chat works immediately.
+- **Gateway health monitor** — background health check every 30 s auto-restarts the gateway if it crashes (only when Pan spawned it)
+- **Graceful shutdown** — gateway child process is cleaned up on SIGINT/SIGTERM/exit
+- Next.js `instrumentation.ts` hook bootstraps the gateway manager at server start
+
+### Changed
+- **Simplified deployment** — only one process/service needed. The separate `hermes-gateway.service` systemd unit is no longer required; Pan manages the gateway lifecycle internally.
+- Architecture diagram updated to show the gateway manager layer
+
+### Fixed
+- Gateway no longer requires hardcoded profile names or `HERMES_HOME` env var — Hermes uses its own active profile detection
+
 ## [0.3.0] — 2026-04-07
 
 ### Added
@@ -93,6 +108,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/), and this
 - Dependabot configuration
 - Community standards (CoC, CONTRIBUTING, SECURITY, issue templates)
 
+[0.4.0]: https://github.com/Euraika-Labs/pan-ui/compare/v0.3.0...v0.4.0
+[0.3.0]: https://github.com/Euraika-Labs/pan-ui/compare/v0.2.4...v0.3.0
 [0.2.4]: https://github.com/Euraika-Labs/pan-ui/compare/v0.2.3...v0.2.4
 [0.2.3]: https://github.com/Euraika-Labs/pan-ui/compare/v0.2.2...v0.2.3
 [0.2.2]: https://github.com/Euraika-Labs/pan-ui/compare/v0.2.1...v0.2.2

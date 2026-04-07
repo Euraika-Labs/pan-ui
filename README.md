@@ -178,21 +178,28 @@ The setup wizard writes these to `.env.local`. You can also edit them directly o
 
 ## How It Works
 
-Pan runs as a standalone Next.js server that bridges your browser to the Hermes runtime:
+Pan runs as a standalone Next.js server that bridges your browser to the Hermes runtime. On startup it **automatically launches the Hermes gateway** if it isn't already running — no manual gateway setup required.
 
 ```
   Browser ──── fetch / SSE ────▶ Pan (Next.js API routes)
                                     │             │
                                     ▼             ▼
-                              Hermes API    Hermes Filesystem
-                              :8642         ~/.hermes/
-                              (streaming)   (skills, memory, profiles, state.db)
+                              Hermes Gateway   Hermes Filesystem
+                              :8642            ~/.hermes/
+                              (auto-managed)   (skills, memory, profiles, state.db)
+                                    │
+                                    ▼
+                              Hermes Agent sessions
+                              (tools, streaming, full agent capabilities)
 ```
 
+- **Gateway** — Pan's startup hook detects whether the Hermes gateway is reachable. If not, it spawns `hermes gateway run` as a child process with health monitoring and auto-restart. The gateway uses the active Hermes profile — no hardcoded names or paths.
 - **Chat** streams through Hermes's OpenAI-compatible SSE endpoint
 - **Skills** are read from `~/.hermes/skills/` with YAML frontmatter parsing
 - **Memory** reads/writes `USER.md` and `MEMORY.md` at global and profile scope
 - **Profiles** map to `~/.hermes/profiles/<name>/` directories
+
+> **Already running a gateway?** Pan detects it and skips auto-launch. This works with systemd services, manual `hermes gateway run`, or any external process on the configured port.
 
 ## Development
 
