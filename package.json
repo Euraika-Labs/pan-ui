@@ -27,6 +27,7 @@
     ".next/standalone/",
     ".next/static/",
     "public/",
+    "hermes.version.json",
     ".env.example",
     "README.md"
   ],

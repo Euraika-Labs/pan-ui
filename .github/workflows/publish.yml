@@ -59,6 +59,7 @@ jobs:
             .next/static/
             bin/
             public/
+            hermes.version.json
             package.json
             README.md
             LICENSE
