@@ -66,9 +66,11 @@ build:
     - if: $CI_PIPELINE_SOURCE == "merge_request_event"
     - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
 
-# ─── Security stage (GitLab SAST) ────────────────────────
+# ─── Security stage (Aikido + GitLab SAST) ───────────────
 
 include:
+  - project: 'euraika/ci-templates'
+    file: 'templates/aikido.yml'
   - template: Security/SAST.gitlab-ci.yml
 
 sast:
