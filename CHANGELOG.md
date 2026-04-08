@@ -4,6 +4,20 @@ All notable changes to Pan by Euraika are documented here.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/), and this project adheres to [Semantic Versioning](https://semver.org/).
 
+## [0.5.1] — 2026-04-08
+
+### Fixed
+- **Fork session crash** — missing closing `)` in `forkRealSession` Python bridge caused all session forks to fail with a syntax error
+
+### Changed
+- **Health probe decoupled from binary** — `getHermesRuntimeStatus()` now probes the API gateway and detects filesystem assets (config, memories, sessions, skills) even when no `hermes` binary is present. Docker and headless deployments report full health status instead of blanket "unavailable".
+
+### Added
+- **Docker test image** — `tests/docker/Dockerfile.test` bundles Hermes Agent (via `uv` + Euraika-Labs fork @ `pan-v0.7.0`). All 7/7 health checks pass inside the container.
+- **Docker test suites** — mock-mode (`docker-test.sh`, 37 assertions incl. 7 Playwright E2E) and real-mode (`docker-real-test.sh`, 28 assertions against a live gateway)
+- **Full-stack functional test** — `tests/functional/full-stack-test.sh` (33 assertions): clean build → standalone start → auth → CRUD → APIs → pages → unit → E2E
+- **`.dockerignore`** — optimised Docker build context
+
 ## [0.5.0] — 2026-04-08
 
 ### Added

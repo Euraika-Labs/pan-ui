@@ -2,15 +2,19 @@
 
 Status: release-candidate quality for local/self-hosted admin usage
 
-Verification completed
+Verification completed (v0.5.1)
 - [x] `npm run lint`
-- [x] `npm run test`
+- [x] `npm run test` — 24/24 unit tests (vitest)
 - [x] `npm run build`
-- [x] `npm run test:e2e`
+- [x] `npm run test:e2e` — 7/7 Playwright E2E tests
+- [x] Functional test suite — 33/33 assertions (full-stack-test.sh)
+- [x] Docker mock-mode — 37/37 assertions (incl. Playwright E2E)
+- [x] Docker real-mode — 28/28 assertions (live gateway)
+- [x] Runtime health — 7/7 checks on host and in Docker
 
 Shipped capabilities
 - Authenticated admin workspace
-- Chat/session management
+- Chat/session management (incl. fork, archive, delete)
 - Real Hermes-backed session/history reads and major writes
 - Runtime runs model and runs explorer
 - Approval queue persistence and server-side gating on app-controlled path
@@ -19,6 +23,8 @@ Shipped capabilities
 - Artifact downloads
 - Persisted MCP probe results/errors/timestamps
 - Real memory/profile/skills/extensions integrations
+- Docker deployment with bundled Hermes Agent (test image)
+- Health probe works without local hermes binary (Docker/headless friendly)
 
 Known remaining caveats
 - Deep Hermes-core-native live tool pause/resume is still approximated through wrapper/orchestration logic rather than a fully embedded Hermes executor contract

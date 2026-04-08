@@ -48,9 +48,31 @@ journalctl --user -u pan-ui -f
 npx pan-ui service remove
 ```
 
-### Docker (planned)
+### Docker
 
-Not yet available. Track [#docker](https://github.com/Euraika-Labs/pan-ui/issues) for updates.
+A test Dockerfile is provided at `tests/docker/Dockerfile.test`. It bundles the Hermes Agent binary, so all health checks pass inside the container.
+
+```bash
+# Build
+docker build -f tests/docker/Dockerfile.test -t pan-ui .
+
+# Run (standalone, mock mode)
+docker run -p 3199:3000 -e HERMES_MOCK_MODE=true pan-ui
+
+# Run (connect to host gateway)
+docker run -p 3199:3000 \
+  --add-host=host.docker.internal:host-gateway \
+  -v ~/.hermes:/home/node/.hermes \
+  -e HERMES_MOCK_MODE=false \
+  -e HOME=/home/node \
+  -e HERMES_HOME=/home/node/.hermes/profiles/<your-profile> \
+  -e HERMES_API_BASE_URL=http://host.docker.internal:8642 \
+  pan-ui
+```
+
+The image includes Python 3, PyYAML, and the Hermes Agent installed via `uv` from the Euraika-Labs fork at the pinned tag. The `hermes` binary is available at `/usr/local/bin/hermes`.
+
+> **Note:** A production-optimised multi-stage Dockerfile is not yet available. The test image is suitable for development and CI.
 
 ## Configuration
 
