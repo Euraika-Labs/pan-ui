@@ -225,6 +225,27 @@ npm run dev
 | `npm run test` | Vitest unit tests |
 | `npm run test:e2e` | Playwright end-to-end tests |
 
+## Recent Changes
+
+### [0.5.1] — 2026-04-08
+- **Fixed** fork session crash (missing `)` in Python bridge)
+- **Changed** health probe decoupled from binary — Docker and headless deployments report full health status
+- **Added** Docker test image with bundled Hermes Agent, Docker test suites (37 + 28 assertions), full-stack functional test (33 assertions), `.dockerignore`
+
+### [0.5.0] — 2026-04-08
+- **Added** vendored Hermes fork (`hermes.version.json`), auto-install wizard, `sync-hermes` / `update` / `version` CLI commands, update banner
+- **Changed** CLI refactored to subcommand structure, profile detection hardened
+
+### [0.4.0] — 2026-04-07
+- **Added** automatic gateway management — Pan auto-starts and monitors the Hermes gateway on boot
+- **Changed** simplified to single-process deployment (no separate gateway service needed)
+
+### [0.3.0] — 2026-04-07
+- **Added** session source badges (CLI, Discord, Telegram, WhatsApp, …), source filter chips, resume button for external sessions
+- **Fixed** skills Discover tab showing 0 skills, hydration mismatch
+
+[Full changelog →](CHANGELOG.md)
+
 ## Security
 
 See [SECURITY.md](SECURITY.md) for reporting vulnerabilities.
