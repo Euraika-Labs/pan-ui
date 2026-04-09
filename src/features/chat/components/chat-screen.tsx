@@ -106,10 +106,10 @@ export function ChatScreen() {
   const isPersisted = Boolean(selectedSessionId && sessionQuery.data);
   const composerChips = [
     { key: 'model', label: `Model · ${activeSettings.model || 'default'}` },
-    { key: 'mode', label: `Mode · ${activeSettings.policyPreset}` },
     { key: 'tools', label: `Tools · ${runtimeConnected ? 'runtime live' : 'degraded'}` },
-    { key: 'files', label: `Files · ${artifacts.length}` },
     { key: 'profile', label: `Profile · ${activeProfileLabel}` },
+    { key: 'mode', label: `Mode · ${activeSettings.policyPreset}` },
+    { key: 'files', label: `Files · ${artifacts.length}` },
   ];
   const optimisticSessionLoadedSkillIds = selectedSessionId ? (sessionLoadedSkillIds[selectedSessionId] ?? []) : [];
   const visibleLoadedSkillIds = Array.from(new Set([requestedLoadedSkillId, ...(optimisticSessionLoadedSkillIds ?? []), ...(recentlyLoadedSkillIds ?? []), ...(sessionQuery.data?.loadedSkillIds ?? [])].filter(Boolean) as string[]));
@@ -324,7 +324,7 @@ export function ChatScreen() {
           ) : null}
           {composerError ? <div className="mx-4 mt-4"><ErrorState error={composerError} layout="banner" /></div> : null}
           {settingsError ? <div className="mx-4 mt-4"><ErrorState error={settingsError} layout="banner" /></div> : null}
-          <ChatComposer disabled={chatStream.isPending || (runtimeUnavailable && !mockMode)} statusNote={runtimeUnavailable && !mockMode ? 'Runtime offline — sending is paused until it reconnects.' : mockMode ? 'Mock mode active · Enter to send · Shift+Enter for newline · drag files to attach.' : 'Enter to send · Shift+Enter for newline · drag files to attach.'} chips={composerChips} starterPrompts={messages.length === 0 ? starterPrompts : []} onSend={handleSend} />
+          <ChatComposer disabled={chatStream.isPending || (runtimeUnavailable && !mockMode)} statusNote={runtimeUnavailable && !mockMode ? 'Runtime offline — sending is paused until it reconnects.' : mockMode ? 'Mock mode active · Enter to send · Shift+Enter for newline · drag files to attach.' : messages.length === 0 ? 'Start with one request. You can add files or open details if the task needs more context.' : 'Enter to send · Shift+Enter for newline · drag files to attach.'} chips={composerChips} starterPrompts={messages.length === 0 ? starterPrompts : []} onSend={handleSend} />
 
         </section>
       </div>

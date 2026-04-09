@@ -1,6 +1,6 @@
 'use client';
 
-import { FolderKanban, Settings2 } from 'lucide-react';
+import { Settings2 } from 'lucide-react';
 import { SessionActionsMenu } from '@/features/sessions/components/session-actions-menu';
 import { ModelSwitcher } from '@/features/settings/components/model-switcher';
 import { StatusBadge } from '@/components/feedback/status-badge';
@@ -45,7 +45,11 @@ export function ChatHeader({
 }) {
   const visibleLoadedSkills = (loadedSkillIds ?? []).filter((skillId) => skillId !== 'skill-authoring');
   const runtimeLabel = runtimeConnected ? 'Runtime connected' : 'Runtime degraded';
-  const metadataSummary = [profileLabel, settings.provider, settings.policyPreset, settings.memoryMode]
+  const metadataSummary = [
+    profileLabel && `Profile ${profileLabel}`,
+    settings.model ? `Model ${settings.model}` : 'Default model',
+    settings.policyPreset && `Mode ${settings.policyPreset}`,
+  ]
     .filter(Boolean)
     .join(' · ');
 
@@ -60,40 +64,22 @@ export function ChatHeader({
               {archived ? <StatusBadge label="Archived" tone="warning" /> : null}
               {isPersisted ? <StatusBadge label="Saved chat" tone="success" /> : <StatusBadge label="New chat" tone="warning" />}
             </div>
-            {runtimeSummary ? <p className="mt-2 max-w-3xl text-sm leading-6 text-muted-foreground">{runtimeSummary}</p> : null}
             <p className="mt-2 text-xs leading-5 text-muted-foreground">{metadataSummary}</p>
+            {hasMessages && runtimeSummary ? <p className="mt-2 max-w-3xl text-sm leading-6 text-muted-foreground">{runtimeSummary}</p> : null}
           </div>
 
           {!hasMessages ? (
             <div className="flex flex-wrap items-center gap-2 text-xs">
               <StatusBadge label={runtimeLabel} tone={connectivityTone(runtimeConnected ? 'healthy' : 'degraded')} />
-              <StatusBadge label={profileLabel} tone="accent" icon={<FolderKanban className="h-3.5 w-3.5 text-accent" />} />
+              {visibleLoadedSkills.length ? <StatusBadge label={`${visibleLoadedSkills.length} skill${visibleLoadedSkills.length === 1 ? '' : 's'} loaded`} tone="accent" /> : null}
             </div>
           ) : null}
 
           {!hasMessages ? (
-            <div className="rounded-lg border border-border/60 bg-background/55 p-3.5">
-              <p className="text-2xs font-semibold uppercase tracking-label text-muted-foreground">Ready to start</p>
-              <div className="mt-2 grid gap-3 md:grid-cols-2">
-                <div>
-                  <p className="text-sm font-semibold text-foreground">Skills in this chat</p>
-                  {visibleLoadedSkills.length ? (
-                    <p className="mt-1 text-xs leading-5 text-muted-foreground">
-                      {visibleLoadedSkills.slice(0, 2).join(', ')}
-                      {visibleLoadedSkills.length > 2 ? ` +${visibleLoadedSkills.length - 2} more` : ''}
-                    </p>
-                  ) : (
-                    <p className="mt-1 text-xs leading-5 text-muted-foreground">No skills added yet. Open Skills when you want reusable instructions or context.</p>
-                  )}
-                </div>
-                <div>
-                  <p className="text-sm font-semibold text-foreground">Current setup</p>
-                  <p className="mt-1 text-xs leading-5 text-muted-foreground">
-                    {isPersisted ? 'Saved chat' : 'New chat'} · Model {settings.model || 'Default'}
-                  </p>
-                </div>
-              </div>
-            </div>
+            <p className="max-w-3xl text-sm leading-6 text-muted-foreground">
+              Start with one clear request. Attach a file or load a skill only when the task needs more context.
+              {visibleLoadedSkills.length ? ` Loaded: ${visibleLoadedSkills.slice(0, 2).join(', ')}${visibleLoadedSkills.length > 2 ? ` +${visibleLoadedSkills.length - 2} more` : ''}.` : ''}
+            </p>
           ) : null}
         </div>
 
