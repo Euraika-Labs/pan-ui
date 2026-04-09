@@ -23,28 +23,37 @@ export function Sidebar() {
   const searchParams = useSearchParams();
   const skillPathMatch = pathname.match(/^\/skills\/([^/?#]+)/);
   const loadedSkillHint = skillPathMatch?.[1] ?? searchParams.get('loadedSkill');
-  const { mobileNavOpen, toggleMobileNav, activeSessionId } = useUIStore();
+  const { mobileNavOpen, toggleMobileNav, activeSessionId, sidebarCompact, toggleSidebarCompact } = useUIStore();
 
   const nav = (
     <div className="flex h-full flex-col">
-      <div className="border-b border-border/50 px-5 py-4">
-        <div className="flex items-center gap-3">
-          <div className="flex h-11 w-11 items-center justify-center rounded-2xl text-primary-foreground shadow-[var(--shadow-card)] euraika-flow-gradient">
-              <svg width="22" height="22" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M14 8h20a14 14 0 0 1 0 28H24v20h-10V8Z" fill="#FEFFEF"/>
-                <path d="M24 18h9a6 6 0 0 1 0 12h-9V18Z" fill="#073455" fillOpacity="0.3"/>
-                <rect x="14" y="58" width="24" height="4" rx="2" fill="#E9C819"/>
-              </svg>
+      <div className={cn('border-b border-border/50 px-5', sidebarCompact ? 'py-3' : 'py-4')}>
+        <div className="flex items-start justify-between gap-3">
+          <div className="flex items-center gap-3">
+            <div className="flex h-11 w-11 items-center justify-center rounded-2xl text-primary-foreground shadow-[var(--shadow-card)] euraika-flow-gradient">
+                <svg width="22" height="22" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M14 8h20a14 14 0 0 1 0 28H24v20h-10V8Z" fill="#FEFFEF"/>
+                  <path d="M24 18h9a6 6 0 0 1 0 12h-9V18Z" fill="#073455" fillOpacity="0.3"/>
+                  <rect x="14" y="58" width="24" height="4" rx="2" fill="#E9C819"/>
+                </svg>
+            </div>
+            <div>
+              <p className="text-2xs font-semibold uppercase tracking-label text-muted-foreground">by Euraika</p>
+              <h1 className="text-lg font-semibold">Pan</h1>
+              {!sidebarCompact ? <p className="mt-1 text-xs leading-5 text-muted-foreground">Your AI workspace — chat, skills, integrations, memory, and runtime controls in one place.</p> : null}
+            </div>
           </div>
-          <div>
-            <p className="text-2xs font-semibold uppercase tracking-label text-muted-foreground">by Euraika</p>
-            <h1 className="text-lg font-semibold">Pan</h1>
-            <p className="mt-1 text-xs leading-5 text-muted-foreground">Your AI workspace — chat, skills, integrations, memory, and runtime controls in one place.</p>
-          </div>
+          <button
+            type="button"
+            onClick={toggleSidebarCompact}
+            className="rounded-full border border-border/70 bg-background/80 px-2.5 py-1 text-3xs font-medium uppercase tracking-label text-muted-foreground"
+          >
+            {sidebarCompact ? 'Comfort' : 'Compact'}
+          </button>
         </div>
       </div>
 
-      <nav className="space-y-1 p-3">
+      <nav className={cn('space-y-1 p-3', sidebarCompact && 'space-y-0.5 p-2')}>
         {navItems.map(({ href, label, icon: Icon, description }) => {
           const targetHref = href === '/chat' && activeSessionId
             ? `/chat?session=${encodeURIComponent(activeSessionId)}${loadedSkillHint ? `&loadedSkill=${encodeURIComponent(loadedSkillHint)}` : ''}`
@@ -61,7 +70,8 @@ export function Sidebar() {
                 if (mobileNavOpen) toggleMobileNav();
               }}
               className={cn(
-                'group flex items-start gap-3 rounded-2xl px-3 py-3 text-sm transition',
+                'group flex items-start gap-3 rounded-2xl px-3 text-sm transition',
+                sidebarCompact ? 'py-2' : 'py-3',
                 active
                   ? 'border-l-[3px] border-l-accent bg-primary/8 text-foreground'
                   : 'border-l-[3px] border-l-transparent text-muted-foreground hover:border-border/60 hover:bg-card/40 hover:text-foreground',
@@ -69,7 +79,8 @@ export function Sidebar() {
             >
               <span
                 className={cn(
-                  'mt-0.5 flex h-9 w-9 items-center justify-center rounded-xl transition',
+                  'mt-0.5 flex items-center justify-center rounded-xl transition',
+                  sidebarCompact ? 'h-8 w-8' : 'h-9 w-9',
                   active
                     ? 'bg-primary/15 text-primary'
                     : 'bg-muted/50 text-muted-foreground group-hover:bg-background group-hover:text-foreground',
@@ -79,9 +90,11 @@ export function Sidebar() {
               </span>
               <span className="min-w-0">
                 <span className="block font-medium">{label}</span>
-                <span className={cn('mt-1 block text-xs leading-5 text-muted-foreground', active ? 'block' : 'hidden group-hover:block')}>
-                  {description}
-                </span>
+                {!sidebarCompact ? (
+                  <span className={cn('mt-1 block text-xs leading-5 text-muted-foreground', active ? 'block' : 'hidden group-hover:block')}>
+                    {description}
+                  </span>
+                ) : null}
               </span>
             </Link>
           );
@@ -90,9 +103,11 @@ export function Sidebar() {
 
       <UpdateBanner />
 
-      <div className="mt-auto px-4 pb-4 pt-2 text-xs leading-5 text-muted-foreground">
-        Chat, skills, integrations, profiles, and settings share one workspace shell. Chat history stays separate so the UI feels like a workspace, not a page list.
-      </div>
+      {!sidebarCompact ? (
+        <div className="mt-auto px-4 pb-4 pt-2 text-xs leading-5 text-muted-foreground">
+          Chat, skills, integrations, profiles, and settings share one workspace shell. Chat history stays separate so the UI feels like a workspace, not a page list.
+        </div>
+      ) : null}
     </div>
   );
 

@@ -7,6 +7,7 @@ export type RightDrawerTab = 'context' | 'activity' | 'tools' | 'output' | 'sess
 type UIState = {
   rightDrawerOpen: boolean;
   mobileNavOpen: boolean;
+  sidebarCompact: boolean;
   selectedProfileId: string | null;
   activeSessionId: string | null;
   recentlyLoadedSkillIds: string[];
@@ -19,6 +20,7 @@ type UIState = {
   openRightDrawer: (tab?: RightDrawerTab) => void;
   closeRightDrawer: () => void;
   toggleMobileNav: () => void;
+  toggleSidebarCompact: () => void;
   setSelectedProfileId: (profileId: string | null) => void;
   setActiveSessionId: (sessionId: string | null) => void;
   rememberLoadedSkill: (skillId: string) => void;
@@ -51,6 +53,7 @@ export const useUIStore = create<UIState>()(
     (set) => ({
       rightDrawerOpen: false,
       mobileNavOpen: false,
+      sidebarCompact: false,
       selectedProfileId: null,
       activeSessionId: null,
       recentlyLoadedSkillIds: [],
@@ -72,6 +75,7 @@ export const useUIStore = create<UIState>()(
         }),
       closeRightDrawer: () => set({ rightDrawerOpen: false }),
       toggleMobileNav: () => set((state) => ({ mobileNavOpen: !state.mobileNavOpen })),
+      toggleSidebarCompact: () => set((state) => ({ sidebarCompact: !state.sidebarCompact })),
       setSelectedProfileId: (profileId) => set({ selectedProfileId: profileId }),
       setActiveSessionId: (sessionId) =>
         set((state) => ({
@@ -141,6 +145,7 @@ export const useUIStore = create<UIState>()(
     {
       name: 'pan-ui',
       partialize: (state) => ({
+        sidebarCompact: state.sidebarCompact,
         selectedProfileId: state.selectedProfileId,
         activeSessionId: state.activeSessionId,
         recentlyLoadedSkillIds: state.recentlyLoadedSkillIds,

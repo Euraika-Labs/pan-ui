@@ -10,6 +10,7 @@ import {
   getSourceMeta,
 } from '@/features/sessions/components/session-source-badge';
 import type { ChatSessionSummary, SessionSource } from '@/lib/types/chat';
+import { useUIStore } from '@/lib/store/ui-store';
 import { cn } from '@/lib/utils';
 
 type SessionSidebarProps = {
@@ -62,6 +63,7 @@ export function SessionSidebar({
   const PAGE_SIZE = 25;
   const [visibleCount, setVisibleCount] = useState(PAGE_SIZE);
   const [sourceFilter, setSourceFilter] = useState<SourceFilter>('all');
+  const { sidebarCompact, toggleSidebarCompact } = useUIStore();
 
   // Sources actually present in the current sessions list, ordered canonically.
   const availableSources = useMemo(() => {
@@ -96,25 +98,35 @@ export function SessionSidebar({
 
   return (
     <aside className="flex h-full max-h-full flex-col overflow-hidden rounded-xl border border-border/70 bg-card/60 shadow-[var(--shadow-soft)]">
-      <div className="border-b border-border/60 p-4">
-        <p className="mb-3 text-xs font-semibold uppercase tracking-label text-muted-foreground">Chats</p>
-        <div className="rounded-lg bg-[linear-gradient(135deg,hsl(var(--primary))/0.16,hsl(var(--accent))/0.12)] p-1">
+      <div className={cn('border-b border-border/60', sidebarCompact ? 'p-3' : 'p-4')}>
+        <div className="mb-3 flex items-center justify-between gap-2">
+          <p className="text-xs font-semibold uppercase tracking-label text-muted-foreground">Chats</p>
           <button
             type="button"
-            onClick={onNewChat}
-            className="flex w-full items-center justify-center gap-2 rounded-lg brand-gradient px-4 py-3 text-sm font-semibold text-primary-foreground shadow-[var(--shadow-card)] transition hover:-translate-y-0.5"
+            onClick={toggleSidebarCompact}
+            className="rounded-full border border-border/70 bg-background/80 px-2.5 py-1 text-3xs font-medium uppercase tracking-label text-muted-foreground"
           >
-            <Plus className="h-4 w-4" />
-            New chat
+            {sidebarCompact ? 'Comfort' : 'Compact'}
           </button>
         </div>
-        <p className="mt-4 text-xs leading-5 text-muted-foreground">
+        <button
+          type="button"
+          onClick={onNewChat}
+          className={cn(
+            'flex w-full items-center justify-center gap-2 rounded-lg brand-gradient text-sm font-semibold text-primary-foreground shadow-[var(--shadow-card)] transition hover:-translate-y-0.5',
+            sidebarCompact ? 'px-3 py-2.5' : 'px-4 py-3',
+          )}
+        >
+          <Plus className="h-4 w-4" />
+          New chat
+        </button>
+        <p className="mt-3 text-xs leading-5 text-muted-foreground">
           {filteredSessions.length} chats · {pinnedSessions.length} pinned · {archivedSessions.length} archived
         </p>
       </div>
       <SessionSearch value={search} onChange={onSearchChange} />
       {showFilter ? (
-        <div className="border-b border-border/70 px-3 pb-3">
+        <div className={cn('border-b border-border/70 px-3', sidebarCompact ? 'pb-2' : 'pb-3')}>
           <div className="mb-1.5 px-1 text-2xs font-semibold uppercase tracking-label text-muted-foreground">
             Source
           </div>
@@ -156,7 +168,7 @@ export function SessionSidebar({
           </div>
         </div>
       ) : null}
-      <div className="flex-1 space-y-4 overflow-y-auto p-3">
+      <div className={cn('flex-1 overflow-y-auto', sidebarCompact ? 'space-y-3 p-2' : 'space-y-4 p-3')}>
         {isLoading ? (
           <LoadingState layout="banner" title="Loading chats…" />
         ) : null}
@@ -183,23 +195,26 @@ export function SessionSidebar({
                   onClick={() => onSelectSession(session.id)}
                   aria-label={/\(fork\)/i.test(session.title) && selectedSessionId !== session.id ? session.title : `Open session ${session.id}`}
                   className={cn(
-                    'w-full rounded-xl border px-4 py-3 text-left transition',
+                    'w-full rounded-xl border text-left transition',
+                    sidebarCompact ? 'px-3 py-2.5' : 'px-4 py-3',
                     selectedSessionId === session.id
-                      ? 'border-primary/15 bg-primary/6'
+                      ? 'border-primary/30 bg-primary/10 shadow-[var(--shadow-card)] ring-1 ring-primary/10'
                       : 'border-border/60 bg-background/70 hover:border-border/70 hover:bg-card/50',
                   )}
                 >
                   <div className="flex items-start justify-between gap-3">
-                    <div className="min-w-0">
+                    <div className="min-w-0 flex-1">
                       <div className="flex items-center gap-2">
                         <p aria-hidden="true" className="truncate text-sm font-semibold text-foreground">{session.title}</p>
                         {session.pinned ? <Pin className="h-3.5 w-3.5 text-muted-foreground" aria-hidden="true" /> : null}
                         {session.parentSessionId ? <GitBranch className="h-3.5 w-3.5 text-muted-foreground" aria-hidden="true" /> : null}
                       </div>
-                      <p aria-hidden="true" className="mt-1 line-clamp-2 text-xs leading-5 text-muted-foreground">{previewText(session.preview)}</p>
+                      <p aria-hidden="true" className={cn('mt-1 text-xs leading-5 text-muted-foreground', sidebarCompact ? 'line-clamp-1' : 'line-clamp-2')}>
+                        {previewText(session.preview)}
+                      </p>
                     </div>
                     <div className="flex shrink-0 flex-col items-end gap-1">
-                      <SessionSourceBadge source={sessionSource(session)} />
+                      <SessionSourceBadge source={sessionSource(session)} iconOnly={sidebarCompact} />
                       {canResume && selectedSessionId === session.id ? (
                         <span
                           role="button"
@@ -216,20 +231,23 @@ export function SessionSidebar({
                             }
                           }}
                           aria-label={`Resume ${getSourceMeta(sessionSource(session)).label} session`}
-                          className="inline-flex items-center gap-1 rounded-full border border-primary/50 bg-primary/10 px-2 py-0.5 text-3xs uppercase tracking-label text-primary transition hover:bg-primary/20 cursor-pointer"
+                          className={cn(
+                            'inline-flex items-center rounded-full border border-primary/50 bg-primary/10 text-3xs uppercase tracking-label text-primary transition hover:bg-primary/20 cursor-pointer',
+                            sidebarCompact ? 'h-5 w-5 justify-center px-0 py-0' : 'gap-1 px-2 py-0.5',
+                          )}
                         >
                           <Play className="h-3 w-3" />
-                          Resume
+                          {sidebarCompact ? null : 'Resume'}
                         </span>
                       ) : null}
                     </div>
                   </div>
-                  <div className="mt-3 flex items-center justify-between gap-2 text-2xs text-muted-foreground">
+                  <div className={cn('flex items-center justify-between gap-2 text-2xs text-muted-foreground', sidebarCompact ? 'mt-2' : 'mt-3')}>
                     <span className="inline-flex items-center gap-1">
                       <Clock3 className="h-3.5 w-3.5" />
                       {formatUpdatedAt(session.updatedAt)}
                     </span>
-                    {session.workspaceLabel && selectedSessionId === session.id ? <span>{session.workspaceLabel}</span> : null}
+                    {!sidebarCompact && session.workspaceLabel && selectedSessionId === session.id ? <span>{session.workspaceLabel}</span> : null}
                   </div>
                 </button>
               );
