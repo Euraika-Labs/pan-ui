@@ -2,22 +2,25 @@
 
 Status: self-hosted beta / release-quality for admin-operated deployments
 
-Verification completed (v0.6.0)
+Verification completed (v0.7.0)
 - [x] `npm run lint`
 - [x] `npm run test` — 24/24 unit tests (vitest)
 - [x] `npm run build`
 - [x] Playwright suite enumerates 23 committed tests across 8 spec files
-- [x] Docker mock-mode smoke, API verification, and browser-driven user-path checks completed for marketplace/plugins/skills/auth flows
-- [x] Runtime health, sessions, skills, memory, profiles, extensions, plugins, and audit APIs re-verified in Docker
-- [x] Chat/session APIs now return `401 Unauthorized` when called without login
+- [x] `npm pack --dry-run` after a clean rebuild
+- [x] Browser-driven validation completed for login, chat, marketplace, integrations, plugins, compact navigation, and first-run guidance flows during the UX overhaul
+- [x] Runtime health, sessions, skills, memory, profiles, extensions, plugins, and audit APIs re-verified through the integrated app flows
 
 Shipped capabilities
-- Authenticated admin workspace
+- Authenticated admin workspace with more product-grade login and first-run framing
+- Chat-first workspace with starter prompts, calmer header hierarchy, and Inspector-based progressive disclosure
 - Chat/session management (create, rename, archive, fork, delete, stream)
 - Authenticated chat/session API surface (`/api/chat/sessions*`, `/api/chat/stream`)
-- Unified Marketplace for skills, MCP Hub, and plugins
+- Unified Marketplace with discover-first browsing for skills, MCP Hub, and plugins
 - MCP Hub registry browsing with trust/install metadata and cache hydration
-- Plugins workspace with install validation, detail routes, and enable/disable flows
+- Integrations workspace that clearly separates installed inventory, tools, approval posture, diagnostics, and MCP discovery
+- Plugins workspace with install validation, repo requirements guidance, detail routes, and enable/disable flows
+- Session/sidebar compact mode and denser history navigation for power users
 - Real Hermes-backed session/history reads and major writes
 - Approval queue persistence and server-side gating on app-controlled path
 - Artifacts, audit, approvals, telemetry, runtime health, MCP diagnostics pages

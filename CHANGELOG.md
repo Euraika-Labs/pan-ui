@@ -4,6 +4,28 @@ All notable changes to Pan by Euraika are documented here.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/), and this project adheres to [Semantic Versioning](https://semver.org/).
 
+## [0.7.0] — 2026-04-09
+
+### Added
+- **Wave-based UX overhaul shipped to main** — the full roadmap now lands in six reviewed waves, each merged separately into `main`
+- **Chat-first workspace redesign** — calmer empty state, starter prompts, stronger composer hierarchy, and a clearer Inspector surface
+- **Marketplace discovery redesign** — discover-first hero, above-the-fold featured content, clearer global search scope, and softer separation between discovery and installed inventory
+- **Integrations IA cleanup** — clearer distinction between live integrations, MCP servers, tools, approval posture, diagnostics, and repo-based plugins
+- **Compact navigation mode** — optional denser sidebar + session history layout for power users
+- **Product-grade login + first-run guidance** — stronger trust framing, no unexplained prefilled credentials, password visibility toggle, and lightweight orientation for Skills / MCP / Plugins / Profiles
+- **UX planning docs** — roadmap, implementation plan, sprint backlog, issue mapping, and canonical terminology docs added under `docs/internal/`
+
+### Changed
+- **Shell hierarchy simplified** — sidebar, right drawer, chat header, session list, and shared layout surfaces are quieter and easier to scan
+- **State clarity improved across screens** — loading, empty, degraded, and error treatments are now more consistent across chat, marketplace, and integrations
+- **Session navigation polished** — stronger selected states, less row noise, and compact-mode-friendly source/resume affordances
+- **Plugin and integrations copy clarified** — the UI now explains more clearly when to use Marketplace, Integrations, MCP servers, Skills, and Plugins
+
+### Fixed
+- **Next.js dev-cache instability handling documented and operationalized** — release verification now explicitly used clean rebuilds after `.next` corruption symptoms appeared during UX iteration
+- **Plugin install guidance** — invalid repository flows now read as intentional validation instead of generic failure noise
+- **Inspector/session/sidebar coherence** — labels and progressive-disclosure patterns are more consistent across chat and surrounding workspace surfaces
+
 ## [0.6.0] — 2026-04-09
 
 ### Added
@@ -178,6 +200,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/), and this
 - Dependabot configuration
 - Community standards (CoC, CONTRIBUTING, SECURITY, issue templates)
 
+[0.7.0]: https://github.com/Euraika-Labs/pan-ui/compare/v0.6.0...v0.7.0
 [0.6.0]: https://github.com/Euraika-Labs/pan-ui/compare/v0.5.2...v0.6.0
 [0.5.2]: https://github.com/Euraika-Labs/pan-ui/compare/v0.5.1...v0.5.2
 [0.5.1]: https://github.com/Euraika-Labs/pan-ui/compare/v0.5.0...v0.5.1

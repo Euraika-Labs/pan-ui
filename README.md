@@ -26,7 +26,7 @@
 
 ---
 
-Pan is a self-hosted web dashboard for [Hermes Agent](https://github.com/NousResearch/hermes-agent). Chat with your agent, manage skills from [skills.sh](https://skills.sh), control MCP integrations, inspect memory, and operate profiles — all from one place.
+Pan is a self-hosted web dashboard for [Hermes Agent](https://github.com/NousResearch/hermes-agent). It now ships a calmer, chat-first workspace with stronger discovery, clearer integrations information architecture, denser optional navigation, and more product-grade onboarding. Chat with your agent, manage skills from [skills.sh](https://skills.sh), control MCP integrations, inspect memory, and operate profiles — all from one place.
 
 ![Pan chat with runtime tools](docs/assets/screenshots/chat-runtime.png)
 
@@ -77,12 +77,12 @@ Your configuration in `~/.pan-ui/` is preserved across updates.
 
 | Feature | Description |
 |---------|-------------|
-| **Chat** | SSE streaming connected to a live Hermes runtime, with tool timelines, approval cards, artifact rendering, and authenticated chat/session APIs |
-| **Sessions** | Unified session sidebar with source badges (CLI, Discord, Telegram, WhatsApp, …), source filtering, and cross-platform session resumption |
-| **Marketplace** | Unified `/marketplace` view for skills, MCP servers, and plugins with cross-surface discovery |
+| **Chat** | SSE streaming connected to a live Hermes runtime, with a chat-first workspace, calmer empty states, starter prompts, tool timelines, approval cards, and authenticated chat/session APIs |
+| **Sessions** | Unified session sidebar with source badges, source filtering, stronger selected states, cross-platform resumption, and optional compact density mode |
+| **Marketplace** | Discover-first `/marketplace` view for skills, MCP servers, and plugins with hero content, grouped global search, and clearer discovery vs installed inventory separation |
 | **Skills** | Browse installed skills, discover and install more from [skills.sh](https://skills.sh), and load skills into active sessions |
-| **Extensions / MCP** | View MCP servers, browse the MCP Hub registry, inspect trust/install metadata, and manage diagnostics and capability scopes |
-| **Plugins** | Dedicated plugin workspace with install validation, enable/disable flows, and plugin detail APIs |
+| **Extensions / MCP** | Clearer integrations IA for live integrations, MCP servers, tools, approvals, diagnostics, and runtime availability |
+| **Plugins** | Dedicated plugin workspace with stronger install validation, repo requirements guidance, enable/disable flows, and plugin detail APIs |
 | **Memory** | Inspect and edit global and profile-scoped agent memory |
 | **Profiles** | Isolated workspaces — each with its own sessions, skills, memory, and API keys |
 | **Operations** | Approvals, run history, audit trails, telemetry, health monitoring, and exports |
@@ -228,6 +228,11 @@ npm run dev
 | `npm run test:e2e` | Playwright end-to-end tests |
 
 ## Recent Changes
+
+### [0.7.0] — 2026-04-09
+- **Added** the full UX roadmap to `main`: chat-first workspace redesign, marketplace discovery refresh, integrations IA cleanup, compact navigation mode, and stronger login/onboarding guidance
+- **Changed** shell hierarchy, session scanability, and discovery/install surfaces so Pan feels calmer and more product-grade without losing power-user depth
+- **Verified** release readiness with `npm run lint`, `npm run test` (24/24), `npm run build`, Playwright suite enumeration (23 tests), and a clean `npm pack --dry-run`
 
 ### [0.6.0] — 2026-04-09
 - **Added** unified Marketplace, MCP Hub registry browsing, dedicated Plugins workspace, and expanded Playwright coverage (23 tests)
