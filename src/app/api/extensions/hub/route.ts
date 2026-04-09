@@ -3,6 +3,10 @@ import { getSelectedProfileFromCookie } from '@/server/hermes/profile-cookie';
 import { listHubMcpServers, searchHubMcpServers } from '@/server/hermes/hub-mcp';
 import { listRealExtensions } from '@/server/hermes/real-extensions';
 
+function toExtensionId(name: string) {
+  return name.toLowerCase().replace(/[^a-z0-9]+/g, '-');
+}
+
 export async function GET(request: Request) {
   try {
     const url = new URL(request.url);
@@ -23,8 +27,11 @@ export async function GET(request: Request) {
     // Filter out already-installed servers
     const profileId = await getSelectedProfileFromCookie();
     const installed = listRealExtensions(profileId);
-    const installedNames = new Set(installed.map((e) => e.name));
-    const filtered = servers.filter((s) => !installedNames.has(s.name));
+    const installedKeys = new Set(installed.flatMap((extension) => [extension.id, extension.name]));
+    const filtered = servers.filter((server) => {
+      const normalizedId = toExtensionId(server.name);
+      return !installedKeys.has(server.name) && !installedKeys.has(normalizedId);
+    });
 
     return NextResponse.json({ servers: filtered, total, filtered: filtered.length });
   } catch (error) {

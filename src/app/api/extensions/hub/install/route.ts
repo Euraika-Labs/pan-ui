@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import { getSelectedProfileFromCookie } from '@/server/hermes/profile-cookie';
 import { installHubMcpServer } from '@/server/hermes/hub-mcp';
 
 const IDENTIFIER_RE = /^[a-zA-Z0-9@][a-zA-Z0-9._/-]*$/;
@@ -18,7 +19,8 @@ export async function POST(request: Request) {
       );
     }
 
-    const result = await installHubMcpServer(body.identifier, { env: body.env });
+    const profileId = await getSelectedProfileFromCookie();
+    const result = await installHubMcpServer(profileId, body.identifier, { env: body.env });
 
     if (!result.success) {
       return NextResponse.json(
@@ -27,7 +29,7 @@ export async function POST(request: Request) {
       );
     }
 
-    return NextResponse.json({ success: true, identifier: body.identifier });
+    return NextResponse.json({ success: true, identifier: body.identifier, extensionId: result.extensionId });
   } catch (error) {
     return NextResponse.json(
       { error: error instanceof Error ? error.message : 'Failed to install MCP server' },

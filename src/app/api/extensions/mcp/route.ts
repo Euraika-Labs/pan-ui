@@ -8,6 +8,8 @@ export async function POST(request: Request) {
     name?: string;
     command?: string;
     url?: string;
+    args?: string[];
+    env?: Record<string, string>;
     authType?: 'none' | 'api-key' | 'oauth';
     token?: string;
   };
@@ -21,6 +23,8 @@ export async function POST(request: Request) {
     name: body.name,
     command: body.command,
     url: body.url,
+    args: body.args,
+    env: body.env,
   });
 
   addAuditEvent('extension_added', 'extension', extension.id, `Added MCP extension ${extension.name}.`);

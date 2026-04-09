@@ -163,7 +163,7 @@ export function listRealExtensionTools(profileId: string | null | undefined): To
 
 export function addRealMcpExtension(
   profileId: string | null | undefined,
-  payload: { name: string; command?: string; url?: string; authType?: 'none' | 'api-key' | 'oauth'; token?: string },
+  payload: { name: string; command?: string; url?: string; args?: string[]; env?: Record<string, string>; authType?: 'none' | 'api-key' | 'oauth'; token?: string },
 ) {
   const configPath = getProfileConfigPath(profileId);
   const config = readYamlFile<ConfigShape>(configPath);
@@ -172,6 +172,8 @@ export function addRealMcpExtension(
   config.mcp_servers[id] = {
     command: payload.command,
     url: payload.url,
+    args: payload.args,
+    env: payload.env,
     auth: payload.authType && payload.authType !== 'none' ? { type: payload.authType, token: payload.token } : undefined,
   };
   writeYamlFile(configPath, config);

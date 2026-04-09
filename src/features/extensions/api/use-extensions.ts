@@ -38,7 +38,7 @@ function writeExtension(queryClient: ReturnType<typeof useQueryClient>, extensio
 export function useAddMcpExtension() {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: (payload: { name: string; command?: string; url?: string; authType?: 'none' | 'api-key' | 'oauth'; token?: string }) =>
+    mutationFn: (payload: { name: string; command?: string; url?: string; args?: string[]; env?: Record<string, string>; authType?: 'none' | 'api-key' | 'oauth'; token?: string }) =>
       apiFetch<ExtensionResponse>('/api/extensions/mcp', {
         method: 'POST',
         body: JSON.stringify(payload),

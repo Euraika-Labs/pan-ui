@@ -1,11 +1,7 @@
-import { execFile } from 'node:child_process';
 import fs from 'node:fs/promises';
 import path from 'node:path';
-import { promisify } from 'node:util';
 import Fuse, { type IFuseOptions } from 'fuse.js';
 import { getEffectiveHome } from '@/server/hermes/paths';
-
-const execFileAsync = promisify(execFile);
 
 // ---------------------------------------------------------------------------
 // Types
@@ -21,6 +17,7 @@ export interface McpHubServer {
   version: string;
   repository?: string;
   websiteUrl?: string;
+  remoteUrl?: string;
   installCommand?: string;
   npmPackage?: string;
   category: string;
@@ -193,6 +190,10 @@ function mapRegistryServer(raw: RegistryServer): McpHubServer {
       ? 'http'
       : 'stdio';
   const primaryIcon = server.icons?.find((icon) => icon.src)?.src;
+  const remoteUrl = server.remotes?.find((remote) => {
+    const type = remote.type || '';
+    return type === 'http' || type === 'streamable-http' || type === 'sse';
+  })?.url;
 
   return {
     id: server.name || '',
@@ -204,6 +205,7 @@ function mapRegistryServer(raw: RegistryServer): McpHubServer {
     version: server.version || server.packages?.[0]?.version || '0.0.0',
     repository: server.repository?.url,
     websiteUrl: server.websiteUrl,
+    remoteUrl,
     installCommand,
     npmPackage,
     category: server.categories?.[0] || server.tags?.[0] || 'uncategorized',
@@ -354,25 +356,51 @@ export async function searchHubMcpServers(query: string): Promise<McpHubSearchRe
  * Derives the shell command from the server's installCommand or npmPackage.
  */
 export async function installHubMcpServer(
+  profileId: string | null | undefined,
   identifier: string,
   config: { env?: Record<string, string> } = {},
-): Promise<{ success: boolean; error?: string }> {
+): Promise<{ success: boolean; error?: string; extensionId?: string }> {
   const servers = await readCacheFile();
   const server = servers.find((s) => s.id === identifier || s.name === identifier);
 
-  if (!server?.installCommand) {
-    return { success: false, error: `No install command found for "${identifier}"` };
+  if (!server) {
+    return { success: false, error: `MCP server "${identifier}" was not found in the hub cache` };
   }
 
-  const [cmd, ...args] = server.installCommand.split(/\s+/);
-  if (!cmd) return { success: false, error: 'Empty install command' };
-
   try {
-    await execFileAsync(cmd, args, {
-      timeout: 30_000,
-      env: { ...process.env, ...config.env },
+    const { addRealMcpExtension, getRealExtension } = await import('@/server/hermes/real-extensions');
+
+    const existing = getRealExtension(profileId, server.name);
+    if (existing) {
+      return { success: true, extensionId: existing.id };
+    }
+
+    if (server.transport === 'http') {
+      if (!server.remoteUrl) {
+        return { success: false, error: `No remote URL found for "${identifier}"` };
+      }
+      const extension = addRealMcpExtension(profileId, {
+        name: server.name,
+        url: server.remoteUrl,
+        env: config.env,
+      });
+      return { success: true, extensionId: extension.id };
+    }
+
+    if (!server.installCommand) {
+      return { success: false, error: `No install command found for "${identifier}"` };
+    }
+
+    const [command, ...args] = server.installCommand.split(/\s+/);
+    if (!command) return { success: false, error: 'Empty install command' };
+
+    const extension = addRealMcpExtension(profileId, {
+      name: server.name,
+      command,
+      args,
+      env: config.env,
     });
-    return { success: true };
+    return { success: true, extensionId: extension.id };
   } catch (error) {
     return { success: false, error: error instanceof Error ? error.message : String(error) };
   }
