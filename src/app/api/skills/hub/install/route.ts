@@ -12,7 +12,16 @@ export async function POST(request: Request) {
 
   const result = await installHubSkill(body.identifier, body.category, body.force === true);
   if (!result.success) {
-    return NextResponse.json({ error: result.error ?? 'Install failed' }, { status: 500 });
+    const message = result.error ?? 'Install failed';
+    const blockedByScan = message.toLowerCase().includes('use --force to override');
+    return NextResponse.json(
+      {
+        error: message,
+        code: blockedByScan ? 'blocked_scan' : 'install_failed',
+        canOverride: blockedByScan,
+      },
+      { status: blockedByScan ? 409 : 500 },
+    );
   }
   return NextResponse.json({ success: true, identifier: body.identifier });
 }

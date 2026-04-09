@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { AlertTriangle, Download, ExternalLink, FolderOpen, Globe, Search, Shield, ShieldAlert, ShieldCheck, Star, X } from 'lucide-react';
+import { ApiError } from '@/lib/api/client';
 import { useContextInspector } from '@/features/memory/api/use-memory';
 import { SkillCard } from '@/features/skills/components/skill-card';
 import { useSkills, useSkillCategories, useHubSkills, useInstallHubSkill, type HubSkill } from '@/features/skills/api/use-skills';
@@ -187,7 +188,8 @@ export function SkillsScreen() {
       setBlockedInstall(null);
     } catch (error) {
       const message = error instanceof Error ? error.message : String(error);
-      if (!force && isForceableInstallError(message)) {
+      const blockedByScan = error instanceof ApiError ? error.code === 'blocked_scan' : isForceableInstallError(message);
+      if (!force && blockedByScan) {
         setBlockedInstall({ skill, message });
         return;
       }
