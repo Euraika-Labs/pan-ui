@@ -263,7 +263,7 @@ async function fetchAllServers(updatedSince?: string): Promise<RegistryServer[]>
 
 let syncInProgress = false;
 
-async function syncRegistry(): Promise<void> {
+async function syncRegistry(forceFull = false): Promise<void> {
   if (syncInProgress) return;
   syncInProgress = true;
 
@@ -272,7 +272,7 @@ async function syncRegistry(): Promise<void> {
     const existingServers = await readCacheFile();
     const existingById = new Map(existingServers.map((s) => [s.id, s]));
 
-    const rawServers = await fetchAllServers(syncState.lastSync);
+    const rawServers = await fetchAllServers(forceFull ? undefined : syncState.lastSync);
     const now = new Date().toISOString();
 
     if (rawServers.length === 0 && existingServers.length > 0) {
@@ -360,8 +360,15 @@ export async function installHubMcpServer(
   identifier: string,
   config: { env?: Record<string, string> } = {},
 ): Promise<{ success: boolean; error?: string; extensionId?: string }> {
-  const servers = await readCacheFile();
-  const server = servers.find((s) => s.id === identifier || s.name === identifier);
+  let servers = await readCacheFile();
+  let server = servers.find((s) => s.id === identifier || s.name === identifier);
+
+  const needsRefresh = !server || (server.transport === 'http' && !server.remoteUrl) || (server.transport === 'stdio' && !server.installCommand);
+  if (needsRefresh) {
+    await syncRegistry(true);
+    servers = await readCacheFile();
+    server = servers.find((s) => s.id === identifier || s.name === identifier);
+  }
 
   if (!server) {
     return { success: false, error: `MCP server "${identifier}" was not found in the hub cache` };
