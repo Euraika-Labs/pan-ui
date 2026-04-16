@@ -25,6 +25,7 @@
   "files": [
     "bin/",
     ".next/standalone/",
+    ".next/standalone/.next/",
     ".next/static/",
     "public/",
     "hermes.version.json",
